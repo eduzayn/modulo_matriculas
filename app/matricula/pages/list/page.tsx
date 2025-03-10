@@ -75,10 +75,10 @@ export default async function ListMatriculasPage({ searchParams }: ListMatricula
         totalCount={totalCount}
         page={page}
         pageSize={pageSize}
-        onPageChange={(newPage) => {
+        onPageChange={(newPage: number) => {
           // Esta função será implementada no cliente
         }}
-        onFilterChange={(filters) => {
+        onFilterChange={(filters: Record<string, any>) => {
           // Esta função será implementada no cliente
         }}
       />
