@@ -34,3 +34,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+tools/supabase/apply-migrations.js
+tools/supabase/direct-sql.js
+tools/supabase/supabase-api.js
