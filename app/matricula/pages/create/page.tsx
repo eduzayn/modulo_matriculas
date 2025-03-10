@@ -1,18 +1,14 @@
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
-import { MatriculaForm } from '@/app/(matricula)/components/matricula-form'
+import { MatriculaForm } from '@/app/matricula/components/matricula-form'
 import { redirect } from 'next/navigation'
-import { matriculaRoutes } from '@/app/(matricula)/routes'
+import { matriculaRoutes } from '@/app/matricula/routes'
 
 export default async function CreateMatriculaPage() {
   const cookieStore = cookies()
   const supabase = createClient(cookieStore)
 
-  // Verificar se o usuário está autenticado
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session) {
-    redirect('/auth/login')
-  }
+  // A autenticação agora é feita pelo middleware
 
   // Buscar alunos
   const { data: alunos, error: alunosError } = await supabase

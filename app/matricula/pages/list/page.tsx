@@ -1,8 +1,8 @@
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
-import { MatriculaList } from '@/app/(matricula)/components/matricula-list'
+import { MatriculaList } from '@/app/matricula/components/matricula-list'
 import { Button } from '@/components/ui/button'
-import { matriculaRoutes } from '@/app/(matricula)/routes'
+import { matriculaRoutes } from '@/app/matricula/routes'
 import Link from 'next/link'
 
 interface ListMatriculasPageProps {
@@ -75,10 +75,10 @@ export default async function ListMatriculasPage({ searchParams }: ListMatricula
         totalCount={totalCount}
         page={page}
         pageSize={pageSize}
-        onPageChange={(newPage) => {
+        onPageChange={(newPage: number) => {
           // Esta função será implementada no cliente
         }}
-        onFilterChange={(filters) => {
+        onFilterChange={(filters: Record<string, any>) => {
           // Esta função será implementada no cliente
         }}
       />
