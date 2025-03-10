@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
-import { MatriculaDetails } from '@/app/(matricula)/components/matricula-details'
+import { MatriculaDetails } from '@/app/matricula/components/matricula-details'
 import { notFound } from 'next/navigation'
 
 interface MatriculaDetailsPageProps {

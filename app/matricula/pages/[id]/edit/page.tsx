@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
-import { MatriculaForm } from '@/app/(matricula)/components/matricula-form'
+import { MatriculaForm } from '@/app/matricula/components/matricula-form'
 import { notFound } from 'next/navigation'
 
 interface EditMatriculaPageProps {

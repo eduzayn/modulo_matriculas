@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { matriculaRoutes } from '@/app/(matricula)/routes'
+import { matriculaRoutes } from '@/app/matricula/routes'
 import {
   Table,
   TableBody,

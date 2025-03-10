@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 import { AppError, appErrors } from '@/lib/errors';
 import type { ActionResponse } from '@/types/actions';
-import { MatriculaStatus } from '@/app/(matricula)/types/matricula';
+import { MatriculaStatus } from '@/app/matricula/types/matricula';
 
 const action = createSafeActionClient();
 

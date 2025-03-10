@@ -1,8 +1,8 @@
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
-import { MatriculaForm } from '@/app/(matricula)/components/matricula-form'
+import { MatriculaForm } from '@/app/matricula/components/matricula-form'
 import { redirect } from 'next/navigation'
-import { matriculaRoutes } from '@/app/(matricula)/routes'
+import { matriculaRoutes } from '@/app/matricula/routes'
 
 export default async function CreateMatriculaPage() {
   const cookieStore = cookies()
