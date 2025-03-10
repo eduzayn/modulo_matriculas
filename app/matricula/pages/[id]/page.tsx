@@ -1,7 +1,9 @@
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
-import { MatriculaDetails } from '@/app/(matricula)/components/matricula-details'
+import { MatriculaDetails } from '@/app/matricula/components/matricula-details'
+import { MatriculaDetailsSkeleton } from '@/app/matricula/components/matricula-details-skeleton'
 import { notFound } from 'next/navigation'
+import { Suspense } from 'react'
 
 interface MatriculaDetailsPageProps {
   params: {
@@ -58,7 +60,9 @@ export default async function MatriculaDetailsPage({ params }: MatriculaDetailsP
 
   return (
     <div className="container py-10">
-      <MatriculaDetails matricula={matricula} />
+      <Suspense fallback={<MatriculaDetailsSkeleton />}>
+        <MatriculaDetails matricula={matricula} />
+      </Suspense>
     </div>
   )
 }

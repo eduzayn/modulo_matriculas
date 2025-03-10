@@ -1,9 +1,11 @@
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
-import { MatriculaList } from '@/app/(matricula)/components/matricula-list'
+import { MatriculaList } from '@/app/matricula/components/matricula-list'
+import { MatriculaListSkeleton } from '@/app/matricula/components/matricula-list-skeleton'
 import { Button } from '@/components/ui/button'
-import { matriculaRoutes } from '@/app/(matricula)/routes'
+import { matriculaRoutes } from '@/app/matricula/routes'
 import Link from 'next/link'
+import { Suspense } from 'react'
 
 interface ListMatriculasPageProps {
   searchParams: {
@@ -70,18 +72,20 @@ export default async function ListMatriculasPage({ searchParams }: ListMatricula
         </Button>
       </div>
 
-      <MatriculaList
-        matriculas={matriculas || []}
-        totalCount={totalCount}
-        page={page}
-        pageSize={pageSize}
-        onPageChange={(newPage) => {
-          // Esta função será implementada no cliente
-        }}
-        onFilterChange={(filters) => {
-          // Esta função será implementada no cliente
-        }}
-      />
+      <Suspense fallback={<MatriculaListSkeleton />}>
+        <MatriculaList
+          matriculas={matriculas || []}
+          totalCount={totalCount}
+          page={page}
+          pageSize={pageSize}
+          onPageChange={(newPage: number) => {
+            // Esta função será implementada no cliente
+          }}
+          onFilterChange={(filters: Record<string, any>) => {
+            // Esta função será implementada no cliente
+          }}
+        />
+      </Suspense>
     </div>
   )
 }

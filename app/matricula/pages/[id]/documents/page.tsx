@@ -1,11 +1,13 @@
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
-import { DocumentList } from '@/app/(matricula)/components/document-list'
-import { DocumentUpload } from '@/app/(matricula)/components/document-upload'
+import { DocumentList } from '@/app/matricula/components/document-list'
+import { DocumentUpload } from '@/app/matricula/components/document-upload'
+import { DocumentListSkeleton } from '@/app/matricula/components/document-list-skeleton'
 import { notFound } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { matriculaRoutes } from '@/app/(matricula)/routes'
+import { matriculaRoutes } from '@/app/matricula/routes'
+import { Suspense } from 'react'
 
 interface DocumentsPageProps {
   params: {
@@ -62,7 +64,9 @@ export default async function DocumentsPage({ params }: DocumentsPageProps) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2">
           <h2 className="text-xl font-semibold mb-4">Documentos Enviados</h2>
-          <DocumentList documents={documentos || []} isAdmin={isAdmin} />
+          <Suspense fallback={<DocumentListSkeleton />}>
+            <DocumentList documents={documentos || []} isAdmin={isAdmin} />
+          </Suspense>
         </div>
         <div>
           <div className="border rounded-lg p-6">
