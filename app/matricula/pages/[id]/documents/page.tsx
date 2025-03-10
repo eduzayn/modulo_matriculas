@@ -1,11 +1,11 @@
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
-import { DocumentList } from '@/app/(matricula)/components/document-list'
-import { DocumentUpload } from '@/app/(matricula)/components/document-upload'
+import { DocumentList } from '@/app/matricula/components/document-list'
+import { DocumentUpload } from '@/app/matricula/components/document-upload'
 import { notFound } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { matriculaRoutes } from '@/app/(matricula)/routes'
+import { matriculaRoutes } from '@/app/matricula/routes'
 
 interface DocumentsPageProps {
   params: {
