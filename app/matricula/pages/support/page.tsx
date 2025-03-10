@@ -12,11 +12,7 @@ export default async function SupportPage() {
   const cookieStore = cookies()
   const supabase = createClient(cookieStore)
 
-  // Verificar autenticação
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session) {
-    redirect('/auth/login?callbackUrl=/matricula/support')
-  }
+  // A autenticação agora é feita pelo middleware
 
   return (
     <div className="container py-10 space-y-6">

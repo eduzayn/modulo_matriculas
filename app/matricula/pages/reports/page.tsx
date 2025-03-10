@@ -18,17 +18,7 @@ export default async function ReportsPage() {
   const cookieStore = cookies()
   const supabase = createClient(cookieStore)
 
-  // Verificar autenticação
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session) {
-    redirect('/auth/login?callbackUrl=/matricula/reports')
-  }
-
-  // Verificar se o usuário é admin
-  const isAdmin = session?.user?.app_metadata?.role === 'admin'
-  if (!isAdmin) {
-    redirect('/matricula/list')
-  }
+  // A autenticação e verificação de permissões agora são feitas pelo middleware
 
   // Buscar estatísticas de matrículas por mês (últimos 6 meses)
   const sixMonthsAgo = new Date()

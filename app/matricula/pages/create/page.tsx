@@ -8,11 +8,7 @@ export default async function CreateMatriculaPage() {
   const cookieStore = cookies()
   const supabase = createClient(cookieStore)
 
-  // Verificar se o usuário está autenticado
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session) {
-    redirect('/auth/login')
-  }
+  // A autenticação agora é feita pelo middleware
 
   // Buscar alunos
   const { data: alunos, error: alunosError } = await supabase

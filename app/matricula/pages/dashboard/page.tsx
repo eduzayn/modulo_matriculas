@@ -4,23 +4,13 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { matriculaRoutes } from '@/app/matricula/routes'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { redirect } from 'next/navigation'
+import React from 'react'
 
 export default async function DashboardPage() {
   const cookieStore = cookies()
   const supabase = createClient(cookieStore)
 
-  // Verificar autenticação
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session) {
-    redirect('/auth/login?callbackUrl=/matricula/dashboard')
-  }
-
-  // Verificar se o usuário é admin
-  const isAdmin = session?.user?.app_metadata?.role === 'admin'
-  if (!isAdmin) {
-    redirect('/matricula/list')
-  }
+  // A autenticação e verificação de permissões agora são feitas pelo middleware
 
   // Buscar estatísticas de matrículas
   const { data: matriculasStats, error: matriculasError } = await supabase
