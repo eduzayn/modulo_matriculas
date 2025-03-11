@@ -39,6 +39,7 @@ const moduleConfig = {
       { path: '/aluno/aulas', name: 'Aulas', icon: <FileText size={20} /> },
       { path: '/aluno/notas', name: 'Notas', icon: <BarChart2 size={20} /> },
       { path: '/aluno/financeiro', name: 'Financeiro', icon: <CreditCard size={20} /> },
+      { path: '/aluno/contratos', name: 'Meus Contratos', icon: <FileText size={20} /> },
       { path: '/aluno/perfil', name: 'Meu Perfil', icon: <Users size={20} /> },
     ],
   },

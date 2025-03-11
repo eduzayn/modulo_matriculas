@@ -102,3 +102,44 @@ export async function getMatriculaDetails(supabase: SupabaseClient, userId: stri
   
   return matricula
 }
+
+export async function getAlunoContratos(supabase: SupabaseClient, userId: string) {
+  if (!userId) return []
+  
+  // Obter aluno pelo user_id
+  const { data: aluno } = await supabase
+    .from('students')
+    .select('*')
+    .eq('user_id', userId)
+    .single()
+  
+  if (!aluno) return []
+  
+  // Obter matrículas do aluno com contratos
+  const { data: matriculas } = await supabase
+    .from('matricula.registros')
+    .select(`
+      id,
+      curso:courses(id, name),
+      contrato:matricula_contratos(
+        id,
+        titulo,
+        versao,
+        url,
+        status,
+        data_assinatura
+      )
+    `)
+    .eq('aluno_id', aluno.id)
+  
+  // Extrair contratos de todas as matrículas
+  const contratos = matriculas
+    ?.filter(m => m.contrato && m.contrato.length > 0)
+    .map(m => ({
+      ...m.contrato[0],
+      matricula_id: m.id,
+      curso_nome: m.curso && m.curso.length > 0 ? m.curso[0].name : 'N/A'
+    })) || []
+  
+  return contratos
+}
