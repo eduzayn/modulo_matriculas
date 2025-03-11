@@ -1,0 +1,138 @@
+/* Responsive Design System for Edunexia Platform
+ * Breakpoints:
+ * - Mobile: < 768px
+ * - Tablet: 768px - 1023px
+ * - Desktop: ≥ 1024px
+ */
+
+/* Responsive Layout Classes */
+.container-responsive {
+  @apply px-4 md:px-6 lg:px-8 mx-auto max-w-7xl;
+}
+
+/* Grid Layouts */
+.grid-1 {
+  @apply grid grid-cols-1 gap-4;
+}
+
+.grid-2 {
+  @apply grid grid-cols-1 md:grid-cols-2 gap-4;
+}
+
+.grid-3 {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4;
+}
+
+.grid-4 {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4;
+}
+
+/* Card Layouts */
+.card-responsive {
+  @apply bg-white rounded-lg border border-neutral-200 overflow-hidden p-4 md:p-6;
+}
+
+.card-header-responsive {
+  @apply flex flex-col md:flex-row md:items-center md:justify-between mb-4;
+}
+
+.card-title-responsive {
+  @apply text-lg md:text-xl font-semibold;
+}
+
+/* Form Elements */
+.form-group-responsive {
+  @apply grid grid-cols-1 md:grid-cols-2 gap-4 mb-4;
+}
+
+.input-responsive {
+  @apply w-full p-2 md:p-3 border border-neutral-200 rounded-md;
+}
+
+/* Table Responsive */
+.table-container-responsive {
+  @apply overflow-x-auto -mx-4 md:mx-0;
+}
+
+.table-responsive {
+  @apply min-w-full divide-y divide-neutral-200;
+}
+
+/* Button Groups */
+.button-group-responsive {
+  @apply flex flex-col md:flex-row gap-2 md:gap-4;
+}
+
+/* Stats Grid */
+.stats-grid-responsive {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4;
+}
+
+.stat-card-responsive {
+  @apply bg-white rounded-lg border border-neutral-200 p-4 md:p-6;
+}
+
+/* Dashboard Layout */
+.dashboard-layout-responsive {
+  @apply space-y-4 md:space-y-6 lg:space-y-8;
+}
+
+/* Module-specific responsive utilities */
+.module-header-communication {
+  @apply bg-gradient-to-r from-blue-500 to-blue-700 text-white p-4 md:p-6 rounded-lg mb-4 md:mb-6;
+}
+
+.module-header-student {
+  @apply bg-gradient-to-r from-emerald-500 to-emerald-700 text-white p-4 md:p-6 rounded-lg mb-4 md:mb-6;
+}
+
+.module-header-content {
+  @apply bg-gradient-to-r from-violet-500 to-violet-700 text-white p-4 md:p-6 rounded-lg mb-4 md:mb-6;
+}
+
+.module-header-enrollment {
+  @apply bg-gradient-to-r from-amber-500 to-amber-700 text-white p-4 md:p-6 rounded-lg mb-4 md:mb-6;
+}
+
+/* Responsive Typography */
+.heading-1 {
+  @apply text-2xl md:text-3xl lg:text-4xl font-bold;
+}
+
+.heading-2 {
+  @apply text-xl md:text-2xl lg:text-3xl font-semibold;
+}
+
+.heading-3 {
+  @apply text-lg md:text-xl font-medium;
+}
+
+.text-responsive {
+  @apply text-sm md:text-base;
+}
+
+/* Responsive Spacing */
+.section-spacing {
+  @apply my-4 md:my-6 lg:my-8;
+}
+
+.content-spacing {
+  @apply p-4 md:p-6 lg:p-8;
+}
+
+/* Mobile Navigation */
+.mobile-nav-container {
+  @apply fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-200 md:hidden z-50;
+}
+
+.mobile-nav {
+  @apply flex justify-around items-center h-16;
+}
+
+.mobile-nav-item {
+  @apply flex flex-col items-center justify-center text-xs text-neutral-600;
+}
+
+.mobile-nav-item-active {
+  @apply flex flex-col items-center justify-center text-xs font-medium;
+}
