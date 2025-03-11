@@ -13,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { colors } from '@/app/styles/colors'
 
 export default async function ReportsPage() {
   const cookieStore = cookies()
@@ -35,7 +36,13 @@ export default async function ReportsPage() {
   }
 
   // Agrupar matrículas por mês
-  const matriculasMensais = {}
+  const matriculasMensais: Record<string, {
+    total: number;
+    ativas: number;
+    pendentes: number;
+    canceladas: number;
+    trancadas: number;
+  }> = {}
   
   matriculasPorMes?.forEach((matricula) => {
     const date = new Date(matricula.created_at)
@@ -100,7 +107,10 @@ export default async function ReportsPage() {
   }
 
   // Agrupar por curso
-  const cursoCount = {}
+  const cursoCount: Record<string, {
+    nome: string;
+    count: number;
+  }> = {}
   
   cursosMaisPopulares?.forEach((matricula) => {
     const cursoId = matricula.curso_id
@@ -124,52 +134,52 @@ export default async function ReportsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Relatórios</h1>
-          <p className="text-muted-foreground">
+          <p className="text-neutral-500">
             Análise de dados e estatísticas de matrículas
           </p>
         </div>
-        <Button variant="outline" asChild>
+        <Button variant="outline" style={{ borderColor: colors.primary.enrollment.main, color: colors.primary.enrollment.main }}>
           <Link href={matriculaRoutes.dashboard}>Voltar para Dashboard</Link>
         </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
+        <Card className="border-t-4" style={{ borderTopColor: colors.primary.enrollment.main }}>
           <CardHeader className="pb-2">
             <CardTitle className="text-lg">Taxa de Conversão</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{taxaConversao.toFixed(1)}%</p>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-neutral-500 text-sm">
               Matrículas ativas / Total de matrículas
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-t-4" style={{ borderTopColor: colors.primary.enrollment.main }}>
           <CardHeader className="pb-2">
             <CardTitle className="text-lg">Total de Matrículas</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{totalMatriculas?.length || 0}</p>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-neutral-500 text-sm">
               Todas as matrículas registradas
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-t-4" style={{ borderTopColor: colors.primary.enrollment.main }}>
           <CardHeader className="pb-2">
             <CardTitle className="text-lg">Matrículas Ativas</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{matriculasAtivas?.length || 0}</p>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-neutral-500 text-sm">
               Matrículas com status ativo
             </p>
           </CardContent>
         </Card>
       </div>
 
-      <Card>
+      <Card className="border-t-4" style={{ borderTopColor: colors.primary.enrollment.main }}>
         <CardHeader>
           <CardTitle>Matrículas por Mês</CardTitle>
         </CardHeader>
@@ -177,12 +187,12 @@ export default async function ReportsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Mês/Ano</TableHead>
-                <TableHead>Total</TableHead>
-                <TableHead>Ativas</TableHead>
-                <TableHead>Pendentes</TableHead>
-                <TableHead>Canceladas</TableHead>
-                <TableHead>Trancadas</TableHead>
+                <TableHead style={{ color: colors.primary.enrollment.dark }}>Mês/Ano</TableHead>
+                <TableHead style={{ color: colors.primary.enrollment.dark }}>Total</TableHead>
+                <TableHead style={{ color: colors.primary.enrollment.dark }}>Ativas</TableHead>
+                <TableHead style={{ color: colors.primary.enrollment.dark }}>Pendentes</TableHead>
+                <TableHead style={{ color: colors.primary.enrollment.dark }}>Canceladas</TableHead>
+                <TableHead style={{ color: colors.primary.enrollment.dark }}>Trancadas</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -193,8 +203,8 @@ export default async function ReportsPage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                mesesOrdenados.map((mes) => (
-                  <TableRow key={mes}>
+                mesesOrdenados.map((mes, index) => (
+                  <TableRow key={mes} className={index % 2 === 0 ? 'bg-neutral-50' : ''}>
                     <TableCell className="font-medium">{mes}</TableCell>
                     <TableCell>{matriculasMensais[mes].total}</TableCell>
                     <TableCell>{matriculasMensais[mes].ativas}</TableCell>
@@ -209,7 +219,7 @@ export default async function ReportsPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="border-t-4" style={{ borderTopColor: colors.primary.enrollment.main }}>
         <CardHeader>
           <CardTitle>Cursos Mais Populares</CardTitle>
         </CardHeader>
@@ -217,8 +227,8 @@ export default async function ReportsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Curso</TableHead>
-                <TableHead className="text-right">Matrículas Ativas</TableHead>
+                <TableHead style={{ color: colors.primary.enrollment.dark }}>Curso</TableHead>
+                <TableHead className="text-right" style={{ color: colors.primary.enrollment.dark }}>Matrículas Ativas</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -230,7 +240,7 @@ export default async function ReportsPage() {
                 </TableRow>
               ) : (
                 cursosOrdenados.map((curso, index) => (
-                  <TableRow key={index}>
+                  <TableRow key={index} className={index % 2 === 0 ? 'bg-neutral-50' : ''}>
                     <TableCell className="font-medium">{curso.nome}</TableCell>
                     <TableCell className="text-right">{curso.count}</TableCell>
                   </TableRow>
@@ -242,7 +252,9 @@ export default async function ReportsPage() {
       </Card>
 
       <div className="flex justify-end">
-        <Button>Exportar Relatórios</Button>
+        <Button style={{ background: colors.primary.enrollment.gradient }}>
+          Exportar Relatórios
+        </Button>
       </div>
     </div>
   )
