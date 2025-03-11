@@ -178,7 +178,7 @@ export default async function PaymentsPage({ params }: PaymentsPageProps) {
                 </TableRow>
               ) : (
                 pagamentos.map((pagamento, index) => (
-                  <TableRow key={pagamento.id} isEven={index % 2 === 0}>
+                  <TableRow key={pagamento.id} className={index % 2 === 0 ? 'bg-neutral-50' : ''}>
                     <TableCell>{pagamento.numero_parcela}</TableCell>
                     <TableCell>{formatDate(pagamento.data_vencimento)}</TableCell>
                     <TableCell>{formatCurrency(pagamento.valor)}</TableCell>
@@ -188,10 +188,10 @@ export default async function PaymentsPage({ params }: PaymentsPageProps) {
                           pagamento.status === 'pago'
                             ? 'success'
                             : pagamento.status === 'atrasado'
-                            ? 'error'
-                            : 'primary'
+                            ? 'destructive'
+                            : 'outline'
                         }
-                        module="enrollment"
+                        style={pagamento.status === 'pago' ? { backgroundColor: `${colors.semantic.success}20`, color: colors.semantic.success } : {}}
                       >
                         {pagamento.status}
                       </Badge>
@@ -199,7 +199,7 @@ export default async function PaymentsPage({ params }: PaymentsPageProps) {
                     <TableCell>{formatDate(pagamento.data_pagamento) || '-'}</TableCell>
                     <TableCell className="text-right">
                       {pagamento.status !== 'pago' && (
-                        <Button variant="outline" size="sm" module="enrollment">
+                        <Button variant="outline" size="sm" style={{ borderColor: colors.primary.enrollment.main, color: colors.primary.enrollment.main }}>
                           Registrar Pagamento
                         </Button>
                       )}
