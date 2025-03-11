@@ -26,6 +26,7 @@ const alunoRoutes = [
   '/aluno/aulas',
   '/aluno/notas',
   '/aluno/financeiro',
+  '/aluno/contratos',
   '/aluno/perfil',
 ]
 
@@ -105,6 +106,28 @@ export async function middleware(request: NextRequest) {
       // Se a matrícula não pertencer ao aluno, redirecionar para o dashboard
       if (!matricula) {
         return NextResponse.redirect(new URL('/aluno/dashboard', request.url))
+      }
+    }
+    
+    // Para rotas de detalhes de contrato, verificar se o aluno tem acesso ao contrato
+    if (pathname.match(/\/aluno\/contratos\/[^\/]+/)) {
+      const contratoId = pathname.split('/')[3]
+      
+      // Verificar se o contrato pertence a uma matrícula do aluno
+      const { data: contrato } = await supabase
+        .from('matricula_contratos')
+        .select(`
+          id,
+          matricula:matricula_id(
+            id,
+            aluno_id
+          )
+        `)
+        .eq('id', contratoId)
+        .single()
+      
+      if (!contrato || !contrato.matricula || contrato.matricula[0]?.aluno_id !== aluno.id) {
+        return NextResponse.redirect(new URL('/aluno/contratos', request.url))
       }
     }
   }
