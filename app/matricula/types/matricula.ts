@@ -6,6 +6,8 @@ export enum MatriculaStatus {
   PENDENTE = 'pendente',
   APROVADO = 'aprovado',
   REJEITADO = 'rejeitado',
+  ATIVO = 'ativo',
+  TRANCADO = 'trancado',
   CANCELADO = 'cancelado',
   CONCLUIDO = 'concluido'
 }
