@@ -8,7 +8,8 @@ import { AppError, appErrors } from '@/lib/errors';
 import type { ActionResponse } from '@/types/actions';
 import { matriculaSchema } from '../lib/schemas';
 import { MatriculaStatus, DocumentoStatus } from '../types/matricula';
-import { notificationService } from '../lib/services/notification-service';
+import { NotificationService } from '../lib/services/notification-service';
+import { ContractService } from '../lib/services/contract-service';
 
 const action = createSafeActionClient();
 
@@ -66,10 +67,10 @@ export const createMatricula = action(matriculaSchema, async (data): Promise<Act
 
       // Enviar notificação de matrícula criada
       try {
-        await notificationService.sendNotification({
+        await NotificationService.sendNotification({
           event: 'matricula_criada',
           recipient: {
-            id: data.aluno_id,
+            id: data.aluno_id as string,
             type: 'aluno',
           },
           data: {
@@ -166,7 +167,7 @@ export const updateMatriculaStatus = action(updateMatriculaStatusSchema, async (
           data.status === MatriculaStatus.CANCELADO ? 'matricula_cancelada' :
           'matricula_status_alterado';
 
-        await notificationService.sendNotification({
+        await NotificationService.sendNotification({
           event: notificationEvent,
           recipient: {
             id: matricula.aluno_id,
@@ -264,7 +265,7 @@ export const uploadDocumento = action(uploadDocumentoSchema, async (data): Promi
 
       // Enviar notificação de documento enviado
       try {
-        await notificationService.sendNotification({
+        await NotificationService.sendNotification({
           event: 'documento_enviado',
           recipient: {
             id: matricula.aluno_id,
@@ -279,7 +280,7 @@ export const uploadDocumento = action(uploadDocumentoSchema, async (data): Promi
         });
 
         // Notificar administradores sobre novo documento
-        await notificationService.sendNotification({
+        await NotificationService.sendNotification({
           event: 'novo_documento_para_analise',
           recipient: {
             type: 'admin',
@@ -374,7 +375,7 @@ export const avaliarDocumento = action(avaliarDocumentoSchema, async (data): Pro
             data.status === DocumentoStatus.REJEITADO ? 'documento_rejeitado' :
             'documento_avaliado';
 
-          await notificationService.sendNotification({
+          await NotificationService.sendNotification({
             event: notificationEvent,
             recipient: {
               id: matricula.aluno_id,
@@ -438,57 +439,41 @@ export const gerarContrato = action(gerarContratoSchema, async (data): Promise<A
         throw new AppError('Matrícula não encontrada', 'NOT_FOUND');
       }
 
-      // Verificar se já existe um contrato para esta matrícula
-      const { count, error: countError } = await supabase
-        .from('matricula_contratos')
-        .select('*', { count: 'exact' })
-        .eq('matricula_id', data.matricula_id);
-
-      if (countError) {
-        console.error('Erro ao verificar contrato existente:', countError);
+      // Verificar se já existe um contrato para esta matrícula usando o serviço
+      try {
+        const contratoExiste = await ContractService.contractExists(data.matricula_id);
+        if (contratoExiste) {
+          throw new AppError('Esta matrícula já possui um contrato gerado', 'ALREADY_EXISTS');
+        }
+      } catch (error) {
+        if (error instanceof AppError) {
+          throw error;
+        }
+        console.error('Erro ao verificar contrato existente:', error);
         throw new AppError('Erro ao verificar contrato existente', 'QUERY_ERROR');
       }
 
-      if (count && count > 0) {
-        throw new AppError('Esta matrícula já possui um contrato gerado', 'ALREADY_EXISTS');
-      }
-
-      // Gerar contrato (mock - em produção, geraria um PDF real)
-      const contratoNome = `contrato_${data.matricula_id}_${Date.now()}.pdf`;
-      const contratoUrl = `https://example.com/contratos/${contratoNome}`;
-
-      // Criar registro do contrato
-      const { data: contrato, error: contratoError } = await supabase
-        .from('matricula_contratos')
-        .insert({
-          matricula_id: data.matricula_id,
-          titulo: `Contrato de Matrícula - ${(matricula.curso as any)?.name || 'Curso'}`,
-          versao: '1.0',
-          url: contratoUrl,
-          status: 'pendente',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        })
-        .select('id')
-        .single();
-
-      if (contratoError) {
-        console.error('Erro ao criar registro do contrato:', contratoError);
-        throw new AppError('Erro ao criar registro do contrato', 'CREATION_FAILED');
+      // Gerar contrato usando o serviço
+      let contratoResult;
+      try {
+        contratoResult = await ContractService.saveContractAndCreateRecord(data.matricula_id);
+      } catch (error) {
+        console.error('Erro ao gerar contrato:', error);
+        throw new AppError('Erro ao gerar contrato', 'CREATION_FAILED');
       }
 
       // Enviar notificação de contrato gerado
       try {
-        await notificationService.sendNotification({
+        await NotificationService.sendNotification({
           event: 'contrato_gerado',
           recipient: {
-            id: matricula.aluno_id,
+            id: matricula.aluno_id as string,
             type: 'aluno',
           },
           data: {
             matricula_id: data.matricula_id,
-            contrato_id: contrato.id,
-            url: contratoUrl,
+            contrato_id: contratoResult.contrato_id,
+            url: contratoResult.url,
           },
           channels: ['email'],
         });
@@ -500,8 +485,8 @@ export const gerarContrato = action(gerarContratoSchema, async (data): Promise<A
       return {
         success: true,
         data: {
-          contrato_id: contrato.id,
-          url: contratoUrl,
+          contrato_id: contratoResult.contrato_id,
+          url: contratoResult.url,
         },
       };
     } catch (error) {
@@ -523,6 +508,13 @@ export const assinarContrato = action(assinarContratoSchema, async (data): Promi
     try {
       const cookieStore = cookies();
       const supabase = createClient(cookieStore);
+      
+      // Obter o usuário atual
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new AppError('Usuário não autenticado', 'UNAUTHORIZED');
+      }
 
       // Verificar se o contrato existe
       const { data: contrato, error: contratoError } = await supabase
@@ -540,19 +532,32 @@ export const assinarContrato = action(assinarContratoSchema, async (data): Promi
         throw new AppError('Este contrato já foi assinado', 'ALREADY_SIGNED');
       }
 
-      // Atualizar status do contrato
-      const { error: updateError } = await supabase
-        .from('matricula_contratos')
-        .update({
-          status: 'assinado',
-          data_assinatura: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', data.contrato_id);
+      // Coletar metadados da assinatura
+      const metadata = {
+        ip: '127.0.0.1', // Em produção, seria o IP real do usuário
+        user_agent: 'Edunexia Web App', // Em produção, seria o user agent real
+        timestamp: Date.now(),
+        browser_info: {
+          browser: 'Chrome',
+          version: '120.0.0',
+          platform: 'Web'
+        },
+        device_info: {
+          type: 'Desktop',
+          os: 'Windows'
+        },
+        location: {
+          country: 'BR',
+          region: 'SP'
+        }
+      };
 
-      if (updateError) {
-        console.error('Erro ao atualizar status do contrato:', updateError);
-        throw new AppError('Erro ao atualizar status do contrato', 'UPDATE_FAILED');
+      // Assinar contrato usando o serviço
+      try {
+        await ContractService.signContract(data.contrato_id, session.user.id, metadata);
+      } catch (error) {
+        console.error('Erro ao assinar contrato:', error);
+        throw new AppError('Erro ao assinar contrato', 'UPDATE_FAILED');
       }
 
       // Buscar informações da matrícula
@@ -566,39 +571,25 @@ export const assinarContrato = action(assinarContratoSchema, async (data): Promi
         console.error('Erro ao buscar matrícula:', matriculaError);
         // Não falhar a operação se apenas a busca da matrícula falhar
       } else {
-        // Atualizar status da matrícula se necessário
-        if (matricula.status === MatriculaStatus.PENDENTE || matricula.status === MatriculaStatus.APROVADO) {
-          const { error: matriculaUpdateError } = await supabase
-            .from('matricula.registros')
-            .update({
-              status: MatriculaStatus.ATIVO,
-              updated_at: new Date().toISOString(),
-            })
-            .eq('id', matricula.id);
-
-          if (matriculaUpdateError) {
-            console.error('Erro ao atualizar status da matrícula:', matriculaUpdateError);
-            // Não falhar a operação se apenas a atualização da matrícula falhar
-          }
-        }
-
         // Enviar notificação de contrato assinado
         try {
-          await notificationService.sendNotification({
+          await NotificationService.sendNotification({
             event: 'contrato_assinado',
             recipient: {
-              id: matricula.aluno_id,
+              id: matricula.aluno_id as string,
               type: 'aluno',
             },
             data: {
               matricula_id: matricula.id,
               contrato_id: data.contrato_id,
+              data_assinatura: new Date().toISOString(),
+              assinado_por: session.user.id,
             },
             channels: ['email', 'sms'],
           });
 
           // Notificar administradores sobre contrato assinado
-          await notificationService.sendNotification({
+          await NotificationService.sendNotification({
             event: 'contrato_assinado_admin',
             recipient: {
               type: 'admin',
@@ -607,6 +598,8 @@ export const assinarContrato = action(assinarContratoSchema, async (data): Promi
             data: {
               matricula_id: matricula.id,
               contrato_id: data.contrato_id,
+              data_assinatura: new Date().toISOString(),
+              assinado_por: session.user.id,
             },
             channels: ['email'],
           });

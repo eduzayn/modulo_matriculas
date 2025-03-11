@@ -1,12 +1,14 @@
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
-import { Button } from '@/components/ui/Button'
+import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { matriculaRoutes } from '@/app/matricula/routes'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
-import { Badge } from '@/components/ui/Badge'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { colors } from '@/app/styles/colors'
+import { gerarContrato } from '@/app/matricula/actions/matricula-actions'
+import SignContractForm from '@/app/matricula/components/contract/sign-contract-form'
 
 interface ContractPageProps {
   params: {
@@ -118,10 +120,16 @@ export default async function ContractPage({ params }: ContractPageProps) {
             </div>
           </CardContent>
           <CardFooter className="flex justify-between">
-            {contrato.status !== 'assinado' && (
-              <Button module="enrollment">Assinar Contrato</Button>
+            {contrato.status !== 'assinado' ? (
+              <div className="w-full">
+                <SignContractForm contratoId={contrato.id} />
+              </div>
+            ) : (
+              <div className="flex-1"></div>
             )}
-            <Button variant="outline" module="enrollment">Baixar Contrato</Button>
+            <Button variant="outline" module="enrollment" asChild>
+              <a href={contrato.url} download>Baixar Contrato</a>
+            </Button>
           </CardFooter>
         </Card>
       ) : (
@@ -135,7 +143,10 @@ export default async function ContractPage({ params }: ContractPageProps) {
             </p>
           </CardContent>
           <CardFooter>
-            <Button module="enrollment">Gerar Contrato</Button>
+            <form action={gerarContrato}>
+              <input type="hidden" name="matricula_id" value={id} />
+              <Button module="enrollment" type="submit">Gerar Contrato</Button>
+            </form>
           </CardFooter>
         </Card>
       )}
