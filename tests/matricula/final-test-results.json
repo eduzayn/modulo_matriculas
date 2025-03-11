@@ -1,0 +1,31 @@
+{
+  "total": 6,
+  "passed": 6,
+  "failed": 0,
+  "tests": [
+    {
+      "name": "Database Schema Setup",
+      "status": "passed"
+    },
+    {
+      "name": "Payment Generation",
+      "status": "passed"
+    },
+    {
+      "name": "Discount Application",
+      "status": "passed"
+    },
+    {
+      "name": "Split Payments",
+      "status": "passed"
+    },
+    {
+      "name": "Payment Registration",
+      "status": "passed"
+    },
+    {
+      "name": "Payment Cancellation",
+      "status": "passed"
+    }
+  ]
+}

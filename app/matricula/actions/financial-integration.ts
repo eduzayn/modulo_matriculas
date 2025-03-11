@@ -7,6 +7,13 @@ import { z } from 'zod';
 import { AppError, appErrors } from '@/lib/errors';
 import type { ActionResponse } from '@/types/actions';
 import { FormaPagamento } from '@/app/matricula/types/matricula';
+import { 
+  PaymentStatus, 
+  PaymentMethod, 
+  DiscountType,
+  TransactionType,
+  TransactionStatus
+} from '@/app/matricula/types/financial';
 
 const action = createSafeActionClient();
 
@@ -26,12 +33,16 @@ const generatePaymentsSchema = z.object({
     return !isNaN(date.getTime());
   }, { message: 'Data de vencimento inválida' }),
   desconto_id: z.string().uuid({ message: 'ID de desconto inválido' }).optional(),
+  split_recipients: z.array(z.object({
+    recipient_id: z.string(),
+    recipient_type: z.string(),
+    amount: z.number().optional(),
+    percentage: z.number().optional(),
+  })).optional(),
 });
 
 // Gerar pagamentos para uma matrícula
-export const generatePayments = action
-  .schema(generatePaymentsSchema)
-  .action(async (data): Promise<ActionResponse<{ success: boolean }>> => {
+export const generatePayments = action(generatePaymentsSchema, async (data): Promise<ActionResponse<{ success: boolean }>> => {
     try {
       const cookieStore = cookies();
       const supabase = createClient(cookieStore);
@@ -50,7 +61,7 @@ export const generatePayments = action
 
       // Verificar se já existem pagamentos para esta matrícula
       const { count, error: countError } = await supabase
-        .from('matricula_pagamentos')
+        .from('financial.payments')
         .select('*', { count: 'exact' })
         .eq('matricula_id', data.matricula_id);
 
@@ -69,15 +80,15 @@ export const generatePayments = action
       // Aplicar desconto, se houver
       if (data.desconto_id) {
         const { data: desconto, error: descontoError } = await supabase
-          .from('discounts')
+          .from('financial.discounts')
           .select('tipo, valor')
           .eq('id', data.desconto_id)
           .single();
 
         if (!descontoError && desconto) {
-          if (desconto.tipo === 'percentual') {
+          if (desconto.tipo === DiscountType.PERCENTUAL) {
             valorTotal = valorTotal * (1 - desconto.valor / 100);
-          } else if (desconto.tipo === 'valor_fixo') {
+          } else if (desconto.tipo === DiscountType.VALOR_FIXO) {
             valorTotal = Math.max(0, valorTotal - desconto.valor);
           }
         }
@@ -98,19 +109,64 @@ export const generatePayments = action
           numero_parcela: i + 1,
           valor: valorParcela,
           data_vencimento: dataVencimento.toISOString(),
-          status: 'pendente',
+          status: PaymentStatus.PENDENTE,
           forma_pagamento: data.forma_pagamento,
         });
       }
 
       // Inserir parcelas no banco de dados
       const { error: insertError } = await supabase
-        .from('matricula_pagamentos')
+        .from('financial.payments')
         .insert(parcelas);
 
       if (insertError) {
         console.error('Erro ao gerar pagamentos:', insertError);
         throw new AppError('Erro ao gerar pagamentos', 'CREATION_FAILED');
+      }
+
+      // Processar split de pagamentos, se houver
+      if (data.split_recipients && data.split_recipients.length > 0) {
+        // Buscar os IDs dos pagamentos gerados
+        const { data: payments, error: paymentsError } = await supabase
+          .from('financial.payments')
+          .select('id, valor')
+          .eq('matricula_id', data.matricula_id)
+          .order('numero_parcela', { ascending: true });
+        
+        if (paymentsError) {
+          console.error('Erro ao buscar pagamentos gerados:', paymentsError);
+          throw new AppError('Erro ao buscar pagamentos gerados', 'QUERY_ERROR');
+        }
+        
+        // Gerar registros de split para cada pagamento
+        const splitRecords = [];
+        
+        for (const payment of payments) {
+          for (const recipient of data.split_recipients) {
+            const amount = recipient.amount || 
+              (recipient.percentage ? (payment.valor * recipient.percentage / 100) : 0);
+            
+            splitRecords.push({
+              payment_id: payment.id,
+              recipient_id: recipient.recipient_id,
+              recipient_type: recipient.recipient_type,
+              amount: amount,
+              percentage: recipient.percentage,
+              status: PaymentStatus.PENDENTE,
+            });
+          }
+        }
+        
+        if (splitRecords.length > 0) {
+          const { error: splitError } = await supabase
+            .from('financial.split_payments')
+            .insert(splitRecords);
+          
+          if (splitError) {
+            console.error('Erro ao gerar registros de split:', splitError);
+            throw new AppError('Erro ao gerar registros de split', 'CREATION_FAILED');
+          }
+        }
       }
 
       // Atualizar matrícula com informações de pagamento
@@ -158,17 +214,15 @@ const registerPaymentSchema = z.object({
 });
 
 // Registrar pagamento de uma parcela
-export const registerPayment = action
-  .schema(registerPaymentSchema)
-  .action(async (data): Promise<ActionResponse<{ success: boolean }>> => {
+export const registerPayment = action(registerPaymentSchema, async (data): Promise<ActionResponse<{ success: boolean }>> => {
     try {
       const cookieStore = cookies();
       const supabase = createClient(cookieStore);
 
       // Verificar se o pagamento existe
       const { data: pagamento, error: pagamentoError } = await supabase
-        .from('matricula_pagamentos')
-        .select('id, matricula_id, status, valor')
+        .from('financial.payments')
+        .select('id, matricula_id, status, valor, forma_pagamento')
         .eq('id', data.pagamento_id)
         .single();
 
@@ -177,15 +231,15 @@ export const registerPayment = action
         throw new AppError('Pagamento não encontrado', 'NOT_FOUND');
       }
 
-      if (pagamento.status === 'pago') {
+      if (pagamento.status === PaymentStatus.PAGO) {
         throw new AppError('Este pagamento já foi registrado', 'ALREADY_PAID');
       }
 
       // Atualizar status do pagamento
       const { error: updateError } = await supabase
-        .from('matricula_pagamentos')
+        .from('financial.payments')
         .update({
-          status: 'pago',
+          status: PaymentStatus.PAGO,
           data_pagamento: data.data_pagamento,
           comprovante_url: data.comprovante_url,
           observacoes: data.observacoes,
@@ -205,8 +259,8 @@ export const registerPayment = action
           reference_id: data.pagamento_id,
           reference_type: 'matricula_pagamento',
           amount: pagamento.valor,
-          type: 'income',
-          status: 'completed',
+          type: TransactionType.RECEITA,
+          status: TransactionStatus.CONCLUIDA,
           payment_method: pagamento.forma_pagamento,
           metadata: {
             matricula_id: pagamento.matricula_id,
@@ -218,6 +272,20 @@ export const registerPayment = action
       if (transactionError) {
         console.error('Erro ao registrar transação financeira:', transactionError);
         // Não falhar a operação se apenas o registro da transação falhar
+      }
+
+      // Atualizar status dos registros de split, se houver
+      const { error: splitUpdateError } = await supabase
+        .from('financial.split_payments')
+        .update({
+          status: PaymentStatus.PAGO,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('payment_id', data.pagamento_id);
+
+      if (splitUpdateError) {
+        console.error('Erro ao atualizar registros de split:', splitUpdateError);
+        // Não falhar a operação se apenas a atualização dos splits falhar
       }
 
       return {
@@ -242,16 +310,14 @@ const cancelPaymentSchema = z.object({
 });
 
 // Cancelar pagamento de uma parcela
-export const cancelPayment = action
-  .schema(cancelPaymentSchema)
-  .action(async (data): Promise<ActionResponse<{ success: boolean }>> => {
+export const cancelPayment = action(cancelPaymentSchema, async (data): Promise<ActionResponse<{ success: boolean }>> => {
     try {
       const cookieStore = cookies();
       const supabase = createClient(cookieStore);
 
       // Verificar se o pagamento existe
       const { data: pagamento, error: pagamentoError } = await supabase
-        .from('matricula_pagamentos')
+        .from('financial.payments')
         .select('id, matricula_id, status')
         .eq('id', data.pagamento_id)
         .single();
@@ -261,19 +327,33 @@ export const cancelPayment = action
         throw new AppError('Pagamento não encontrado', 'NOT_FOUND');
       }
 
-      if (pagamento.status === 'cancelado') {
+      if (pagamento.status === PaymentStatus.CANCELADO) {
         throw new AppError('Este pagamento já foi cancelado', 'ALREADY_CANCELLED');
       }
 
       // Atualizar status do pagamento
       const { error: updateError } = await supabase
-        .from('matricula_pagamentos')
+        .from('financial.payments')
         .update({
-          status: 'cancelado',
+          status: PaymentStatus.CANCELADO,
           observacoes: data.motivo,
           updated_at: new Date().toISOString(),
         })
         .eq('id', data.pagamento_id);
+        
+      // Atualizar status dos registros de split, se houver
+      const { error: splitUpdateError } = await supabase
+        .from('financial.split_payments')
+        .update({
+          status: PaymentStatus.CANCELADO,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('payment_id', data.pagamento_id);
+        
+      if (splitUpdateError) {
+        console.error('Erro ao atualizar registros de split:', splitUpdateError);
+        // Não falhar a operação se apenas a atualização dos splits falhar
+      }
 
       if (updateError) {
         console.error('Erro ao cancelar pagamento:', updateError);
