@@ -13,9 +13,7 @@ import { notificationService } from '../lib/services/notification-service';
 const action = createSafeActionClient();
 
 // Schema para criação de matrícula
-export const createMatricula = action
-  .schema(matriculaSchema)
-  .action(async (data): Promise<ActionResponse<{ matricula_id: string }>> => {
+export const createMatricula = action(matriculaSchema, async (data): Promise<ActionResponse<{ matricula_id: string }>> => {
     try {
       const cookieStore = cookies();
       const supabase = createClient(cookieStore);
@@ -51,9 +49,9 @@ export const createMatricula = action
           aluno_id: data.aluno_id,
           curso_id: data.curso_id,
           status: MatriculaStatus.PENDENTE,
-          forma_pagamento: data.formaPagamento,
-          numero_parcelas: data.numeroParcelas,
-          desconto_id: data.descontoId,
+          forma_pagamento: data.forma_pagamento,
+          numero_parcelas: data.numero_parcelas,
+          desconto_id: data.desconto_id,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
           metadata: data.metadata || {},
@@ -116,9 +114,7 @@ const updateMatriculaStatusSchema = z.object({
 });
 
 // Atualizar status de matrícula
-export const updateMatriculaStatus = action
-  .schema(updateMatriculaStatusSchema)
-  .action(async (data): Promise<ActionResponse<{ success: boolean }>> => {
+export const updateMatriculaStatus = action(updateMatriculaStatusSchema, async (data): Promise<ActionResponse<{ success: boolean }>> => {
     try {
       const cookieStore = cookies();
       const supabase = createClient(cookieStore);
@@ -126,7 +122,7 @@ export const updateMatriculaStatus = action
       // Verificar se a matrícula existe
       const { data: matricula, error: matriculaError } = await supabase
         .from('matricula.registros')
-        .select('id, aluno_id, status')
+        .select('id, aluno_id, status, metadata')
         .eq('id', data.id)
         .single();
 
@@ -142,9 +138,9 @@ export const updateMatriculaStatus = action
           status: data.status,
           updated_at: new Date().toISOString(),
           metadata: {
-            ...matricula.metadata,
+            ...((matricula as any).metadata || {}),
             status_history: [
-              ...(matricula.metadata?.status_history || []),
+              ...(((matricula as any).metadata?.status_history || []) as any[]),
               {
                 from: matricula.status,
                 to: data.status,
@@ -211,9 +207,7 @@ const uploadDocumentoSchema = z.object({
 });
 
 // Upload de documento
-export const uploadDocumento = action
-  .schema(uploadDocumentoSchema)
-  .action(async (data): Promise<ActionResponse<{ documento_id: string }>> => {
+export const uploadDocumento = action(uploadDocumentoSchema, async (data): Promise<ActionResponse<{ documento_id: string }>> => {
     try {
       const cookieStore = cookies();
       const supabase = createClient(cookieStore);
@@ -330,9 +324,7 @@ const avaliarDocumentoSchema = z.object({
 });
 
 // Avaliar documento
-export const avaliarDocumento = action
-  .schema(avaliarDocumentoSchema)
-  .action(async (data): Promise<ActionResponse<{ success: boolean }>> => {
+export const avaliarDocumento = action(avaliarDocumentoSchema, async (data): Promise<ActionResponse<{ success: boolean }>> => {
     try {
       const cookieStore = cookies();
       const supabase = createClient(cookieStore);
@@ -423,9 +415,7 @@ const gerarContratoSchema = z.object({
 });
 
 // Gerar contrato de matrícula
-export const gerarContrato = action
-  .schema(gerarContratoSchema)
-  .action(async (data): Promise<ActionResponse<{ contrato_id: string; url: string }>> => {
+export const gerarContrato = action(gerarContratoSchema, async (data): Promise<ActionResponse<{ contrato_id: string; url: string }>> => {
     try {
       const cookieStore = cookies();
       const supabase = createClient(cookieStore);
@@ -472,7 +462,7 @@ export const gerarContrato = action
         .from('matricula_contratos')
         .insert({
           matricula_id: data.matricula_id,
-          titulo: `Contrato de Matrícula - ${matricula.curso?.name || 'Curso'}`,
+          titulo: `Contrato de Matrícula - ${(matricula.curso as any)?.name || 'Curso'}`,
           versao: '1.0',
           url: contratoUrl,
           status: 'pendente',
@@ -529,9 +519,7 @@ const assinarContratoSchema = z.object({
 });
 
 // Assinar contrato de matrícula
-export const assinarContrato = action
-  .schema(assinarContratoSchema)
-  .action(async (data): Promise<ActionResponse<{ success: boolean }>> => {
+export const assinarContrato = action(assinarContratoSchema, async (data): Promise<ActionResponse<{ success: boolean }>> => {
     try {
       const cookieStore = cookies();
       const supabase = createClient(cookieStore);

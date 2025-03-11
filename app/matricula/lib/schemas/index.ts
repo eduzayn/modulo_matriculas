@@ -4,7 +4,7 @@ import {
   DocumentoStatus, 
   AssinaturaStatus, 
   FormaPagamento 
-} from '../types/matricula';
+} from '../../../types/matricula';
 
 // Schema para dados pessoais
 export const personalDataSchema = z.object({
@@ -46,7 +46,7 @@ export const courseSelectionSchema = z.object({
 
 // Schema para pagamento
 export const paymentSchema = z.object({
-  formaPagamento: z.enum([
+  forma_pagamento: z.enum([
     FormaPagamento.CARTAO_CREDITO,
     FormaPagamento.BOLETO,
     FormaPagamento.PIX,
@@ -54,8 +54,8 @@ export const paymentSchema = z.object({
   ], { 
     errorMap: () => ({ message: 'Forma de pagamento inválida' }) 
   }),
-  numeroParcelas: z.number().int().min(1, { message: 'Número de parcelas inválido' }),
-  descontoId: z.string().uuid({ message: 'Desconto inválido' }).optional(),
+  numero_parcelas: z.number().int().min(1, { message: 'Número de parcelas inválido' }),
+  desconto_id: z.string().uuid({ message: 'Desconto inválido' }).optional(),
 });
 
 // Schema para pré-matrícula
@@ -96,14 +96,14 @@ export const matriculaSchema = z.object({
     MatriculaStatus.CANCELADO,
     MatriculaStatus.CONCLUIDO
   ]).default(MatriculaStatus.PENDENTE),
-  formaPagamento: z.enum([
+  forma_pagamento: z.enum([
     FormaPagamento.CARTAO_CREDITO,
     FormaPagamento.BOLETO,
     FormaPagamento.PIX,
     FormaPagamento.TRANSFERENCIA
   ]),
-  numeroParcelas: z.number().int().min(1, { message: 'Número de parcelas inválido' }),
-  descontoId: z.string().uuid({ message: 'Desconto inválido' }).optional(),
+  numero_parcelas: z.number().int().min(1, { message: 'Número de parcelas inválido' }),
+  desconto_id: z.string().uuid({ message: 'Desconto inválido' }).optional(),
   metadata: z.record(z.any()).optional(),
 });
 
