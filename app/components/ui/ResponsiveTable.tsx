@@ -1,7 +1,7 @@
 'use client';
 
 import React, { ReactNode } from 'react';
-import { colors } from '@/app/styles/colors';
+import { colors } from '../../styles/colors';
 
 interface ResponsiveTableProps {
   children: ReactNode;
