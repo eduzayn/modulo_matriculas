@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { colors } from '@/app/styles/colors'
 
 interface PaymentsPageProps {
   params: {
@@ -95,35 +96,35 @@ export default async function PaymentsPage({ params }: PaymentsPageProps) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Pagamentos da Matrícula</h1>
-          <p className="text-muted-foreground">
+          <p className="text-neutral-500">
             Aluno: {matricula.aluno?.name || 'N/A'} | ID: {matricula.id.substring(0, 8)}
           </p>
         </div>
-        <Button variant="outline" asChild>
+        <Button variant="outline" module="enrollment" asChild>
           <Link href={matriculaRoutes.details(id)}>Voltar para Matrícula</Link>
         </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
+        <Card variant="gradient" module="enrollment">
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Total Pago</CardTitle>
+            <CardTitle className="text-lg" module="enrollment">Total Pago</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">{formatCurrency(totalPago)}</p>
+            <p className="text-2xl font-bold text-green-600">{formatCurrency(totalPago)}</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card variant="gradient" module="enrollment">
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Total Pendente</CardTitle>
+            <CardTitle className="text-lg" module="enrollment">Total Pendente</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">{formatCurrency(totalPendente)}</p>
+            <p className="text-2xl font-bold text-amber-600">{formatCurrency(totalPendente)}</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card variant="gradient" module="enrollment">
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Total Geral</CardTitle>
+            <CardTitle className="text-lg" module="enrollment">Total Geral</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{formatCurrency(totalGeral)}</p>
@@ -131,19 +132,19 @@ export default async function PaymentsPage({ params }: PaymentsPageProps) {
         </Card>
       </div>
 
-      <div className="border rounded-lg p-6">
-        <h2 className="text-xl font-semibold mb-4">Detalhes do Pagamento</h2>
+      <Card variant="default" module="enrollment" className="p-6">
+        <h2 className="text-xl font-semibold mb-4" style={{ color: colors.primary.enrollment.dark }}>Detalhes do Pagamento</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div>
-            <h3 className="font-medium">Forma de Pagamento</h3>
+            <h3 className="font-medium" style={{ color: colors.primary.enrollment.main }}>Forma de Pagamento</h3>
             <p>{matricula.forma_pagamento || 'N/A'}</p>
           </div>
           <div>
-            <h3 className="font-medium">Número de Parcelas</h3>
+            <h3 className="font-medium" style={{ color: colors.primary.enrollment.main }}>Número de Parcelas</h3>
             <p>{matricula.numero_parcelas || 'N/A'}</p>
           </div>
           <div>
-            <h3 className="font-medium">Desconto Aplicado</h3>
+            <h3 className="font-medium" style={{ color: colors.primary.enrollment.main }}>Desconto Aplicado</h3>
             <p>
               {matricula.desconto
                 ? `${matricula.desconto.nome} (${
@@ -157,15 +158,15 @@ export default async function PaymentsPage({ params }: PaymentsPageProps) {
         </div>
 
         <div className="rounded-md border">
-          <Table>
-            <TableHeader>
+          <Table module="enrollment">
+            <TableHeader module="enrollment">
               <TableRow>
-                <TableHead>Parcela</TableHead>
-                <TableHead>Vencimento</TableHead>
-                <TableHead>Valor</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Data Pagamento</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
+                <TableHead module="enrollment">Parcela</TableHead>
+                <TableHead module="enrollment">Vencimento</TableHead>
+                <TableHead module="enrollment">Valor</TableHead>
+                <TableHead module="enrollment">Status</TableHead>
+                <TableHead module="enrollment">Data Pagamento</TableHead>
+                <TableHead module="enrollment" className="text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -176,8 +177,8 @@ export default async function PaymentsPage({ params }: PaymentsPageProps) {
                   </TableCell>
                 </TableRow>
               ) : (
-                pagamentos.map((pagamento) => (
-                  <TableRow key={pagamento.id}>
+                pagamentos.map((pagamento, index) => (
+                  <TableRow key={pagamento.id} className={index % 2 === 0 ? 'bg-neutral-50' : ''}>
                     <TableCell>{pagamento.numero_parcela}</TableCell>
                     <TableCell>{formatDate(pagamento.data_vencimento)}</TableCell>
                     <TableCell>{formatCurrency(pagamento.valor)}</TableCell>
@@ -190,6 +191,7 @@ export default async function PaymentsPage({ params }: PaymentsPageProps) {
                             ? 'destructive'
                             : 'outline'
                         }
+                        style={pagamento.status === 'pago' ? { backgroundColor: `${colors.semantic.success}20`, color: colors.semantic.success } : {}}
                       >
                         {pagamento.status}
                       </Badge>
@@ -197,7 +199,7 @@ export default async function PaymentsPage({ params }: PaymentsPageProps) {
                     <TableCell>{formatDate(pagamento.data_pagamento) || '-'}</TableCell>
                     <TableCell className="text-right">
                       {pagamento.status !== 'pago' && (
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" style={{ borderColor: colors.primary.enrollment.main, color: colors.primary.enrollment.main }}>
                           Registrar Pagamento
                         </Button>
                       )}
@@ -208,7 +210,7 @@ export default async function PaymentsPage({ params }: PaymentsPageProps) {
             </TableBody>
           </Table>
         </div>
-      </div>
+      </Card>
     </div>
   )
 }
