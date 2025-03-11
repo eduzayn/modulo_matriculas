@@ -1,0 +1,235 @@
+/* High Contrast Mode Styles */
+.high-contrast {
+  /* Text and Background Colors */
+  --hc-text: #000000;
+  --hc-background: #FFFFFF;
+  --hc-border: #000000;
+  --hc-link: #0000EE;
+  --hc-link-visited: #551A8B;
+  --hc-button: #000000;
+  --hc-button-text: #FFFFFF;
+  --hc-focus: #FF8C00;
+  --hc-error: #FF0000;
+  --hc-success: #006400;
+  --hc-warning: #FF8C00;
+  --hc-info: #0000FF;
+  
+  /* Override Theme Colors */
+  --primary: #000000;
+  --primary-foreground: #FFFFFF;
+  --secondary: #333333;
+  --secondary-foreground: #FFFFFF;
+  --accent: #0000EE;
+  --accent-foreground: #FFFFFF;
+  --destructive: #FF0000;
+  --destructive-foreground: #FFFFFF;
+  --muted: #666666;
+  --muted-foreground: #FFFFFF;
+  --card: #FFFFFF;
+  --card-foreground: #000000;
+  --popover: #FFFFFF;
+  --popover-foreground: #000000;
+  --border: #000000;
+  --input: #FFFFFF;
+  --ring: #0000EE;
+}
+
+/* Global Styles */
+.high-contrast body {
+  background-color: var(--hc-background);
+  color: var(--hc-text);
+}
+
+/* Links */
+.high-contrast a {
+  color: var(--hc-link);
+  text-decoration: underline;
+}
+
+.high-contrast a:visited {
+  color: var(--hc-link-visited);
+}
+
+.high-contrast a:hover,
+.high-contrast a:focus {
+  text-decoration: underline;
+  outline: 2px solid var(--hc-focus);
+  outline-offset: 2px;
+}
+
+/* Buttons */
+.high-contrast button,
+.high-contrast .button,
+.high-contrast [role="button"] {
+  background-color: var(--hc-button);
+  color: var(--hc-button-text);
+  border: 2px solid var(--hc-border);
+  font-weight: bold;
+}
+
+.high-contrast button:hover,
+.high-contrast .button:hover,
+.high-contrast [role="button"]:hover {
+  background-color: var(--hc-button-text);
+  color: var(--hc-button);
+}
+
+.high-contrast button:disabled,
+.high-contrast .button:disabled,
+.high-contrast [role="button"][aria-disabled="true"] {
+  background-color: #CCCCCC;
+  color: #666666;
+  border-color: #666666;
+}
+
+/* Form Elements */
+.high-contrast input,
+.high-contrast select,
+.high-contrast textarea {
+  background-color: var(--hc-background);
+  color: var(--hc-text);
+  border: 2px solid var(--hc-border);
+}
+
+.high-contrast input:focus,
+.high-contrast select:focus,
+.high-contrast textarea:focus {
+  outline: 3px solid var(--hc-focus);
+  outline-offset: 0;
+}
+
+.high-contrast input::placeholder,
+.high-contrast textarea::placeholder {
+  color: #666666;
+}
+
+.high-contrast label {
+  color: var(--hc-text);
+  font-weight: bold;
+}
+
+/* Checkboxes and Radio Buttons */
+.high-contrast input[type="checkbox"],
+.high-contrast input[type="radio"] {
+  border: 2px solid var(--hc-border);
+  background-color: var(--hc-background);
+}
+
+.high-contrast input[type="checkbox"]:checked,
+.high-contrast input[type="radio"]:checked {
+  background-color: var(--hc-button);
+  border-color: var(--hc-border);
+}
+
+/* Tables */
+.high-contrast table {
+  border: 2px solid var(--hc-border);
+}
+
+.high-contrast th {
+  background-color: #EEEEEE;
+  color: var(--hc-text);
+  border: 1px solid var(--hc-border);
+  font-weight: bold;
+}
+
+.high-contrast td {
+  border: 1px solid var(--hc-border);
+}
+
+.high-contrast tr:nth-child(even) {
+  background-color: #F2F2F2;
+}
+
+/* Cards */
+.high-contrast .card {
+  background-color: var(--hc-background);
+  border: 2px solid var(--hc-border);
+  color: var(--hc-text);
+}
+
+/* Alerts and Notifications */
+.high-contrast .alert,
+.high-contrast .notification {
+  border: 2px solid var(--hc-border);
+  background-color: var(--hc-background);
+  color: var(--hc-text);
+}
+
+.high-contrast .alert-error,
+.high-contrast .notification-error {
+  border-color: var(--hc-error);
+}
+
+.high-contrast .alert-success,
+.high-contrast .notification-success {
+  border-color: var(--hc-success);
+}
+
+.high-contrast .alert-warning,
+.high-contrast .notification-warning {
+  border-color: var(--hc-warning);
+}
+
+.high-contrast .alert-info,
+.high-contrast .notification-info {
+  border-color: var(--hc-info);
+}
+
+/* Navigation */
+.high-contrast nav {
+  border: 2px solid var(--hc-border);
+}
+
+.high-contrast nav a {
+  color: var(--hc-link);
+  text-decoration: underline;
+}
+
+.high-contrast nav a.active {
+  background-color: var(--hc-button);
+  color: var(--hc-button-text);
+  font-weight: bold;
+}
+
+/* Focus Indicators */
+.high-contrast *:focus {
+  outline: 3px solid var(--hc-focus);
+  outline-offset: 2px;
+}
+
+/* Icons */
+.high-contrast svg {
+  fill: currentColor;
+}
+
+/* Dialogs and Modals */
+.high-contrast dialog,
+.high-contrast [role="dialog"] {
+  border: 3px solid var(--hc-border);
+  background-color: var(--hc-background);
+  color: var(--hc-text);
+}
+
+/* Tooltips */
+.high-contrast [role="tooltip"] {
+  background-color: var(--hc-background);
+  color: var(--hc-text);
+  border: 2px solid var(--hc-border);
+}
+
+/* Progress Bars */
+.high-contrast progress,
+.high-contrast [role="progressbar"] {
+  border: 2px solid var(--hc-border);
+  background-color: var(--hc-background);
+}
+
+.high-contrast progress::-webkit-progress-value,
+.high-contrast [role="progressbar"] > div {
+  background-color: var(--hc-button);
+}
+
+.high-contrast progress::-webkit-progress-bar {
+  background-color: var(--hc-background);
+}

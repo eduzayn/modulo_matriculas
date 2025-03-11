@@ -1,0 +1,198 @@
+/* Accessibility CSS Variables */
+:root {
+  --focus-ring-color: #3B82F6;
+  --focus-ring-width: 3px;
+  --high-contrast-text: #000000;
+  --high-contrast-background: #FFFFFF;
+  --high-contrast-border: #000000;
+  --high-contrast-link: #0000EE;
+  --high-contrast-button: #000000;
+  --high-contrast-button-text: #FFFFFF;
+}
+
+/* Focus Styles */
+*:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: 2px;
+}
+
+/* Skip Link */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.sr-only.focus:not-sr-only {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: auto;
+  height: auto;
+  padding: 1rem;
+  background-color: white;
+  color: black;
+  clip: auto;
+  text-decoration: none;
+  display: block;
+}
+
+/* High Contrast Mode */
+.high-contrast {
+  --text-primary: var(--high-contrast-text);
+  --bg-primary: var(--high-contrast-background);
+  --border-primary: var(--high-contrast-border);
+  --link-color: var(--high-contrast-link);
+  --button-bg: var(--high-contrast-button);
+  --button-text: var(--high-contrast-button-text);
+}
+
+.high-contrast body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.high-contrast a {
+  color: var(--link-color);
+  text-decoration: underline;
+}
+
+.high-contrast button:not([aria-disabled="true"]) {
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border: 2px solid var(--border-primary);
+}
+
+.high-contrast input,
+.high-contrast select,
+.high-contrast textarea {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  border: 2px solid var(--border-primary);
+}
+
+/* Form Elements */
+.high-contrast label {
+  color: var(--text-primary);
+  font-weight: bold;
+}
+
+.high-contrast ::placeholder {
+  color: #555555;
+}
+
+/* Tables */
+.high-contrast table {
+  border-collapse: collapse;
+  border: 2px solid var(--border-primary);
+}
+
+.high-contrast th,
+.high-contrast td {
+  border: 1px solid var(--border-primary);
+}
+
+.high-contrast th {
+  background-color: #EEEEEE;
+  color: var(--text-primary);
+}
+
+/* Focus Indicators for Interactive Elements */
+.high-contrast a:focus,
+.high-contrast button:focus,
+.high-contrast input:focus,
+.high-contrast select:focus,
+.high-contrast textarea:focus {
+  outline: 3px solid #000000;
+  outline-offset: 2px;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Keyboard Focus Styles */
+[data-focus-visible-added] {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: 2px;
+}
+
+/* Screen Reader Only Text */
+.screen-reader-text {
+  border: 0;
+  clip: rect(1px, 1px, 1px, 1px);
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+  word-wrap: normal !important;
+}
+
+/* Accessible Tooltips */
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltip-text {
+  visibility: hidden;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  padding: 5px;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltip-text,
+.tooltip:focus .tooltip-text,
+.tooltip:focus-within .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Accessible Error Messages */
+.error-message {
+  color: #d32f2f;
+  font-weight: bold;
+  margin-top: 4px;
+}
+
+.high-contrast .error-message {
+  color: #ff0000;
+  background-color: #ffffff;
+  border: 1px solid #ff0000;
+  padding: 4px;
+}
+
+/* Accessible Announcements */
+.announcer {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
