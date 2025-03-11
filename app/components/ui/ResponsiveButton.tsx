@@ -70,12 +70,12 @@ export const ResponsiveButton = ({
   // Apply module-specific colors
   const style: React.CSSProperties = {};
   
-  if (variant === 'primary') {
+  if (variant === 'primary' && moduleColor?.gradient) {
     style.background = moduleColor.gradient;
-  } else if (variant === 'outline') {
+  } else if (variant === 'outline' && moduleColor?.main) {
     style.borderColor = moduleColor.main;
     style.color = moduleColor.main;
-  } else if (variant === 'ghost' || variant === 'link') {
+  } else if ((variant === 'ghost' || variant === 'link') && moduleColor?.main) {
     style.color = moduleColor.main;
   }
   
