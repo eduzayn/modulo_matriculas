@@ -1,0 +1,36 @@
+{
+  "total": 6,
+  "passed": 1,
+  "failed": 5,
+  "tests": [
+    {
+      "name": "Database Schema Consistency",
+      "status": "passed"
+    },
+    {
+      "name": "Payment Generation",
+      "status": "failed",
+      "error": "Failed to fetch payments: relation \"public.financial.payments\" does not exist"
+    },
+    {
+      "name": "Discount Application",
+      "status": "failed",
+      "error": "Failed to fetch payments with discount: relation \"public.financial.payments\" does not exist"
+    },
+    {
+      "name": "Split Payments",
+      "status": "failed",
+      "error": "Failed to fetch payments: relation \"public.financial.payments\" does not exist"
+    },
+    {
+      "name": "Payment Registration",
+      "status": "failed",
+      "error": "Failed to fetch payments: relation \"public.financial.payments\" does not exist"
+    },
+    {
+      "name": "Payment Cancellation",
+      "status": "failed",
+      "error": "Failed to fetch payments: relation \"public.financial.payments\" does not exist"
+    }
+  ]
+}
