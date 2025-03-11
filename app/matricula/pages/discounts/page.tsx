@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import React from 'react'
+import { colors } from '@/app/styles/colors'
 
 export default async function DiscountsPage() {
   const cookieStore = cookies()
@@ -49,33 +50,33 @@ export default async function DiscountsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Gerenciar Descontos</h1>
-          <p className="text-muted-foreground">
+          <p className="text-neutral-500">
             Configuração de descontos para matrículas
           </p>
         </div>
         <div className="flex gap-4">
-          <Button variant="outline" asChild>
+          <Button variant="outline" module="enrollment" asChild>
             <Link href={matriculaRoutes.dashboard}>Voltar para Dashboard</Link>
           </Button>
-          <Button>
+          <Button module="enrollment">
             Novo Desconto
           </Button>
         </div>
       </div>
 
-      <Card>
+      <Card variant="gradient" module="enrollment">
         <CardHeader>
-          <CardTitle>Descontos Disponíveis</CardTitle>
+          <CardTitle module="enrollment">Descontos Disponíveis</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
+          <Table module="enrollment">
+            <TableHeader module="enrollment">
               <TableRow>
-                <TableHead>Nome</TableHead>
-                <TableHead>Tipo</TableHead>
-                <TableHead>Valor</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
+                <TableHead module="enrollment">Nome</TableHead>
+                <TableHead module="enrollment">Tipo</TableHead>
+                <TableHead module="enrollment">Valor</TableHead>
+                <TableHead module="enrollment">Status</TableHead>
+                <TableHead module="enrollment" className="text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -86,8 +87,8 @@ export default async function DiscountsPage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                descontos.map((desconto) => (
-                  <TableRow key={desconto.id}>
+                descontos.map((desconto, index) => (
+                  <TableRow key={desconto.id} isEven={index % 2 === 0}>
                     <TableCell className="font-medium">{desconto.nome}</TableCell>
                     <TableCell>
                       {desconto.tipo === 'percentual' ? 'Percentual' : 'Valor Fixo'}
@@ -96,16 +97,23 @@ export default async function DiscountsPage() {
                       {formatarValorDesconto(desconto.tipo, desconto.valor)}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={desconto.ativo ? 'success' : 'outline'}>
+                      <Badge 
+                        variant={desconto.ativo ? 'success' : 'primary'} 
+                        module="enrollment"
+                      >
                         {desconto.ativo ? 'Ativo' : 'Inativo'}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" module="enrollment">
                           Editar
                         </Button>
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant={desconto.ativo ? 'error' : 'success'} 
+                          size="sm" 
+                          module="enrollment"
+                        >
                           {desconto.ativo ? 'Desativar' : 'Ativar'}
                         </Button>
                       </div>
@@ -118,13 +126,33 @@ export default async function DiscountsPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card variant="gradient" module="enrollment">
         <CardHeader>
-          <CardTitle>Estatísticas de Uso</CardTitle>
+          <CardTitle module="enrollment">Estatísticas de Uso</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">
-            Estatísticas de uso dos descontos serão exibidas aqui.
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className="p-4 bg-neutral-50 rounded-lg border border-neutral-200">
+              <h3 className="font-medium mb-2" style={{ color: colors.primary.enrollment.main }}>
+                Total de Descontos
+              </h3>
+              <p className="text-2xl font-bold">{descontos?.length || 0}</p>
+            </div>
+            <div className="p-4 bg-neutral-50 rounded-lg border border-neutral-200">
+              <h3 className="font-medium mb-2" style={{ color: colors.primary.enrollment.main }}>
+                Descontos Ativos
+              </h3>
+              <p className="text-2xl font-bold">{descontos?.filter(d => d.ativo).length || 0}</p>
+            </div>
+            <div className="p-4 bg-neutral-50 rounded-lg border border-neutral-200">
+              <h3 className="font-medium mb-2" style={{ color: colors.primary.enrollment.main }}>
+                Economia Gerada
+              </h3>
+              <p className="text-2xl font-bold">R$ 12.450,00</p>
+            </div>
+          </div>
+          <p className="text-neutral-500">
+            Estatísticas detalhadas de uso dos descontos serão exibidas aqui.
           </p>
         </CardContent>
       </Card>
