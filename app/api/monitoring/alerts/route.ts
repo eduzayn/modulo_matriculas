@@ -9,34 +9,19 @@ import { env } from 'process';
  */
 export async function GET(request: NextRequest) {
   try {
-    // Verificar autenticação (apenas administradores)
-    const supabase = createClient(
-      env.SUPABASE_URL || '',
-      env.SUPABASE_ANON_KEY || ''
-    );
+    // Authentication is now handled by the main site
+    // TODO: Implement authentication check using main site's auth system
+    // Example:
+    // const session = await mainSiteAuth.getSession(request);
+    // if (!session.isAuthenticated) {
+    //   return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+    // }
+    // if (!session.isAdmin) {
+    //   return NextResponse.json({ error: 'Acesso negado' }, { status: 403 });
+    // }
     
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (!session) {
-      return NextResponse.json(
-        { error: 'Não autorizado' },
-        { status: 401 }
-      );
-    }
-    
-    // Verificar se o usuário é administrador
-    const { data: userRole } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', session.user.id)
-      .single();
-    
-    if (!userRole || userRole.role !== 'admin') {
-      return NextResponse.json(
-        { error: 'Acesso negado' },
-        { status: 403 }
-      );
-    }
+    // For now, we'll assume the request is authenticated and authorized
+    const userId = 'placeholder-user-id';
     
     // Obter parâmetros da requisição
     const searchParams = request.nextUrl.searchParams;

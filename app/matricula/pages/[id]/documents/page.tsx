@@ -1,5 +1,3 @@
-import { cookies } from 'next/headers'
-import { createClient } from '@/lib/supabase/server'
 import { DocumentList } from '@/app/matricula/components/document-list'
 import { DocumentUpload } from '@/app/matricula/components/document-upload'
 import { notFound } from 'next/navigation'
@@ -15,35 +13,26 @@ interface DocumentsPageProps {
 
 export default async function DocumentsPage({ params }: DocumentsPageProps) {
   const { id } = params
-  const cookieStore = cookies()
-  const supabase = createClient(cookieStore)
 
-  // Verificar se a matrícula existe
-  const { data: matricula, error: matriculaError } = await supabase
-    .from('matricula.registros')
-    .select('id, aluno:students(name)')
-    .eq('id', id)
-    .single()
+  // TODO: Replace with main site's data fetching
+  const matricula = {
+    id,
+    aluno: {
+      name: 'Nome do Aluno' // This will come from the main site
+    }
+  }
 
-  if (matriculaError || !matricula) {
-    console.error('Erro ao buscar matrícula:', matriculaError)
+  // TODO: Replace with main site's data fetching
+  const documentos = [] // This will come from the main site's API
+
+  if (!matricula) {
     notFound()
   }
-
-  // Buscar documentos da matrícula
-  const { data: documentos, error: documentosError } = await supabase
-    .from('matricula_documentos')
-    .select('*')
-    .eq('matricula_id', id)
-    .order('created_at', { ascending: false })
-
-  if (documentosError) {
-    console.error('Erro ao buscar documentos:', documentosError)
   }
 
-  // Verificar se o usuário é admin
-  const { data: { session } } = await supabase.auth.getSession()
-  const isAdmin = session?.user?.app_metadata?.role === 'admin'
+  // Authentication and role checks are now handled by the main site
+  // TODO: Get isAdmin from main site authentication
+  const isAdmin = false // Temporary default until main site integration
 
   return (
     <div className="container py-10 space-y-6">

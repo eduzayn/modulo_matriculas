@@ -1,5 +1,3 @@
-import { cookies } from 'next/headers'
-import { createClient } from '@/lib/supabase/server'
 import { MatriculaList } from '@/app/matricula/components/matricula-list'
 import { Button } from '@/components/ui/button'
 import { matriculaRoutes } from '@/app/matricula/routes'
@@ -20,35 +18,10 @@ export default async function ListMatriculasPage({ searchParams }: ListMatricula
   const search = searchParams.search || ''
   const status = searchParams.status || ''
 
-  const cookieStore = cookies()
-  const supabase = createClient(cookieStore)
-
-  // Construir a query base
-  let query = supabase
-    .from('matricula.registros')
-    .select(`
-      *,
-      aluno:students(id, name),
-      curso:courses(id, name)
-    `, { count: 'exact' })
-
-  // Aplicar filtros
-  if (search) {
-    query = query.or(`aluno.name.ilike.%${search}%,id.ilike.%${search}%`)
-  }
-
-  if (status) {
-    query = query.eq('status', status)
-  }
-
-  // Paginação
-  const from = (page - 1) * pageSize
-  const to = from + pageSize - 1
-
-  // Executar a query
-  const { data: matriculas, count, error } = await query
-    .order('created_at', { ascending: false })
-    .range(from, to)
+  // TODO: Fetch matriculas data from main site API
+  // Authentication and data fetching is now handled by the main site
+  const response = await fetch(`${process.env.MAIN_SITE_URL}/api/matriculas?page=${page}&pageSize=${pageSize}&search=${search}&status=${status}`)
+  const { data: matriculas, count, error } = await response.json()
 
   if (error) {
     console.error('Erro ao buscar matrículas:', error)

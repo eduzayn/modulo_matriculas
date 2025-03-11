@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { cookies } from 'next/headers';
 import { PaymentStatus } from '@/app/matricula/types/financial';
 
 /**
@@ -10,8 +8,18 @@ import { PaymentStatus } from '@/app/matricula/types/financial';
  */
 export async function GET(request: NextRequest) {
   try {
-    const cookieStore = cookies();
-    const supabase = createClient(cookieStore);
+    // TODO: Authentication is now handled by the main site
+    // Get user session from main site authentication system
+    const mainSiteSession = await fetch(process.env.MAIN_SITE_URL + '/api/auth/session', {
+      headers: { cookie: request.headers.get('cookie') || '' }
+    }).then(res => res.json());
+
+    if (!mainSiteSession?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // TODO: Replace with database client initialization that doesn't depend on Supabase auth
+    const supabase = null; // Temporary placeholder - needs to be replaced with new database client
     
     // Obter dados dos últimos 6 meses
     const today = new Date();

@@ -1,9 +1,8 @@
-import { cookies } from 'next/headers'
-import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { matriculaRoutes } from '@/app/matricula/routes'
+// TODO: Import API client for main site authentication and data access
 import {
   Table,
   TableBody,
@@ -24,11 +23,9 @@ interface PaymentsPageProps {
 
 export default async function PaymentsPage({ params }: PaymentsPageProps) {
   const { id } = params
-  const cookieStore = cookies()
-  const supabase = createClient(cookieStore)
-
-  // Verificar se a matrícula existe
-  const { data: matricula, error: matriculaError } = await supabase
+  // TODO: Use main site's API client to fetch data
+  // Authentication is now handled by the main site
+  const { data: matricula, error: matriculaError } = await fetch(`/api/matriculas/${id}`).then(res => res.json())
     .from('matricula.registros')
     .select(`
       id, 

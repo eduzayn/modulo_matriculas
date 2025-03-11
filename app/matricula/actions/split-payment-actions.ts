@@ -1,8 +1,6 @@
 'use server';
 
 import { createSafeActionClient } from 'next-safe-action';
-import { cookies } from 'next/headers';
-import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 import { AppError, appErrors } from '@/lib/errors';
 import type { ActionResponse } from '@/types/actions';
@@ -26,15 +24,12 @@ const createSplitConfigSchema = z.object({
  */
 export const createSplitConfig = action(createSplitConfigSchema, async (data): Promise<ActionResponse<{ success: boolean }>> => {
   try {
-    const cookieStore = cookies();
-    const supabase = createClient(cookieStore);
-
-    // Verify that the payment exists
-    const { data: payment, error: paymentError } = await supabase
-      .from('financial.payments')
-      .select('id, valor, status')
-      .eq('id', data.payment_id)
-      .single();
+    // TODO: Replace with main site API client
+    const payment = await fetch(`${process.env.MAIN_SITE_URL}/api/financial/payments/${data.payment_id}`).then(res => res.json());
+    
+    if (!payment) {
+      throw new AppError('Pagamento não encontrado', 'NOT_FOUND');
+    }
 
     if (paymentError) {
       console.error('Error fetching payment:', paymentError);
@@ -68,13 +63,7 @@ export const createSplitConfig = action(createSplitConfigSchema, async (data): P
       throw new AppError('O total de valores não pode exceder o valor do pagamento', 'VALIDATION_ERROR');
     }
 
-    // Delete any existing split configurations for this payment
-    await supabase
-      .from('financial.split_payments')
-      .delete()
-      .eq('payment_id', data.payment_id);
-
-    // Create split payment records
+    // TODO: Replace with main site API client
     const splitRecords = data.recipients.map(recipient => ({
       payment_id: data.payment_id,
       recipient_id: recipient.recipient_id,
@@ -84,9 +73,11 @@ export const createSplitConfig = action(createSplitConfigSchema, async (data): P
       status: PaymentStatus.PENDENTE,
     }));
 
-    const { error: insertError } = await supabase
-      .from('financial.split_payments')
-      .insert(splitRecords);
+    const response = await fetch(`${process.env.MAIN_SITE_URL}/api/financial/payments/${data.payment_id}/splits`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(splitRecords)
+    });
 
     if (insertError) {
       console.error('Error creating split payment configuration:', insertError);
@@ -118,14 +109,8 @@ const getSplitConfigSchema = z.object({
  */
 export const getSplitConfig = action(getSplitConfigSchema, async (data): Promise<ActionResponse<{ splits: any[] }>> => {
   try {
-    const cookieStore = cookies();
-    const supabase = createClient(cookieStore);
-
-    // Get split payment configuration
-    const { data: splits, error: splitsError } = await supabase
-      .from('financial.split_payments')
-      .select('*')
-      .eq('payment_id', data.payment_id);
+    // TODO: Replace with main site API client
+    const splits = await fetch(`${process.env.MAIN_SITE_URL}/api/financial/payments/${data.payment_id}/splits`).then(res => res.json());
 
     if (splitsError) {
       console.error('Error fetching split payment configuration:', splitsError);

@@ -22,8 +22,9 @@ export const allocateClass = action
   .schema(allocateClassSchema)
   .action(async (data): Promise<ActionResponse<{ success: boolean }>> => {
     try {
-      const cookieStore = cookies();
-      const supabase = createClient(cookieStore);
+      // TODO: Replace with main site's authentication system
+      // Authentication is now handled centrally
+      const supabase = createClient();
 
       // Verificar se a matrícula existe e está ativa
       const { data: matricula, error: matriculaError } = await supabase
@@ -150,8 +151,9 @@ export const checkAcademicRequirements = action
   .schema(checkAcademicRequirementsSchema)
   .action(async (data): Promise<ActionResponse<{ approved: boolean; reasons?: string[] }>> => {
     try {
-      const cookieStore = cookies();
-      const supabase = createClient(cookieStore);
+      // TODO: Replace with main site's authentication system
+      // Authentication is now handled centrally
+      const supabase = createClient();
 
       // Verificar se a matrícula existe
       const { data: matricula, error: matriculaError } = await supabase
@@ -239,8 +241,9 @@ export const generateCurriculum = action
   .schema(generateCurriculumSchema)
   .action(async (data): Promise<ActionResponse<{ success: boolean; curriculum_id?: string }>> => {
     try {
-      const cookieStore = cookies();
-      const supabase = createClient(cookieStore);
+      // TODO: Replace with main site's authentication system
+      // Authentication is now handled centrally
+      const supabase = createClient();
 
       // Verificar se a matrícula existe
       const { data: matricula, error: matriculaError } = await supabase

@@ -5,12 +5,12 @@
  * Utiliza pdf-lib para geração de PDFs e integra com o storage do Supabase para armazenamento.
  */
 
-import { createClient } from '@/lib/supabase/server';
-import { cookies } from 'next/headers';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { MatriculaStatus } from '../../types/matricula';
+// TODO: Import the database client from the main site's shared library
+import { db } from '@/lib/db';
 
 export interface ContractGenerationResult {
   buffer: Buffer;
@@ -27,8 +27,8 @@ export class ContractService {
    * Gera um PDF de contrato com os dados da matrícula e do curso
    */
   static async generateContractPDF(matriculaId: string): Promise<ContractGenerationResult> {
-    const cookieStore = cookies();
-    const supabase = createClient(cookieStore);
+    // Authentication is now handled by the main site
+    // Database operations now use the shared database client
     
     // Buscar dados da matrícula, aluno e curso
     const { data: matricula, error } = await supabase
@@ -300,8 +300,8 @@ export class ContractService {
    * Salva o PDF gerado no storage e cria o registro do contrato
    */
   static async saveContractAndCreateRecord(matriculaId: string): Promise<ContractCreationResult> {
-    const cookieStore = cookies();
-    const supabase = createClient(cookieStore);
+    // Authentication is now handled by the main site
+    // Database operations now use the shared database client
     
     // Gerar PDF
     const { buffer, filename } = await this.generateContractPDF(matriculaId);
@@ -361,8 +361,8 @@ export class ContractService {
    * Implementa a assinatura digital do contrato
    */
   static async signContract(contratoId: string, userId: string, metadata: Record<string, any> = {}): Promise<boolean> {
-    const cookieStore = cookies();
-    const supabase = createClient(cookieStore);
+    // Authentication is now handled by the main site
+    // Database operations now use the shared database client
     
     // Verificar se o contrato existe
     const { data: contrato, error: contratoError } = await supabase
@@ -463,8 +463,8 @@ export class ContractService {
    * Verifica se um contrato existe para uma matrícula
    */
   static async contractExists(matriculaId: string): Promise<boolean> {
-    const cookieStore = cookies();
-    const supabase = createClient(cookieStore);
+    // Authentication is now handled by the main site
+    // Database operations now use the shared database client
     
     const { count, error } = await supabase
       .from('matricula_contratos')
@@ -482,8 +482,8 @@ export class ContractService {
    * Obtém os detalhes de um contrato
    */
   static async getContractDetails(contratoId: string): Promise<any> {
-    const cookieStore = cookies();
-    const supabase = createClient(cookieStore);
+    // Authentication is now handled by the main site
+    // Database operations now use the shared database client
     
     const { data, error } = await supabase
       .from('matricula_contratos')
@@ -522,8 +522,8 @@ export class ContractService {
    * Lista os contratos de uma matrícula
    */
   static async listContractsByMatricula(matriculaId: string): Promise<any[]> {
-    const cookieStore = cookies();
-    const supabase = createClient(cookieStore);
+    // Authentication is now handled by the main site
+    // Database operations now use the shared database client
     
     const { data, error } = await supabase
       .from('matricula_contratos')

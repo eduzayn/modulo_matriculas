@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { createClient } from '@/lib/supabase/middleware'
 
 // Rotas que requerem autenticação
 const protectedRoutes = [
@@ -33,14 +32,6 @@ const alunoRoutes = [
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Criar cliente Supabase
-  const { supabase, response } = createClient(request)
-
-  // Verificar se o usuário está autenticado
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
-
   // Verificar se a rota atual requer autenticação para o módulo de matrículas
   const isMatriculaProtectedRoute = protectedRoutes.some(route => 
     pathname.startsWith(route) || pathname.includes('/matricula/') && pathname.includes('/edit') || 
@@ -60,80 +51,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Se não estiver autenticado, redirecionar para a página de login
-  if (!session) {
-    const redirectUrl = new URL('/auth/login', request.url)
-    redirectUrl.searchParams.set('callbackUrl', pathname)
-    return NextResponse.redirect(redirectUrl)
-  }
-
-  // Verificar se a rota requer permissão de administrador
-  if (isAdminRoute) {
-    const isAdmin = session.user?.app_metadata?.role === 'admin'
-    
-    // Se não for administrador, redirecionar para a lista de matrículas
-    if (!isAdmin) {
-      return NextResponse.redirect(new URL('/matricula/list', request.url))
-    }
-  }
-
-  // Verificar se é uma rota do portal do aluno
-  if (isAlunoRoute) {
-    // Verificar se o usuário é um aluno
-    const { data: aluno } = await supabase
-      .from('students')
-      .select('id')
-      .eq('user_id', session.user.id)
-      .single()
-    
-    // Se não for um aluno, redirecionar para a página de login com erro
-    if (!aluno) {
-      return NextResponse.redirect(new URL('/auth/login?error=unauthorized', request.url))
-    }
-
-    // Para rotas de detalhes de matrícula, verificar se o aluno tem acesso à matrícula
-    if (pathname.match(/\/aluno\/matricula\/[^\/]+/)) {
-      const matriculaId = pathname.split('/')[3]
-      
-      // Verificar se a matrícula pertence ao aluno
-      const { data: matricula } = await supabase
-        .from('matricula.registros')
-        .select('id')
-        .eq('id', matriculaId)
-        .eq('aluno_id', aluno.id)
-        .single()
-      
-      // Se a matrícula não pertencer ao aluno, redirecionar para o dashboard
-      if (!matricula) {
-        return NextResponse.redirect(new URL('/aluno/dashboard', request.url))
-      }
-    }
-    
-    // Para rotas de detalhes de contrato, verificar se o aluno tem acesso ao contrato
-    if (pathname.match(/\/aluno\/contratos\/[^\/]+/)) {
-      const contratoId = pathname.split('/')[3]
-      
-      // Verificar se o contrato pertence a uma matrícula do aluno
-      const { data: contrato } = await supabase
-        .from('matricula_contratos')
-        .select(`
-          id,
-          matricula:matricula_id(
-            id,
-            aluno_id
-          )
-        `)
-        .eq('id', contratoId)
-        .single()
-      
-      if (!contrato || !contrato.matricula || contrato.matricula[0]?.aluno_id !== aluno.id) {
-        return NextResponse.redirect(new URL('/aluno/contratos', request.url))
-      }
-    }
-  }
-
-  // Usuário autenticado e com permissões adequadas, continuar normalmente
-  return response
+  // Verificar autenticação através do site principal
+  // Redirecionar para o site principal para autenticação
+  const mainSiteLoginUrl = new URL(process.env.MAIN_SITE_URL + '/login', request.url)
+  mainSiteLoginUrl.searchParams.set('callbackUrl', request.url)
+  return NextResponse.redirect(mainSiteLoginUrl)
 }
 
 // Configurar em quais caminhos o middleware será executado

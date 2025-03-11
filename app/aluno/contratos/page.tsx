@@ -1,6 +1,4 @@
 import React from 'react'
-import { cookies } from 'next/headers'
-import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { getAlunoContratos } from '../lib/services/aluno-service'
 
@@ -102,14 +100,12 @@ const Badge: React.FC<BadgeProps> = ({ children, variant = 'default', className 
 }
 
 export default async function AlunoContratosPage() {
-  const cookieStore = cookies()
-  const supabase = createClient(cookieStore)
-  
-  // Obter usuário atual
-  const { data: { session } } = await supabase.auth.getSession()
+  // Authentication is now handled by the main site
+  // TODO: Get user ID from main site authentication
+  const userId = '' // This will come from the main site's auth
   
   // Obter contratos do aluno
-  const contratos = await getAlunoContratos(supabase, session?.user.id || '')
+  const contratos = await getAlunoContratos(null, userId)
   
   // Função para formatar data
   const formatDate = (dateString: string) => {

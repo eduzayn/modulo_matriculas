@@ -5,10 +5,10 @@
  * para os alunos com pagamentos em atraso.
  */
 
-import { createClient } from '@/lib/supabase/server';
-import { cookies } from 'next/headers';
 import { PaymentStatus } from '@/app/matricula/types/financial';
 import { NotificationService } from './notification-service';
+// TODO: Import main site's database client
+import { db } from '@/lib/db';
 
 export class PaymentVerificationService {
   /**
@@ -16,8 +16,7 @@ export class PaymentVerificationService {
    */
   static async checkOverduePayments() {
     try {
-      const cookieStore = cookies();
-      const supabase = createClient(cookieStore);
+      // Authentication is now handled by the main site
       const today = new Date().toISOString().split('T')[0];
       
       // Buscar pagamentos vencidos e não pagos
@@ -134,8 +133,7 @@ export class PaymentVerificationService {
    */
   static async checkUpcomingPayments(daysBeforeDue = 3) {
     try {
-      const cookieStore = cookies();
-      const supabase = createClient(cookieStore);
+      // Authentication is now handled by the main site
       
       // Calcular data para verificação (hoje + dias antes do vencimento)
       const today = new Date();

@@ -1,5 +1,3 @@
-import { cookies } from 'next/headers'
-import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { matriculaRoutes } from '@/app/matricula/routes'
@@ -18,10 +16,8 @@ import React from 'react'
 import { colors } from '@/app/styles/colors'
 
 export default async function DiscountsPage() {
-  const cookieStore = cookies()
-  const supabase = createClient(cookieStore)
-
-  // A autenticação e verificação de permissões agora são feitas pelo middleware
+  // Authentication is now handled by the main site through middleware
+  // TODO: Update to use main site's database client for fetching discounts
 
   // Buscar descontos
   const { data: descontos, error: descontosError } = await supabase

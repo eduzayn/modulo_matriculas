@@ -1,5 +1,3 @@
-import { cookies } from 'next/headers'
-import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
@@ -18,35 +16,16 @@ interface ContractPageProps {
 
 export default async function ContractPage({ params }: ContractPageProps) {
   const { id } = params
-  const cookieStore = cookies()
-  const supabase = createClient(cookieStore)
-
-  // Verificar se a matrícula existe
-  const { data: matricula, error: matriculaError } = await supabase
-    .from('matricula.registros')
-    .select(`
-      id, 
-      aluno:students(name),
-      curso:courses(name)
-    `)
-    .eq('id', id)
-    .single()
-
-  if (matriculaError || !matricula) {
-    console.error('Erro ao buscar matrícula:', matriculaError)
+  
+  // TODO: Use main site's API to fetch matricula and contract data
+  const matricula = await fetch(`${process.env.MAIN_SITE_URL}/api/matriculas/${id}`).then(res => res.json())
+  
+  if (!matricula) {
     notFound()
   }
-
-  // Buscar contrato da matrícula
-  const { data: contrato, error: contratoError } = await supabase
-    .from('matricula_contratos')
-    .select('*')
-    .eq('matricula_id', id)
-    .maybeSingle()
-
-  if (contratoError) {
-    console.error('Erro ao buscar contrato:', contratoError)
-  }
+  
+  // TODO: Use main site's API to fetch contract data
+  const contrato = await fetch(`${process.env.MAIN_SITE_URL}/api/contratos/matricula/${id}`).then(res => res.json())
 
   const formatDate = (dateString: string) => {
     if (!dateString) return 'N/A'

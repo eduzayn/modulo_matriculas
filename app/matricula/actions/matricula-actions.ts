@@ -16,11 +16,18 @@ const action = createSafeActionClient();
 // Schema para criação de matrícula
 export const createMatricula = action(matriculaSchema, async (data): Promise<ActionResponse<{ matricula_id: string }>> => {
     try {
-      const cookieStore = cookies();
-      const supabase = createClient(cookieStore);
+      // TODO: Implement main site authentication
+      // This will be replaced with a call to the main site's authentication API
+      const session = await fetch(process.env.MAIN_SITE_URL + '/api/auth/session', {
+        headers: { cookie: cookies().toString() }
+      }).then(res => res.json());
+      
+      if (!session?.user) {
+        throw new AppError('Usuário não autenticado', 'UNAUTHORIZED');
+      }
 
-      // Verificar se o aluno existe
-      const { data: aluno, error: alunoError } = await supabase
+      // TODO: Replace with main site's API call
+      const { data: aluno, error: alunoError } = await fetch(process.env.MAIN_SITE_URL + '/api/students/' + data.aluno_id).then(res => res.json());
         .from('students')
         .select('id')
         .eq('id', data.aluno_id)
@@ -117,8 +124,15 @@ const updateMatriculaStatusSchema = z.object({
 // Atualizar status de matrícula
 export const updateMatriculaStatus = action(updateMatriculaStatusSchema, async (data): Promise<ActionResponse<{ success: boolean }>> => {
     try {
-      const cookieStore = cookies();
-      const supabase = createClient(cookieStore);
+      // TODO: Implement main site authentication
+      // This will be replaced with a call to the main site's authentication API
+      const session = await fetch(process.env.MAIN_SITE_URL + '/api/auth/session', {
+        headers: { cookie: cookies().toString() }
+      }).then(res => res.json());
+      
+      if (!session?.user) {
+        throw new AppError('Usuário não autenticado', 'UNAUTHORIZED');
+      }
 
       // Verificar se a matrícula existe
       const { data: matricula, error: matriculaError } = await supabase
@@ -210,8 +224,15 @@ const uploadDocumentoSchema = z.object({
 // Upload de documento
 export const uploadDocumento = action(uploadDocumentoSchema, async (data): Promise<ActionResponse<{ documento_id: string }>> => {
     try {
-      const cookieStore = cookies();
-      const supabase = createClient(cookieStore);
+      // TODO: Implement main site authentication
+      // This will be replaced with a call to the main site's authentication API
+      const session = await fetch(process.env.MAIN_SITE_URL + '/api/auth/session', {
+        headers: { cookie: cookies().toString() }
+      }).then(res => res.json());
+      
+      if (!session?.user) {
+        throw new AppError('Usuário não autenticado', 'UNAUTHORIZED');
+      }
 
       // Verificar se a matrícula existe
       const { data: matricula, error: matriculaError } = await supabase
@@ -327,8 +348,15 @@ const avaliarDocumentoSchema = z.object({
 // Avaliar documento
 export const avaliarDocumento = action(avaliarDocumentoSchema, async (data): Promise<ActionResponse<{ success: boolean }>> => {
     try {
-      const cookieStore = cookies();
-      const supabase = createClient(cookieStore);
+      // TODO: Implement main site authentication
+      // This will be replaced with a call to the main site's authentication API
+      const session = await fetch(process.env.MAIN_SITE_URL + '/api/auth/session', {
+        headers: { cookie: cookies().toString() }
+      }).then(res => res.json());
+      
+      if (!session?.user) {
+        throw new AppError('Usuário não autenticado', 'UNAUTHORIZED');
+      }
 
       // Verificar se o documento existe
       const { data: documento, error: documentoError } = await supabase
@@ -418,8 +446,15 @@ const gerarContratoSchema = z.object({
 // Gerar contrato de matrícula
 export const gerarContrato = action(gerarContratoSchema, async (data): Promise<ActionResponse<{ contrato_id: string; url: string }>> => {
     try {
-      const cookieStore = cookies();
-      const supabase = createClient(cookieStore);
+      // TODO: Implement main site authentication
+      // This will be replaced with a call to the main site's authentication API
+      const session = await fetch(process.env.MAIN_SITE_URL + '/api/auth/session', {
+        headers: { cookie: cookies().toString() }
+      }).then(res => res.json());
+      
+      if (!session?.user) {
+        throw new AppError('Usuário não autenticado', 'UNAUTHORIZED');
+      }
 
       // Verificar se a matrícula existe
       const { data: matricula, error: matriculaError } = await supabase
@@ -506,13 +541,13 @@ const assinarContratoSchema = z.object({
 // Assinar contrato de matrícula
 export const assinarContrato = action(assinarContratoSchema, async (data): Promise<ActionResponse<{ success: boolean }>> => {
     try {
-      const cookieStore = cookies();
-      const supabase = createClient(cookieStore);
+      // TODO: Implement main site authentication
+      // This will be replaced with a call to the main site's authentication API
+      const session = await fetch(process.env.MAIN_SITE_URL + '/api/auth/session', {
+        headers: { cookie: cookies().toString() }
+      }).then(res => res.json());
       
-      // Obter o usuário atual
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
+      if (!session?.user) {
         throw new AppError('Usuário não autenticado', 'UNAUTHORIZED');
       }
 

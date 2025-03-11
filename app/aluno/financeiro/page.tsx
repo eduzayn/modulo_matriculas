@@ -1,5 +1,3 @@
-import { cookies } from 'next/headers'
-import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
@@ -7,14 +5,12 @@ import { getAlunoMatriculas } from '../lib/services/aluno-service'
 import { Badge } from '@/components/ui/badge'
 
 export default async function AlunoFinanceiroPage() {
-  const cookieStore = cookies()
-  const supabase = createClient(cookieStore)
-  
-  // Obter usuário atual
-  const { data: { session } } = await supabase.auth.getSession()
+  // Authentication is now handled by the main site
+  // TODO: Get user information from the main site's authentication system
+  const userId = 'placeholder' // Replace with actual user ID from main site
   
   // Obter matrículas do aluno
-  const matriculas = await getAlunoMatriculas(supabase, session?.user.id)
+  const matriculas = await getAlunoMatriculas(null, userId)
   
   // Calcular totais financeiros
   const pagamentos = matriculas.flatMap(m => m.pagamentos || [])
