@@ -1,8 +1,8 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import Link from 'next/link'
 import { getAlunoMatriculas } from '../lib/services/aluno-service'
-import { Badge } from '@/components/ui/badge'
+import { Badge } from '@/components/ui/Badge'
 
 export default async function AlunoFinanceiroPage() {
   // Authentication is now handled by the main site
