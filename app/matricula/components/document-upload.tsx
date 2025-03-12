@@ -18,8 +18,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Input } from '@/components/ui/input'
+} from '@/components/ui/Select'
+import { Input } from '@/components/ui/Input'
 import { uploadDocumento } from '../actions/matricula-actions'
 import { toast } from '@/components/ui/use-toast'
 import { useRouter } from 'next/navigation'

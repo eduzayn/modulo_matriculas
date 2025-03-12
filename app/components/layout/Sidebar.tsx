@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { colors } from '@/app/styles/colors';
+import { colors } from '@/components/providers/ThemeProvider';
 import { 
   Home, 
   Users, 

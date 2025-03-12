@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { matriculaRoutes } from '@/app/matricula/routes'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import React from 'react'
-import { colors } from '@/app/styles/colors'
+import { colors } from '@/components/providers/ThemeProvider'
 
 export default async function DashboardPage() {
   // Authentication is now handled by the main site's middleware

@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/Button'
 import Link from 'next/link'
 import { matriculaRoutes } from '@/app/matricula/routes'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { redirect } from 'next/navigation'
 import {
   Table,
@@ -11,9 +11,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Badge } from '@/components/ui/badge'
+import { Badge } from '@/components/ui/Badge'
 import React from 'react'
-import { colors } from '@/app/styles/colors'
+import { colors } from '@/components/providers/ThemeProvider'
 
 export default async function DiscountsPage() {
   // Authentication is now handled by the main site through middleware
