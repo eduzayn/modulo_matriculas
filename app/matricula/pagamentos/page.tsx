@@ -1,8 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../../components/ui/Card';
+import { Button } from '../../../components/ui/Button';
 import { ResponsiveLayout, ResponsiveContainer, ResponsiveHeader } from '../../../app/components/ui/ResponsiveLayout';
+import { NovaCobrancaDialog, PagamentoFormValues } from '../components/pagamento/nova-cobranca-dialog';
 
 export default function PagamentosPage() {
   // Mock data for payments
@@ -14,12 +16,53 @@ export default function PagamentosPage() {
     { id: 5, aluno: 'Juliana Lima', valor: 'R$ 450,00', data: '25/02/2025', metodo: 'Boleto', status: 'Atrasado' },
   ];
 
+  // Mock data for students
+  const mockAlunos = [
+    { id: 1, nome: 'Ana Silva' },
+    { id: 2, nome: 'Carlos Oliveira' },
+    { id: 3, nome: 'Mariana Santos' },
+    { id: 4, nome: 'Pedro Costa' },
+    { id: 5, nome: 'Juliana Lima' },
+  ];
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [pagamentos, setPagamentos] = useState(mockPagamentos);
+
+  const handleAddPagamento = (novoPagamento: PagamentoFormValues) => {
+    // Find the student name from the ID
+    const aluno = mockAlunos.find(a => a.id.toString() === novoPagamento.alunoId)?.nome || '';
+    
+    // Format the date for display
+    const dataParts = novoPagamento.dataVencimento.split('-');
+    const dataFormatada = dataParts.length === 3 ? `${dataParts[2]}/${dataParts[1]}/${dataParts[0]}` : novoPagamento.dataVencimento;
+    
+    // Add the new payment to the state
+    setPagamentos([
+      ...pagamentos, 
+      { 
+        id: pagamentos.length + 1, 
+        aluno, 
+        valor: novoPagamento.valor, 
+        data: dataFormatada, 
+        metodo: novoPagamento.metodo, 
+        status: 'Pendente' 
+      }
+    ]);
+    
+    setIsDialogOpen(false);
+  };
+
   return (
     <ResponsiveLayout>
       <ResponsiveContainer>
         <ResponsiveHeader 
           title="Pagamentos" 
           subtitle="Gerenciamento de pagamentos de matrículas"
+          actions={
+            <Button onClick={() => setIsDialogOpen(true)}>
+              Nova Cobrança
+            </Button>
+          }
         />
         
         <div className="mt-6">
@@ -42,7 +85,7 @@ export default function PagamentosPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {mockPagamentos.map((pagamento) => (
+                    {pagamentos.map((pagamento) => (
                       <tr key={pagamento.id} className="bg-white border-b hover:bg-gray-50">
                         <td className="px-6 py-4 font-medium text-gray-900">{pagamento.aluno}</td>
                         <td className="px-6 py-4">{pagamento.valor}</td>
@@ -72,6 +115,12 @@ export default function PagamentosPage() {
           </Card>
         </div>
       </ResponsiveContainer>
+      <NovaCobrancaDialog 
+        isOpen={isDialogOpen} 
+        onClose={() => setIsDialogOpen(false)} 
+        onSave={handleAddPagamento}
+        alunos={mockAlunos}
+      />
     </ResponsiveLayout>
   );
 }
