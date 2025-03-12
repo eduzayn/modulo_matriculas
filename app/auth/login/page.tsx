@@ -62,12 +62,8 @@ export default function LoginPage() {
         variant: "default",
       });
 
-      // Redirecionar para a URL de callback ou dashboard usando router.push
-      // para garantir que o redirecionamento funcione corretamente no Next.js
-      setTimeout(() => {
-        // Usar router.push para redirecionamento mais confiável no Next.js
-        router.push(callbackUrl);
-      }, 1000); // Pequeno atraso para mostrar o toast antes do redirecionamento
+      // Redirecionar imediatamente para o dashboard
+      window.location.href = "/matricula/pages/dashboard";
     } catch (error: any) {
       console.error("Erro de autenticação:", error);
       
