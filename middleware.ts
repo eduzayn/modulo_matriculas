@@ -41,6 +41,12 @@ const alunoRoutes = [
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
+  // MODO DE DESENVOLVIMENTO: Bypass de autenticação para testes
+  // Remover esta linha em produção
+  return NextResponse.next()
+
+  // Código original comentado para testes
+  /*
   // Verificar se a rota atual é pública
   const isPublicRoute = publicRoutes.some(route => 
     pathname.startsWith(route) || pathname === '/'
@@ -75,6 +81,7 @@ export async function middleware(request: NextRequest) {
   const mainSiteLoginUrl = new URL(process.env.MAIN_SITE_URL + '/login' || '/auth/login', request.url)
   mainSiteLoginUrl.searchParams.set('callbackUrl', request.url)
   return NextResponse.redirect(mainSiteLoginUrl)
+  */
 }
 
 // Configurar em quais caminhos o middleware será executado
