@@ -18,9 +18,19 @@ const nextConfig = {
   staticPageGenerationTimeout: 120,
   // Disable static generation completely
   output: 'standalone',
-  env: {
-    NEXT_PUBLIC_SUPABASE_URL: 'https://uasnyifizdjxogowijip.supabase.co',
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVhc255aWZpemRqeG9nb3dpamlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE1ODYzMjIsImV4cCI6MjA1NzE2MjMyMn0.WGkiWL6VEazfIBHHz8LguEr8pRVy5XlbZT0iQ2rdfHU',
+  // Configuração de headers para Content Security Policy
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: "default-src 'self'; style-src 'self' 'unsafe-inline' *.gstatic.com vercel.com *.vercel.com vercel.live *.vercel.app *.vercel.sh; script-src 'self' 'unsafe-inline' 'unsafe-eval'; font-src 'self' data: *.gstatic.com; img-src 'self' data: blob: *.supabase.co edunexia.com *.vercel.app; connect-src 'self' *.supabase.co; frame-src 'self';"
+          }
+        ]
+      }
+    ];
   }
 }
 
