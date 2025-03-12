@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/ui/Button'
 import Link from 'next/link'
 import { matriculaRoutes } from '@/app/matricula/routes'
 // TODO: Import API client for main site authentication and data access

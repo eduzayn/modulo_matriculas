@@ -1,5 +1,5 @@
 import { MatriculaList } from '@/app/matricula/components/matricula-list'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/app/components/ui/Button'
 import { matriculaRoutes } from '@/app/matricula/routes'
 import Link from 'next/link'
 
