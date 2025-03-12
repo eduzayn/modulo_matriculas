@@ -72,6 +72,11 @@ const moduleConfig = {
 
 interface SidebarProps {
   module?: 'communication' | 'student' | 'content' | 'enrollment';
+  navItems?: Array<{
+    path: string;
+    name: string;
+    icon: any;
+  }>;
 }
 
 export const Sidebar = ({ module = 'enrollment' }: SidebarProps) => {
