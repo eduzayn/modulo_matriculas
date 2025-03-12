@@ -26,7 +26,7 @@ const nextConfig = {
         headers: [
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self' *.vercel-insights.com; style-src 'self' 'unsafe-inline' *.gstatic.com *.googleapis.com fonts.googleapis.com vercel.com *.vercel.com vercel.live *.vercel.app *.vercel.sh; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.googleapis.com *.vercel-insights.com; font-src 'self' data: *.gstatic.com fonts.gstatic.com *.googleapis.com; img-src 'self' data: blob: *.supabase.co edunexia.com *.vercel.app; connect-src 'self' *.supabase.co *.googleapis.com *.vercel-insights.com; frame-src 'self';"
+            value: "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;"
           }
         ]
       }
