@@ -1,251 +1,123 @@
-/**
- * Payment Verification Service
- * 
- * Este serviço é responsável por verificar pagamentos vencidos e enviar notificações
- * para os alunos com pagamentos em atraso.
- */
+// Simplified payment verification service
+import { notificationService } from './notification-service';
 
-import { PaymentStatus } from '@/app/matricula/types/financial';
-import { NotificationService } from './notification-service';
-// TODO: Import main site's database client
-import { db } from '@/lib/db';
-
-export class PaymentVerificationService {
-  /**
-   * Verifica pagamentos vencidos e envia notificações
-   */
-  static async checkOverduePayments() {
-    try {
-      // Authentication is now handled by the main site
-      const today = new Date().toISOString().split('T')[0];
-      
-      // Buscar pagamentos vencidos e não pagos
-      const { data: overduePayments, error } = await supabase
-        .from('financial.payments')
-        .select(`
-          id,
-          matricula_id,
-          valor,
-          data_vencimento,
-          numero_parcela,
-          matricula:matricula_id (
-            aluno_id,
-            aluno:aluno_id (
-              nome,
-              email,
-              telefone
-            )
-          )
-        `)
-        .eq('status', PaymentStatus.PENDENTE)
-        .lt('data_vencimento', today);
-      
-      if (error) {
-        console.error('Erro ao verificar pagamentos vencidos:', error);
-        return { success: false, error };
-      }
-      
-      // Enviar notificações para cada pagamento vencido
-      const notificationResults = [];
-      
-      for (const payment of overduePayments || []) {
-        const student = payment.matricula?.aluno;
-        
-        if (student) {
-          try {
-            // Calcular dias de atraso
-            const vencimento = new Date(payment.data_vencimento);
-            const hoje = new Date();
-            const diasAtraso = Math.floor((hoje.getTime() - vencimento.getTime()) / (1000 * 60 * 60 * 24));
-            
-            // Enviar notificação
-            const notificationResult = await NotificationService.sendNotification({
-              event: 'payment_overdue',
-              recipient: {
-                id: student.id,
-                type: 'aluno',
-              },
-              data: {
-                email: student.email,
-                phone: student.telefone,
-                subject: `Pagamento vencido - Parcela ${payment.numero_parcela}`,
-                body: `Olá ${student.nome},\n\nSua parcela ${payment.numero_parcela} no valor de R$ ${payment.valor.toFixed(2)} venceu em ${vencimento.toLocaleDateString('pt-BR')} (há ${diasAtraso} dias).\n\nPor favor, regularize seu pagamento o mais breve possível para evitar juros e multas.\n\nAtenciosamente,\nEquipe Edunexia`,
-                message: `Edunexia: Sua parcela ${payment.numero_parcela} no valor de R$ ${payment.valor.toFixed(2)} está vencida há ${diasAtraso} dias. Acesse a plataforma para regularizar.`,
-                template: 'payment_overdue',
-                templateData: {
-                  student_name: student.nome,
-                  payment_number: payment.numero_parcela,
-                  payment_value: payment.valor.toFixed(2),
-                  due_date: vencimento.toLocaleDateString('pt-BR'),
-                  days_overdue: diasAtraso
-                }
-              },
-              channels: ['email', 'sms', 'whatsapp']
-            });
-            
-            // Registrar notificação no banco de dados
-            await supabase.from('financial.payment_notifications').insert({
-              payment_id: payment.id,
-              student_id: student.id,
-              notification_type: 'overdue_payment',
-              channels: ['email', 'sms', 'whatsapp'],
-              sent_at: new Date().toISOString(),
-              status: notificationResult.success ? 'success' : 'failed',
-              days_overdue: diasAtraso
-            });
-            
-            notificationResults.push({
-              payment_id: payment.id,
-              student_id: student.id,
-              success: notificationResult.success,
-              notification_id: notificationResult.id
-            });
-          } catch (notificationError) {
-            console.error('Erro ao enviar notificação para pagamento:', payment.id, notificationError);
-            notificationResults.push({
-              payment_id: payment.id,
-              student_id: student.id,
-              success: false,
-              error: notificationError instanceof Error ? notificationError.message : 'Erro desconhecido'
-            });
-          }
-        }
-      }
-      
-      return {
-        success: true,
-        data: {
-          processed: overduePayments?.length || 0,
-          notifications: notificationResults
-        }
-      };
-    } catch (error) {
-      console.error('Erro ao verificar pagamentos vencidos:', error);
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Erro desconhecido'
-      };
-    }
-  }
-  
-  /**
-   * Verifica pagamentos próximos do vencimento e envia lembretes
-   */
-  static async checkUpcomingPayments(daysBeforeDue = 3) {
-    try {
-      // Authentication is now handled by the main site
-      
-      // Calcular data para verificação (hoje + dias antes do vencimento)
-      const today = new Date();
-      const targetDate = new Date(today);
-      targetDate.setDate(today.getDate() + daysBeforeDue);
-      const targetDateStr = targetDate.toISOString().split('T')[0];
-      
-      // Buscar pagamentos que vencem na data alvo
-      const { data: upcomingPayments, error } = await supabase
-        .from('financial.payments')
-        .select(`
-          id,
-          matricula_id,
-          valor,
-          data_vencimento,
-          numero_parcela,
-          forma_pagamento,
-          matricula:matricula_id (
-            aluno_id,
-            aluno:aluno_id (
-              nome,
-              email,
-              telefone
-            )
-          )
-        `)
-        .eq('status', PaymentStatus.PENDENTE)
-        .eq('data_vencimento', targetDateStr);
-      
-      if (error) {
-        console.error('Erro ao verificar pagamentos próximos do vencimento:', error);
-        return { success: false, error };
-      }
-      
-      // Enviar lembretes para cada pagamento próximo do vencimento
-      const reminderResults = [];
-      
-      for (const payment of upcomingPayments || []) {
-        const student = payment.matricula?.aluno;
-        
-        if (student) {
-          try {
-            // Enviar lembrete
-            const notificationResult = await NotificationService.sendNotification({
-              event: 'payment_reminder',
-              recipient: {
-                id: student.id,
-                type: 'aluno',
-              },
-              data: {
-                email: student.email,
-                phone: student.telefone,
-                subject: `Lembrete de pagamento - Parcela ${payment.numero_parcela}`,
-                body: `Olá ${student.nome},\n\nLembramos que sua parcela ${payment.numero_parcela} no valor de R$ ${payment.valor.toFixed(2)} vence em ${daysBeforeDue} dias (${new Date(payment.data_vencimento).toLocaleDateString('pt-BR')}).\n\nRealize o pagamento até a data de vencimento para evitar juros e multas.\n\nAtenciosamente,\nEquipe Edunexia`,
-                message: `Edunexia: Sua parcela ${payment.numero_parcela} no valor de R$ ${payment.valor.toFixed(2)} vence em ${daysBeforeDue} dias. Evite juros realizando o pagamento até o vencimento.`,
-                template: 'payment_reminder',
-                templateData: {
-                  student_name: student.nome,
-                  payment_number: payment.numero_parcela,
-                  payment_value: payment.valor.toFixed(2),
-                  due_date: new Date(payment.data_vencimento).toLocaleDateString('pt-BR'),
-                  days_until_due: daysBeforeDue,
-                  payment_method: payment.forma_pagamento
-                }
-              },
-              channels: ['email', 'whatsapp']
-            });
-            
-            // Registrar lembrete no banco de dados
-            await supabase.from('financial.payment_notifications').insert({
-              payment_id: payment.id,
-              student_id: student.id,
-              notification_type: 'payment_reminder',
-              channels: ['email', 'whatsapp'],
-              sent_at: new Date().toISOString(),
-              status: notificationResult.success ? 'success' : 'failed',
-              days_before_due: daysBeforeDue
-            });
-            
-            reminderResults.push({
-              payment_id: payment.id,
-              student_id: student.id,
-              success: notificationResult.success,
-              notification_id: notificationResult.id
-            });
-          } catch (notificationError) {
-            console.error('Erro ao enviar lembrete para pagamento:', payment.id, notificationError);
-            reminderResults.push({
-              payment_id: payment.id,
-              student_id: student.id,
-              success: false,
-              error: notificationError instanceof Error ? notificationError.message : 'Erro desconhecido'
-            });
-          }
-        }
-      }
-      
-      return {
-        success: true,
-        data: {
-          processed: upcomingPayments?.length || 0,
-          reminders: reminderResults
-        }
-      };
-    } catch (error) {
-      console.error('Erro ao verificar pagamentos próximos do vencimento:', error);
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Erro desconhecido'
-      };
-    }
-  }
+interface Payment {
+  id: string;
+  matricula_id: string;
+  valor: number;
+  data_vencimento: string;
+  data_pagamento: string | null;
+  status: 'pendente' | 'pago' | 'atrasado' | 'cancelado';
 }
 
-export default PaymentVerificationService;
+interface Student {
+  id: string;
+  nome: string;
+  email: string;
+  telefone: string;
+}
+
+interface Enrollment {
+  id: string;
+  aluno_id: string;
+  aluno: Student;
+  valor_total: number;
+  status: string;
+}
+
+export const paymentVerificationService = {
+  /**
+   * Check for overdue payments and send notifications
+   */
+  checkOverduePayments: async (): Promise<number> => {
+    try {
+      // In a real implementation, this would query the database
+      // For now, we'll use mock data
+      const overduePayments: Array<Payment & { enrollment: Enrollment }> = [
+        {
+          id: '1',
+          matricula_id: '101',
+          valor: 250,
+          data_vencimento: '2023-03-01',
+          data_pagamento: null,
+          status: 'atrasado',
+          enrollment: {
+            id: '101',
+            aluno_id: '1001',
+            aluno: {
+              id: '1001',
+              nome: 'João Silva',
+              email: 'joao@example.com',
+              telefone: '+5511999999999',
+            },
+            valor_total: 1000,
+            status: 'ativa',
+          },
+        },
+        {
+          id: '2',
+          matricula_id: '102',
+          valor: 300,
+          data_vencimento: '2023-03-05',
+          data_pagamento: null,
+          status: 'atrasado',
+          enrollment: {
+            id: '102',
+            aluno_id: '1002',
+            aluno: {
+              id: '1002',
+              nome: 'Maria Souza',
+              email: 'maria@example.com',
+              telefone: '+5511888888888',
+            },
+            valor_total: 1200,
+            status: 'ativa',
+          },
+        },
+      ];
+      
+      // Send notifications for each overdue payment
+      let notificationsSent = 0;
+      
+      for (const payment of overduePayments) {
+        const { enrollment, valor, data_vencimento } = payment;
+        const { aluno } = enrollment;
+        
+        const notificationSent = await notificationService.sendPaymentReminder(
+          aluno.email,
+          aluno.telefone,
+          aluno.nome,
+          enrollment.id,
+          valor,
+          new Date(data_vencimento).toLocaleDateString('pt-BR')
+        );
+        
+        if (notificationSent) {
+          notificationsSent++;
+        }
+      }
+      
+      return notificationsSent;
+    } catch (error) {
+      console.error('Error checking overdue payments:', error);
+      return 0;
+    }
+  },
+  
+  /**
+   * Process a payment
+   */
+  processPayment: async (paymentId: string, amount: number): Promise<boolean> => {
+    try {
+      // In a real implementation, this would update the database
+      // For now, we'll just log the payment
+      console.log(`Processing payment ${paymentId} for R$ ${amount.toFixed(2)}`);
+      
+      // Simulate a successful payment
+      return true;
+    } catch (error) {
+      console.error('Error processing payment:', error);
+      return false;
+    }
+  },
+};

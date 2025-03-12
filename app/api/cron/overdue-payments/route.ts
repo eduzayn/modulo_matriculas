@@ -1,73 +1,32 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { PaymentVerificationService } from '@/app/matricula/lib/services/payment-verification-service';
+import { NextResponse } from 'next/server';
+import { paymentVerificationService } from '../../../matricula/lib/services/payment-verification-service';
 
-// Chave de segurança para proteger o endpoint de cron
-const CRON_SECRET = process.env.CRON_SECRET || 'default-secret-key';
-
-/**
- * Endpoint para verificação de pagamentos vencidos
- * Este endpoint é chamado por um cron job para verificar pagamentos vencidos
- * e enviar notificações para os alunos.
- * 
- * Requer autenticação via token no header Authorization
- */
-export async function GET(request: NextRequest) {
-  // Verificar autenticação do cron job
-  const authHeader = request.headers.get('authorization');
-  if (!authHeader || authHeader !== `Bearer ${CRON_SECRET}`) {
-    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+export async function GET(request: Request) {
+  // Check for API key in headers for security
+  const apiKey = request.headers.get('x-api-key');
+  
+  if (!apiKey || apiKey !== process.env.CRON_API_KEY) {
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: 401 }
+    );
   }
   
   try {
-    // Executar verificação de pagamentos vencidos
-    const result = await PaymentVerificationService.checkOverduePayments();
+    // Check for overdue payments and send notifications
+    const notificationsSent = await paymentVerificationService.checkOverduePayments();
     
-    if (!result.success) {
-      return NextResponse.json({ error: 'Falha ao verificar pagamentos vencidos', details: result.error }, { status: 500 });
-    }
-    
-    return NextResponse.json(result.data);
+    return NextResponse.json({
+      success: true,
+      notificationsSent,
+      timestamp: new Date().toISOString(),
+    });
   } catch (error) {
-    console.error('Erro ao processar verificação de pagamentos vencidos:', error);
-    return NextResponse.json({ 
-      error: 'Erro interno do servidor',
-      details: error instanceof Error ? error.message : 'Erro desconhecido'
-    }, { status: 500 });
-  }
-}
-
-/**
- * Endpoint para envio de lembretes de pagamentos próximos do vencimento
- * Este endpoint é chamado por um cron job para verificar pagamentos que estão
- * próximos do vencimento e enviar lembretes para os alunos.
- * 
- * Requer autenticação via token no header Authorization
- */
-export async function POST(request: NextRequest) {
-  // Verificar autenticação do cron job
-  const authHeader = request.headers.get('authorization');
-  if (!authHeader || authHeader !== `Bearer ${CRON_SECRET}`) {
-    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
-  }
-  
-  try {
-    // Obter parâmetros da requisição
-    const body = await request.json();
-    const daysBeforeDue = body.daysBeforeDue || 3; // Padrão: 3 dias antes
+    console.error('Error in overdue payments cron:', error);
     
-    // Executar verificação de pagamentos próximos do vencimento
-    const result = await PaymentVerificationService.checkUpcomingPayments(daysBeforeDue);
-    
-    if (!result.success) {
-      return NextResponse.json({ error: 'Falha ao verificar pagamentos próximos do vencimento', details: result.error }, { status: 500 });
-    }
-    
-    return NextResponse.json(result.data);
-  } catch (error) {
-    console.error('Erro ao processar verificação de pagamentos próximos do vencimento:', error);
-    return NextResponse.json({ 
-      error: 'Erro interno do servidor',
-      details: error instanceof Error ? error.message : 'Erro desconhecido'
-    }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 }
+    );
   }
 }

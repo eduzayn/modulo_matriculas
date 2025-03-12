@@ -1,26 +1,23 @@
-import { ReactNode } from "react"
-import { Inter } from 'next/font/google'
 import './globals.css'
-import { ThemeProvider } from '../components/providers/ThemeProvider'
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
+const inter = Inter({ subsets: ['latin'] })
 
-export const metadata = {
-  title: 'Módulo de Matrículas - Edunéxia',
-  description: 'Sistema de gerenciamento de matrículas para instituições de ensino',
+export const metadata: Metadata = {
+  title: 'Módulo de Matrículas - Edunexia',
+  description: 'Sistema de gerenciamento de matrículas da plataforma Edunexia',
 }
 
 export default function RootLayout({
   children,
 }: {
-  children: ReactNode
+  children: React.ReactNode
 }) {
   return (
     <html lang="pt-BR">
-      <body className={`${inter.variable} antialiased bg-neutral-50`}>
-        <ThemeProvider module="enrollment">
-          {children}
-        </ThemeProvider>
+      <body className={inter.className}>
+        {children}
       </body>
     </html>
   )

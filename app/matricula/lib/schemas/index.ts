@@ -1,141 +1,84 @@
 import { z } from 'zod';
-import { 
-  MatriculaStatus, 
-  DocumentoStatus, 
-  AssinaturaStatus, 
-  FormaPagamento 
-} from '../../../types/matricula';
 
-// Schema para dados pessoais
-export const personalDataSchema = z.object({
-  nome: z.string().min(3, { message: 'Nome deve ter pelo menos 3 caracteres' }),
-  email: z.string().email({ message: 'Email inválido' }),
-  telefone: z.string().min(10, { message: 'Telefone inválido' }),
-  cpf: z.string().length(11, { message: 'CPF deve ter 11 dígitos' }),
-  rg: z.string().min(5, { message: 'RG inválido' }),
-  dataNascimento: z.string().refine((data) => {
-    const date = new Date(data);
-    const hoje = new Date();
-    return date < hoje && date > new Date(hoje.getFullYear() - 100, hoje.getMonth(), hoje.getDate());
-  }, { message: 'Data de nascimento inválida' }),
-  endereco: z.object({
-    cep: z.string().length(8, { message: 'CEP deve ter 8 dígitos' }),
-    logradouro: z.string().min(3, { message: 'Logradouro inválido' }),
-    numero: z.string().min(1, { message: 'Número inválido' }),
-    complemento: z.string().optional(),
-    bairro: z.string().min(2, { message: 'Bairro inválido' }),
-    cidade: z.string().min(2, { message: 'Cidade inválida' }),
-    estado: z.string().length(2, { message: 'Estado deve ter 2 caracteres' }),
-  }),
-});
-
-// Schema para documento
-export const documentSchema = z.object({
-  tipo: z.string().min(1, { message: 'Tipo de documento é obrigatório' }),
-  arquivo: z.any().refine((file) => file?.size > 0, { message: 'Arquivo é obrigatório' }),
-});
-
-// Schema para seleção de curso
-export const courseSelectionSchema = z.object({
-  cursoId: z.string().uuid({ message: 'Curso inválido' }),
-  turmaId: z.string().uuid({ message: 'Turma inválida' }).optional(),
-  modalidade: z.enum(['presencial', 'online', 'hibrido'], { 
-    errorMap: () => ({ message: 'Modalidade inválida' }) 
-  }),
-});
-
-// Schema para pagamento
-export const paymentSchema = z.object({
-  forma_pagamento: z.enum([
-    FormaPagamento.CARTAO_CREDITO,
-    FormaPagamento.BOLETO,
-    FormaPagamento.PIX,
-    FormaPagamento.TRANSFERENCIA
-  ], { 
-    errorMap: () => ({ message: 'Forma de pagamento inválida' }) 
-  }),
-  numero_parcelas: z.number().int().min(1, { message: 'Número de parcelas inválido' }),
-  desconto_id: z.string().uuid({ message: 'Desconto inválido' }).optional(),
-});
-
-// Schema para pré-matrícula
-export const preMatriculaSchema = z.object({
-  dadosPessoais: personalDataSchema,
-  documentos: z.array(documentSchema).min(1, { message: 'Pelo menos um documento é obrigatório' }),
-  curso: courseSelectionSchema,
-});
-
-// Schema para análise documental
-export const analiseDocumentalSchema = z.object({
-  documentoId: z.string().uuid({ message: 'Documento inválido' }),
-  status: z.enum([
-    DocumentoStatus.APROVADO,
-    DocumentoStatus.PENDENTE,
-    DocumentoStatus.REJEITADO
-  ], { 
-    errorMap: () => ({ message: 'Status inválido' }) 
-  }),
-  observacoes: z.string().optional(),
-});
-
-// Schema para contrato
-export const contratoSchema = z.object({
-  aceite: z.boolean().refine((val) => val === true, { message: 'É necessário aceitar os termos do contrato' }),
-});
-
-// Schema para criação de matrícula
+// Schema for creating a matricula
 export const matriculaSchema = z.object({
-  aluno_id: z.string().uuid({ message: 'Aluno inválido' }),
-  curso_id: z.string().uuid({ message: 'Curso inválido' }),
-  status: z.enum([
-    MatriculaStatus.PENDENTE,
-    MatriculaStatus.APROVADO,
-    MatriculaStatus.REJEITADO,
-    MatriculaStatus.ATIVO,
-    MatriculaStatus.TRANCADO,
-    MatriculaStatus.CANCELADO,
-    MatriculaStatus.CONCLUIDO
-  ]).default(MatriculaStatus.PENDENTE),
-  forma_pagamento: z.enum([
-    FormaPagamento.CARTAO_CREDITO,
-    FormaPagamento.BOLETO,
-    FormaPagamento.PIX,
-    FormaPagamento.TRANSFERENCIA
-  ]),
-  numero_parcelas: z.number().int().min(1, { message: 'Número de parcelas inválido' }),
-  desconto_id: z.string().uuid({ message: 'Desconto inválido' }).optional(),
-  metadata: z.record(z.any()).optional(),
+  aluno_id: z.string().uuid(),
+  curso_id: z.string().uuid(),
+  data_inicio: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  data_termino: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  valor_total: z.number().positive(),
+  forma_pagamento: z.enum(['boleto', 'cartao', 'pix', 'transferencia']),
+  parcelas: z.number().int().positive(),
 });
 
-// Schema para atualização de status da matrícula
+// Schema for updating matricula status
 export const updateMatriculaStatusSchema = z.object({
-  id: z.string().uuid({ message: 'ID de matrícula inválido' }),
-  status: z.enum([
-    MatriculaStatus.PENDENTE,
-    MatriculaStatus.APROVADO,
-    MatriculaStatus.REJEITADO,
-    MatriculaStatus.ATIVO,
-    MatriculaStatus.TRANCADO,
-    MatriculaStatus.CANCELADO,
-    MatriculaStatus.CONCLUIDO
-  ]),
-  observacoes: z.string().optional(),
+  matricula_id: z.string().uuid(),
+  status: z.enum(['pendente', 'ativa', 'cancelada', 'concluida', 'trancada']),
 });
 
-// Schema para upload de documento
+// Schema for uploading a document
 export const uploadDocumentoSchema = z.object({
-  matricula_id: z.string().uuid({ message: 'ID de matrícula inválido' }),
-  tipo: z.string().min(1, { message: 'Tipo de documento é obrigatório' }),
-  arquivo: z.any().refine((file) => file?.size > 0, { message: 'Arquivo é obrigatório' }),
+  matricula_id: z.string().uuid(),
+  tipo: z.enum(['rg', 'cpf', 'comprovante_residencia', 'diploma', 'historico', 'contrato', 'outros']),
+  file: z.any(), // This would be a File in the browser
 });
 
-// Schema para avaliação de documento
-export const avaliacaoDocumentoSchema = z.object({
-  documento_id: z.string().uuid({ message: 'ID de documento inválido' }),
-  status: z.enum([
-    DocumentoStatus.APROVADO,
-    DocumentoStatus.PENDENTE,
-    DocumentoStatus.REJEITADO
-  ]),
-  observacoes: z.string().optional(),
+// Schema for evaluating a document
+export const avaliarDocumentoSchema = z.object({
+  documento_id: z.string().uuid(),
+  aprovado: z.boolean(),
+  observacao: z.string().optional(),
+});
+
+// Schema for generating a contract
+export const gerarContratoSchema = z.object({
+  matricula_id: z.string().uuid(),
+});
+
+// Schema for signing a contract
+export const assinarContratoSchema = z.object({
+  matricula_id: z.string().uuid(),
+  assinatura: z.string(),
+});
+
+// Schema for payment
+export const paymentSchema = z.object({
+  matricula_id: z.string().uuid(),
+  valor: z.number().positive(),
+  data_vencimento: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  forma_pagamento: z.enum(['boleto', 'cartao', 'pix', 'transferencia']),
+});
+
+// Schema for discount
+export const discountSchema = z.object({
+  nome: z.string().min(3),
+  codigo: z.string().min(3),
+  tipo: z.enum(['percentual', 'valor_fixo']),
+  valor: z.number().positive(),
+  data_inicio: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  data_fim: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  cursos_aplicaveis: z.array(z.string().uuid()).optional(),
+  limite_usos: z.number().int().positive().optional(),
+});
+
+// Schema for feedback
+export const feedbackSchema = z.object({
+  matricula_id: z.string().uuid().optional(),
+  aluno_id: z.string().uuid(),
+  tipo: z.enum(['sugestao', 'elogio', 'reclamacao', 'duvida']),
+  assunto: z.string().min(3),
+  mensagem: z.string().min(10),
+  avaliacao: z.number().int().min(1).max(5).optional(),
+});
+
+// Schema for report generation
+export const reportSchema = z.object({
+  tipo: z.enum(['financeiro', 'matriculas', 'alunos', 'cursos']),
+  periodo: z.object({
+    inicio: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    fim: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  }),
+  filtros: z.record(z.string(), z.any()).optional(),
+  formato: z.enum(['excel', 'pdf', 'csv']).default('excel'),
 });

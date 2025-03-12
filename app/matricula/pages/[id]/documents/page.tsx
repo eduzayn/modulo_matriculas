@@ -1,39 +1,121 @@
-import { DocumentList } from '@/app/matricula/components/document-list'
-import { DocumentUpload } from '@/app/matricula/components/document-upload'
-import { notFound } from 'next/navigation'
-import { Button } from '@/app/components/ui/Button'
-import Link from 'next/link'
-import { matriculaRoutes } from '@/app/matricula/routes'
+'use client';
 
-interface DocumentsPageProps {
-  params: {
-    id: string
-  }
+import React from 'react';
+import Link from 'next/link';
+import { Button } from '../../../../../components/ui/Button';
+
+interface DocumentListProps {
+  documents: any[];
+  isAdmin: boolean;
 }
 
-export default async function DocumentsPage({ params }: DocumentsPageProps) {
-  const { id } = params
+function DocumentList({ documents, isAdmin }: DocumentListProps) {
+  return (
+    <div className="border rounded-lg overflow-hidden">
+      {documents.length === 0 ? (
+        <div className="p-6 text-center">
+          <p className="text-neutral-500">Nenhum documento enviado ainda.</p>
+        </div>
+      ) : (
+        <div className="divide-y">
+          {documents.map((doc) => (
+            <div key={doc.id} className="p-4 flex items-center justify-between">
+              <div>
+                <p className="font-medium">{doc.tipo}</p>
+                <p className="text-sm text-neutral-500">
+                  Enviado em: {new Date(doc.created_at).toLocaleDateString('pt-BR')}
+                </p>
+              </div>
+              <div className="flex space-x-2">
+                <Button variant="outline" size="sm" asChild>
+                  <a href={doc.url} target="_blank" rel="noopener noreferrer">
+                    Visualizar
+                  </a>
+                </Button>
+                {isAdmin && (
+                  <Button
+                    variant={doc.aprovado ? "outline" : "default"}
+                    size="sm"
+                  >
+                    {doc.aprovado ? "Aprovado" : "Aprovar"}
+                  </Button>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
-  // TODO: Replace with main site's data fetching
+interface DocumentUploadProps {
+  matriculaId: string;
+}
+
+function DocumentUpload({ matriculaId }: DocumentUploadProps) {
+  return (
+    <form className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium mb-1">Tipo de Documento</label>
+        <select className="w-full rounded-md border border-neutral-300 p-2">
+          <option value="">Selecione o tipo</option>
+          <option value="rg">RG</option>
+          <option value="cpf">CPF</option>
+          <option value="comprovante_residencia">Comprovante de Residência</option>
+          <option value="diploma">Diploma</option>
+          <option value="historico">Histórico Escolar</option>
+          <option value="outros">Outros</option>
+        </select>
+      </div>
+      
+      <div>
+        <label className="block text-sm font-medium mb-1">Arquivo</label>
+        <input
+          type="file"
+          className="w-full rounded-md border border-neutral-300 p-2"
+        />
+      </div>
+      
+      <Button type="submit">Enviar Documento</Button>
+    </form>
+  );
+}
+
+export default function DocumentsPage({ params }: { params: { id: string } }) {
+  const id = params.id;
+  
+  // Mock data for demonstration
   const matricula = {
     id,
-    aluno: {
-      name: 'Nome do Aluno' // This will come from the main site
-    }
-  }
-
-  // TODO: Replace with main site's data fetching
-  const documentos = [] // This will come from the main site's API
-
-  if (!matricula) {
-    notFound()
-  }
-  }
-
-  // Authentication and role checks are now handled by the main site
-  // TODO: Get isAdmin from main site authentication
-  const isAdmin = false // Temporary default until main site integration
-
+    aluno: { name: 'Aluno Exemplo' },
+  };
+  
+  const documentos = [
+    {
+      id: '1',
+      tipo: 'RG',
+      url: '#',
+      aprovado: true,
+      created_at: '2023-01-01T00:00:00Z',
+    },
+    {
+      id: '2',
+      tipo: 'CPF',
+      url: '#',
+      aprovado: false,
+      created_at: '2023-01-02T00:00:00Z',
+    },
+  ];
+  
+  // Routes for navigation
+  const matriculaRoutes = {
+    details: (id: string) => `/matricula/${id}`,
+  };
+  
+  // Admin check
+  const isAdmin = false;
+  
   return (
     <div className="container py-10 space-y-6">
       <div className="flex items-center justify-between">
@@ -61,5 +143,5 @@ export default async function DocumentsPage({ params }: DocumentsPageProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

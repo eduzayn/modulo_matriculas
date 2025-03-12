@@ -1,0 +1,283 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API do Módulo de Matrículas",
+    "description": "API para gerenciamento de matrículas da plataforma Edunexia",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.edunexia.com/matriculas",
+      "description": "Servidor de Produção"
+    },
+    {
+      "url": "https://staging-api.edunexia.com/matriculas",
+      "description": "Servidor de Homologação"
+    }
+  ],
+  "paths": {
+    "/matriculas": {
+      "get": {
+        "summary": "Lista todas as matrículas",
+        "description": "Retorna uma lista paginada de matrículas",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Número da página",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Número de itens por página",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Filtrar por status",
+            "schema": {
+              "type": "string",
+              "enum": ["pendente", "ativa", "cancelada", "concluida", "trancada"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de matrículas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Matricula"
+                      }
+                    },
+                    "pagination": {
+                      "$ref": "#/components/schemas/Pagination"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      },
+      "post": {
+        "summary": "Cria uma nova matrícula",
+        "description": "Cria uma nova matrícula no sistema",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMatriculaInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Matrícula criada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Matricula"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos"
+          },
+          "401": {
+            "description": "Não autorizado"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Matricula": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "aluno_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "curso_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "data_matricula": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "data_inicio": {
+            "type": "string",
+            "format": "date"
+          },
+          "data_termino": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pendente", "ativa", "cancelada", "concluida", "trancada"]
+          },
+          "valor_total": {
+            "type": "number",
+            "format": "float"
+          },
+          "valor_pago": {
+            "type": "number",
+            "format": "float"
+          },
+          "forma_pagamento": {
+            "type": "string",
+            "enum": ["boleto", "cartao", "pix", "transferencia"]
+          },
+          "parcelas": {
+            "type": "integer"
+          },
+          "documentos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Documento"
+            }
+          },
+          "contrato_url": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true
+          },
+          "contrato_assinado": {
+            "type": "boolean"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Documento": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "matricula_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": ["rg", "cpf", "comprovante_residencia", "diploma", "historico", "contrato", "outros"]
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "aprovado": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "observacao": {
+            "type": "string",
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CreateMatriculaInput": {
+        "type": "object",
+        "required": ["aluno_id", "curso_id", "data_inicio", "valor_total", "forma_pagamento", "parcelas"],
+        "properties": {
+          "aluno_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "curso_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "data_inicio": {
+            "type": "string",
+            "format": "date"
+          },
+          "data_termino": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "valor_total": {
+            "type": "number",
+            "format": "float"
+          },
+          "forma_pagamento": {
+            "type": "string",
+            "enum": ["boleto", "cartao", "pix", "transferencia"]
+          },
+          "parcelas": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "Pagination": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "integer"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "pages": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,134 +1,197 @@
-import { notFound } from 'next/navigation'
-import { Button } from '@/components/ui/Button'
-import Link from 'next/link'
-import { matriculaRoutes } from '@/app/matricula/routes'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
-import { Badge } from '@/components/ui/Badge'
-import { colors } from '@/components/providers/ThemeProvider'
-import { gerarContrato } from '@/app/matricula/actions/matricula-actions'
-import SignContractForm from '@/app/matricula/components/contract/sign-contract-form'
+'use client';
+
+import React from 'react';
+import Link from 'next/link';
+import { Button } from '../../../../../components/ui/Button';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../../../../../components/ui/Card';
+import { Badge } from '../../../../../components/ui/Badge';
+import { assinarContrato, gerarContrato } from '../../../actions/matricula-actions';
 
 interface ContractPageProps {
   params: {
-    id: string
-  }
+    id: string;
+  };
 }
 
-export default async function ContractPage({ params }: ContractPageProps) {
-  const { id } = params
+export default function ContractPage({ params }: ContractPageProps) {
+  const { id } = params;
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [contractGenerated, setContractGenerated] = React.useState(false);
+  const [contractSigned, setContractSigned] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
   
-  // TODO: Use main site's API to fetch matricula and contract data
-  const matricula = await fetch(`${process.env.MAIN_SITE_URL}/api/matriculas/${id}`).then(res => res.json())
+  // Mock data for demonstration
+  const matricula = {
+    id,
+    aluno: { name: 'Aluno Exemplo' },
+    curso: { name: 'Curso Exemplo' },
+    valor_total: 1200,
+    data_inicio: '2023-01-01',
+    data_termino: '2023-12-31',
+    status: 'pendente',
+    contrato_url: contractGenerated ? `https://example.com/contracts/${id}` : null,
+    contrato_assinado: contractSigned,
+  };
   
-  if (!matricula) {
-    notFound()
-  }
+  const handleGenerateContract = async () => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const result = await gerarContrato({ matricula_id: id });
+      
+      if (result.success) {
+        setContractGenerated(true);
+      } else {
+        setError(result.error || 'Erro ao gerar contrato');
+      }
+    } catch (error) {
+      setError('Erro ao gerar contrato');
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   
-  // TODO: Use main site's API to fetch contract data
-  const contrato = await fetch(`${process.env.MAIN_SITE_URL}/api/contratos/matricula/${id}`).then(res => res.json())
-
-  const formatDate = (dateString: string) => {
-    if (!dateString) return 'N/A'
-    return new Date(dateString).toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    })
-  }
-
+  const handleSignContract = async () => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const result = await assinarContrato({
+        matricula_id: id,
+        assinatura: 'assinatura-digital-exemplo',
+      });
+      
+      if (result.success) {
+        setContractSigned(true);
+      } else {
+        setError(result.error || 'Erro ao assinar contrato');
+      }
+    } catch (error) {
+      setError('Erro ao assinar contrato');
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
   return (
     <div className="container py-10 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Contrato de Matrícula</h1>
-          <p className="text-neutral-500">
-            Aluno: {matricula.aluno?.name || 'N/A'} | Curso: {matricula.curso?.name || 'N/A'}
+          <h1 className="text-3xl font-bold tracking-tight">Contrato da Matrícula</h1>
+          <p className="text-muted-foreground">
+            Aluno: {matricula.aluno?.name || 'N/A'} | ID: {matricula.id.substring(0, 8)}
           </p>
         </div>
-        <Button variant="outline" module="enrollment" asChild>
-          <Link href={matriculaRoutes.details(id)}>Voltar para Matrícula</Link>
+        <Button variant="outline" asChild>
+          <Link href={`/matricula/${id}`}>Voltar para Matrícula</Link>
         </Button>
       </div>
-
-      {contrato ? (
-        <Card variant="gradient" module="enrollment">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle module="enrollment">{contrato.titulo}</CardTitle>
-              <Badge
-                variant={
-                  contrato.status === 'assinado'
-                    ? 'success'
-                    : contrato.status === 'expirado'
-                    ? 'error'
-                    : 'primary'
-                }
-                module="enrollment"
-              >
-                {contrato.status}
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <h3 className="font-medium" style={{ color: colors.primary.enrollment.main }}>Versão</h3>
-                <p>{contrato.versao}</p>
+      
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
+          {error}
+        </div>
+      )}
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="md:col-span-2">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle>Detalhes do Contrato</CardTitle>
+                <Badge variant={contractSigned ? 'success' : 'warning'}>
+                  {contractSigned ? 'Assinado' : 'Pendente'}
+                </Badge>
               </div>
-              <div>
-                <h3 className="font-medium" style={{ color: colors.primary.enrollment.main }}>Data de Geração</h3>
-                <p>{formatDate(contrato.created_at)}</p>
-              </div>
-              {contrato.data_assinatura && (
+              <CardDescription>
+                Informações do contrato de matrícula
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <h3 className="font-medium" style={{ color: colors.primary.enrollment.main }}>Data de Assinatura</h3>
-                  <p>{formatDate(contrato.data_assinatura)}</p>
+                  <p className="text-sm font-medium text-neutral-500">Curso</p>
+                  <p>{matricula.curso?.name || 'N/A'}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-neutral-500">Valor Total</p>
+                  <p>R$ {matricula.valor_total.toFixed(2)}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-neutral-500">Data de Início</p>
+                  <p>{new Date(matricula.data_inicio).toLocaleDateString('pt-BR')}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-neutral-500">Data de Término</p>
+                  <p>{matricula.data_termino ? new Date(matricula.data_termino).toLocaleDateString('pt-BR') : 'N/A'}</p>
+                </div>
+              </div>
+              
+              {contractGenerated && (
+                <div className="mt-6">
+                  <p className="text-sm font-medium text-neutral-500 mb-2">Contrato</p>
+                  <div className="border rounded-md p-4 bg-neutral-50">
+                    <div className="flex items-center justify-between">
+                      <span>Contrato de Matrícula</span>
+                      <Button variant="outline" size="sm" asChild>
+                        <a href={matricula.contrato_url || '#'} target="_blank" rel="noopener noreferrer">
+                          Visualizar PDF
+                        </a>
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               )}
-            </div>
-
-            <div className="border rounded-md p-4 mt-4 bg-neutral-50">
-              <h3 className="font-medium mb-2" style={{ color: colors.primary.enrollment.main }}>Visualização do Contrato</h3>
-              <div className="flex justify-center">
-                <Button variant="outline" module="enrollment" asChild>
-                  <a href={contrato.url} target="_blank" rel="noopener noreferrer">
-                    Abrir Contrato
+            </CardContent>
+            <CardFooter className="flex justify-end space-x-2">
+              {!contractGenerated && (
+                <Button onClick={handleGenerateContract} disabled={isLoading}>
+                  {isLoading ? 'Gerando...' : 'Gerar Contrato'}
+                </Button>
+              )}
+              
+              {contractGenerated && !contractSigned && (
+                <Button onClick={handleSignContract} disabled={isLoading}>
+                  {isLoading ? 'Assinando...' : 'Assinar Contrato'}
+                </Button>
+              )}
+              
+              {contractSigned && (
+                <Button variant="outline" asChild>
+                  <a href={matricula.contrato_url || '#'} target="_blank" rel="noopener noreferrer">
+                    Baixar Contrato Assinado
                   </a>
                 </Button>
-              </div>
-            </div>
-          </CardContent>
-          <CardFooter className="flex justify-between">
-            {contrato.status !== 'assinado' ? (
-              <div className="w-full">
-                <SignContractForm contratoId={contrato.id} />
-              </div>
-            ) : (
-              <div className="flex-1"></div>
-            )}
-            <Button variant="outline" module="enrollment" asChild>
-              <a href={contrato.url} download>Baixar Contrato</a>
-            </Button>
-          </CardFooter>
-        </Card>
-      ) : (
-        <Card variant="gradient" module="enrollment">
-          <CardHeader>
-            <CardTitle module="enrollment">Nenhum Contrato Gerado</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-neutral-500">
-              Ainda não há um contrato gerado para esta matrícula.
-            </p>
-          </CardContent>
-          <CardFooter>
-            <form action={gerarContrato}>
-              <input type="hidden" name="matricula_id" value={id} />
-              <Button module="enrollment" type="submit">Gerar Contrato</Button>
-            </form>
-          </CardFooter>
-        </Card>
-      )}
+              )}
+            </CardFooter>
+          </Card>
+        </div>
+        
+        <div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Informações Importantes</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm">
+                O contrato de matrícula é um documento legal que estabelece os termos e condições
+                para a prestação de serviços educacionais.
+              </p>
+              <p className="text-sm">
+                Após a geração do contrato, é necessário assiná-lo digitalmente para confirmar
+                a matrícula.
+              </p>
+              <p className="text-sm">
+                Uma vez assinado, o contrato não pode ser alterado. Caso seja necessário fazer
+                alterações, entre em contato com a secretaria.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
-  )
+  );
 }

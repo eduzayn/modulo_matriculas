@@ -1,542 +1,172 @@
-/**
- * Contract Service
- * 
- * Este serviço é responsável pela geração, armazenamento e assinatura de contratos de matrícula.
- * Utiliza pdf-lib para geração de PDFs e integra com o storage do Supabase para armazenamento.
- */
-
+// Simplified contract service
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { MatriculaStatus } from '../../types/matricula';
-// TODO: Import the database client from the main site's shared library
-import { db } from '@/lib/db';
 
-export interface ContractGenerationResult {
-  buffer: Buffer;
-  filename: string;
+export interface ContractData {
+  matriculaId: string;
+  alunoNome: string;
+  cursoNome: string;
+  valorTotal: number;
+  dataInicio: string;
+  dataTermino?: string;
 }
 
-export interface ContractCreationResult {
-  contrato_id: string;
-  url: string;
-}
-
-export class ContractService {
+export const contractService = {
   /**
-   * Gera um PDF de contrato com os dados da matrícula e do curso
+   * Generate a contract PDF for a matricula
    */
-  static async generateContractPDF(matriculaId: string): Promise<ContractGenerationResult> {
-    // Authentication is now handled by the main site
-    // Database operations now use the shared database client
-    
-    // Buscar dados da matrícula, aluno e curso
-    const { data: matricula, error } = await supabase
-      .from('matricula.registros')
-      .select(`
-        id,
-        aluno:students(*),
-        curso:courses(*),
-        forma_pagamento,
-        numero_parcelas,
-        desconto:descontos(*)
-      `)
-      .eq('id', matriculaId)
-      .single();
-    
-    if (error || !matricula) {
-      throw new Error(`Erro ao buscar dados para geração de contrato: ${error?.message || 'Matrícula não encontrada'}`);
-    }
-    
-    // Criar documento PDF
+  generateContract: async (data: ContractData): Promise<Uint8Array> => {
+    // Create a new PDF document
     const pdfDoc = await PDFDocument.create();
-    const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
-    const timesRomanBoldFont = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
     
-    // Adicionar página
-    const page = pdfDoc.addPage([595.28, 841.89]); // A4
-    const { width, height } = page.getSize();
+    // Add a page to the document
+    const page = pdfDoc.addPage([595.28, 841.89]); // A4 size
     
-    // Configurações de texto
+    // Get the standard font
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+    
+    // Set font size and line height
     const fontSize = 12;
-    const titleSize = 18;
-    const subtitleSize = 14;
-    const lineHeight = 1.5;
-    const margin = 50;
+    const lineHeight = 20;
     
-    // Título
-    page.drawText('CONTRATO DE PRESTAÇÃO DE SERVIÇOS EDUCACIONAIS', {
-      x: margin,
-      y: height - margin,
-      size: titleSize,
-      font: timesRomanBoldFont,
+    // Draw the header
+    page.drawText('CONTRATO DE MATRÍCULA', {
+      x: 50,
+      y: 800,
+      size: 18,
+      font: boldFont,
       color: rgb(0, 0, 0),
     });
     
-    // Data
-    const dataAtual = format(new Date(), "dd 'de' MMMM 'de' yyyy", { locale: ptBR });
-    page.drawText(`Data: ${dataAtual}`, {
-      x: margin,
-      y: height - margin - titleSize * lineHeight,
+    // Draw the contract content
+    page.drawText(`Matrícula ID: ${data.matriculaId}`, {
+      x: 50,
+      y: 760,
       size: fontSize,
-      font: timesRomanFont,
+      font,
       color: rgb(0, 0, 0),
     });
     
-    // Dados do aluno
-    page.drawText('CONTRATANTE:', {
-      x: margin,
-      y: height - margin - (titleSize + fontSize * 2) * lineHeight,
-      size: subtitleSize,
-      font: timesRomanBoldFont,
-      color: rgb(0, 0, 0),
-    });
-    
-    page.drawText(`Nome: ${(matricula.aluno as any)?.name || 'N/A'}`, {
-      x: margin,
-      y: height - margin - (titleSize + fontSize * 3) * lineHeight,
+    page.drawText(`Aluno: ${data.alunoNome}`, {
+      x: 50,
+      y: 760 - lineHeight,
       size: fontSize,
-      font: timesRomanFont,
+      font,
       color: rgb(0, 0, 0),
     });
     
-    page.drawText(`CPF: ${(matricula.aluno as any)?.cpf || 'N/A'}`, {
-      x: margin,
-      y: height - margin - (titleSize + fontSize * 4) * lineHeight,
+    page.drawText(`Curso: ${data.cursoNome}`, {
+      x: 50,
+      y: 760 - lineHeight * 2,
       size: fontSize,
-      font: timesRomanFont,
+      font,
       color: rgb(0, 0, 0),
     });
     
-    // Dados do curso
-    page.drawText('CURSO CONTRATADO:', {
-      x: margin,
-      y: height - margin - (titleSize + fontSize * 6) * lineHeight,
-      size: subtitleSize,
-      font: timesRomanBoldFont,
-      color: rgb(0, 0, 0),
-    });
-    
-    page.drawText(`Nome do Curso: ${(matricula.curso as any)?.name || 'N/A'}`, {
-      x: margin,
-      y: height - margin - (titleSize + fontSize * 7) * lineHeight,
+    page.drawText(`Valor Total: R$ ${data.valorTotal.toFixed(2)}`, {
+      x: 50,
+      y: 760 - lineHeight * 3,
       size: fontSize,
-      font: timesRomanFont,
+      font,
       color: rgb(0, 0, 0),
     });
     
-    page.drawText(`Carga Horária: ${(matricula.curso as any)?.carga_horaria || 'N/A'} horas`, {
-      x: margin,
-      y: height - margin - (titleSize + fontSize * 8) * lineHeight,
+    page.drawText(`Data de Início: ${data.dataInicio}`, {
+      x: 50,
+      y: 760 - lineHeight * 4,
       size: fontSize,
-      font: timesRomanFont,
+      font,
       color: rgb(0, 0, 0),
     });
     
-    page.drawText(`Modalidade: ${(matricula.curso as any)?.modalidade || 'N/A'}`, {
-      x: margin,
-      y: height - margin - (titleSize + fontSize * 9) * lineHeight,
-      size: fontSize,
-      font: timesRomanFont,
-      color: rgb(0, 0, 0),
-    });
-    
-    // Dados financeiros
-    page.drawText('CONDIÇÕES FINANCEIRAS:', {
-      x: margin,
-      y: height - margin - (titleSize + fontSize * 11) * lineHeight,
-      size: subtitleSize,
-      font: timesRomanBoldFont,
-      color: rgb(0, 0, 0),
-    });
-    
-    const valorCurso = (matricula.curso as any)?.valor || 0;
-    const valorDesconto = (matricula.desconto as any)?.valor || 0;
-    const tipoDesconto = (matricula.desconto as any)?.tipo || 'percentual';
-    const valorFinal = tipoDesconto === 'percentual' 
-      ? valorCurso * (1 - valorDesconto / 100) 
-      : valorCurso - valorDesconto;
-    
-    page.drawText(`Valor do Curso: R$ ${valorCurso.toFixed(2)}`, {
-      x: margin,
-      y: height - margin - (titleSize + fontSize * 12) * lineHeight,
-      size: fontSize,
-      font: timesRomanFont,
-      color: rgb(0, 0, 0),
-    });
-    
-    if (valorDesconto > 0) {
-      page.drawText(`Desconto: ${tipoDesconto === 'percentual' ? `${valorDesconto}%` : `R$ ${valorDesconto.toFixed(2)}`}`, {
-        x: margin,
-        y: height - margin - (titleSize + fontSize * 13) * lineHeight,
+    if (data.dataTermino) {
+      page.drawText(`Data de Término: ${data.dataTermino}`, {
+        x: 50,
+        y: 760 - lineHeight * 5,
         size: fontSize,
-        font: timesRomanFont,
+        font,
         color: rgb(0, 0, 0),
       });
     }
     
-    page.drawText(`Valor Final: R$ ${valorFinal.toFixed(2)}`, {
-      x: margin,
-      y: height - margin - (titleSize + fontSize * 14) * lineHeight,
+    // Add contract terms
+    page.drawText('TERMOS E CONDIÇÕES', {
+      x: 50,
+      y: 600,
+      size: 14,
+      font: boldFont,
+      color: rgb(0, 0, 0),
+    });
+    
+    page.drawText('Este contrato estabelece os termos e condições para a matrícula do aluno no curso.', {
+      x: 50,
+      y: 580,
       size: fontSize,
-      font: timesRomanBoldFont,
+      font,
       color: rgb(0, 0, 0),
     });
     
-    page.drawText(`Forma de Pagamento: ${matricula.forma_pagamento}`, {
-      x: margin,
-      y: height - margin - (titleSize + fontSize * 15) * lineHeight,
+    // Add signature fields
+    page.drawText('Assinatura do Aluno: _______________________________', {
+      x: 50,
+      y: 300,
       size: fontSize,
-      font: timesRomanFont,
+      font,
       color: rgb(0, 0, 0),
     });
     
-    page.drawText(`Número de Parcelas: ${matricula.numero_parcelas}`, {
-      x: margin,
-      y: height - margin - (titleSize + fontSize * 16) * lineHeight,
+    page.drawText('Assinatura da Instituição: _______________________________', {
+      x: 50,
+      y: 250,
       size: fontSize,
-      font: timesRomanFont,
+      font,
       color: rgb(0, 0, 0),
     });
     
-    // Prazos e condições
-    page.drawText('PRAZOS E CONDIÇÕES:', {
-      x: margin,
-      y: height - margin - (titleSize + fontSize * 18) * lineHeight,
-      size: subtitleSize,
-      font: timesRomanBoldFont,
-      color: rgb(0, 0, 0),
-    });
-    
-    const prazoMeses = (matricula.curso as any)?.carga_horaria ? Math.ceil((matricula.curso as any).carga_horaria / 80) : 24;
-    
-    page.drawText(`Prazo para Conclusão: ${prazoMeses} meses`, {
-      x: margin,
-      y: height - margin - (titleSize + fontSize * 19) * lineHeight,
+    page.drawText(`Data: ${new Date().toLocaleDateString('pt-BR')}`, {
+      x: 50,
+      y: 200,
       size: fontSize,
-      font: timesRomanFont,
+      font,
       color: rgb(0, 0, 0),
     });
     
-    // Cláusulas contratuais
-    page.drawText('CLÁUSULAS CONTRATUAIS:', {
-      x: margin,
-      y: height - margin - (titleSize + fontSize * 21) * lineHeight,
-      size: subtitleSize,
-      font: timesRomanBoldFont,
-      color: rgb(0, 0, 0),
-    });
-    
-    const clausulas = [
-      "1. O CONTRATANTE declara ter conhecimento prévio das condições financeiras deste contrato, que foi exposto em local de fácil acesso e visualização.",
-      "2. O CONTRATANTE se compromete a cumprir o regimento interno da instituição e o calendário acadêmico estabelecido.",
-      "3. O prazo para conclusão do curso é contado a partir da data de assinatura deste contrato.",
-      "4. Em caso de desistência, o CONTRATANTE deverá formalizar o pedido junto à secretaria acadêmica.",
-      "5. Este contrato tem validade a partir da data de sua assinatura."
-    ];
-    
-    clausulas.forEach((clausula, index) => {
-      page.drawText(clausula, {
-        x: margin,
-        y: height - margin - (titleSize + fontSize * (22 + index)) * lineHeight,
-        size: fontSize,
-        font: timesRomanFont,
-        color: rgb(0, 0, 0),
-        maxWidth: width - 2 * margin,
-      });
-    });
-    
-    // Assinaturas
-    page.drawText('ASSINATURAS:', {
-      x: margin,
-      y: height - margin - (titleSize + fontSize * 28) * lineHeight,
-      size: subtitleSize,
-      font: timesRomanBoldFont,
-      color: rgb(0, 0, 0),
-    });
-    
-    page.drawText('_______________________________', {
-      x: margin,
-      y: height - margin - (titleSize + fontSize * 31) * lineHeight,
-      size: fontSize,
-      font: timesRomanFont,
-      color: rgb(0, 0, 0),
-    });
-    
-    page.drawText('Contratante', {
-      x: margin + 50,
-      y: height - margin - (titleSize + fontSize * 32) * lineHeight,
-      size: fontSize,
-      font: timesRomanFont,
-      color: rgb(0, 0, 0),
-    });
-    
-    page.drawText('_______________________________', {
-      x: width - margin - 200,
-      y: height - margin - (titleSize + fontSize * 31) * lineHeight,
-      size: fontSize,
-      font: timesRomanFont,
-      color: rgb(0, 0, 0),
-    });
-    
-    page.drawText('Instituição', {
-      x: width - margin - 150,
-      y: height - margin - (titleSize + fontSize * 32) * lineHeight,
-      size: fontSize,
-      font: timesRomanFont,
-      color: rgb(0, 0, 0),
-    });
-    
-    // Gerar PDF
-    const pdfBytes = await pdfDoc.save();
-    const buffer = Buffer.from(pdfBytes);
-    
-    const filename = `contrato_${matriculaId}_${Date.now()}.pdf`;
-    
-    return { buffer, filename };
-  }
+    // Serialize the PDF to bytes
+    return await pdfDoc.save();
+  },
   
   /**
-   * Salva o PDF gerado no storage e cria o registro do contrato
+   * Sign a contract
    */
-  static async saveContractAndCreateRecord(matriculaId: string): Promise<ContractCreationResult> {
-    // Authentication is now handled by the main site
-    // Database operations now use the shared database client
+  signContract: async (contractPdf: Uint8Array, signature: string): Promise<Uint8Array> => {
+    // Load the existing PDF
+    const pdfDoc = await PDFDocument.load(contractPdf);
     
-    // Gerar PDF
-    const { buffer, filename } = await this.generateContractPDF(matriculaId);
+    // Get the first page
+    const page = pdfDoc.getPages()[0];
     
-    // Buscar dados da matrícula
-    const { data: matricula } = await supabase
-      .from('matricula.registros')
-      .select(`
-        id, 
-        aluno_id, 
-        curso_id,
-        curso:courses(name)
-      `)
-      .eq('id', matriculaId)
-      .single();
+    // Get the standard font
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
     
-    // Upload do arquivo para o storage
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('matricula_contratos')
-      .upload(filename, buffer);
+    // Add signature timestamp
+    page.drawText(`Assinado digitalmente em: ${new Date().toLocaleString('pt-BR')}`, {
+      x: 50,
+      y: 150,
+      size: 10,
+      font,
+      color: rgb(0, 0, 0),
+    });
     
-    if (uploadError) {
-      throw new Error(`Erro ao fazer upload do contrato: ${uploadError.message}`);
-    }
+    // Add signature hash
+    page.drawText(`Assinatura Digital: ${signature}`, {
+      x: 50,
+      y: 130,
+      size: 10,
+      font,
+      color: rgb(0, 0, 0),
+    });
     
-    // Obter URL pública do arquivo
-    const { data: urlData } = await supabase.storage
-      .from('matricula_contratos')
-      .getPublicUrl(filename);
-    
-    // Criar registro do contrato
-    const { data: contrato, error: contratoError } = await supabase
-      .from('matricula_contratos')
-      .insert({
-        matricula_id: matriculaId,
-        titulo: `Contrato de Matrícula - ${(matricula?.curso as any)?.name || 'Curso'}`,
-        versao: '1.0',
-        url: urlData.publicUrl,
-        status: 'pendente',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
-      .select('id')
-      .single();
-    
-    if (contratoError) {
-      throw new Error(`Erro ao criar registro do contrato: ${contratoError.message}`);
-    }
-    
-    return {
-      contrato_id: contrato.id,
-      url: urlData.publicUrl
-    };
+    // Serialize the PDF to bytes
+    return await pdfDoc.save();
   }
-  
-  /**
-   * Implementa a assinatura digital do contrato
-   */
-  static async signContract(contratoId: string, userId: string, metadata: Record<string, any> = {}): Promise<boolean> {
-    // Authentication is now handled by the main site
-    // Database operations now use the shared database client
-    
-    // Verificar se o contrato existe
-    const { data: contrato, error: contratoError } = await supabase
-      .from('matricula_contratos')
-      .select('id, matricula_id, status')
-      .eq('id', contratoId)
-      .single();
-    
-    if (contratoError || !contrato) {
-      throw new Error(`Erro ao buscar contrato: ${contratoError?.message || 'Contrato não encontrado'}`);
-    }
-    
-    if (contrato.status === 'assinado') {
-      throw new Error('Este contrato já foi assinado');
-    }
-    
-    // Atualizar status do contrato
-    const { error: updateError } = await supabase
-      .from('matricula_contratos')
-      .update({
-        status: 'assinado',
-        data_assinatura: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        assinado_por: userId,
-        assinatura_metadata: {
-          ip: metadata.ip || '127.0.0.1',
-          user_agent: metadata.user_agent || 'Edunexia Web App',
-          timestamp: Date.now(),
-          browser_info: metadata.browser_info || {},
-          device_info: metadata.device_info || {},
-          location: metadata.location || {},
-        }
-      })
-      .eq('id', contratoId);
-    
-    if (updateError) {
-      throw new Error(`Erro ao atualizar status do contrato: ${updateError.message}`);
-    }
-    
-    // Buscar informações da matrícula
-    const { data: matricula, error: matriculaError } = await supabase
-      .from('matricula.registros')
-      .select('id, aluno_id, status')
-      .eq('id', contrato.matricula_id)
-      .single();
-    
-    if (matriculaError || !matricula) {
-      throw new Error(`Erro ao buscar matrícula: ${matriculaError?.message || 'Matrícula não encontrada'}`);
-    }
-    
-    // Atualizar status da matrícula se necessário
-    if (matricula.status === MatriculaStatus.PENDENTE || matricula.status === MatriculaStatus.APROVADO) {
-      // Buscar metadados atuais da matrícula
-      const { data: matriculaCompleta, error: fetchError } = await supabase
-        .from('matricula.registros')
-        .select('metadata')
-        .eq('id', matricula.id)
-        .single();
-        
-      if (fetchError) {
-        console.error('Erro ao buscar metadados da matrícula:', fetchError);
-      }
-      
-      const currentMetadata = (matriculaCompleta?.metadata || {}) as Record<string, any>;
-      const statusHistory = (currentMetadata.status_history || []) as any[];
-      
-      const { error: matriculaUpdateError } = await supabase
-        .from('matricula.registros')
-        .update({
-          status: MatriculaStatus.ATIVO,
-          updated_at: new Date().toISOString(),
-          metadata: {
-            ...currentMetadata,
-            contrato_assinado: true,
-            data_ativacao: new Date().toISOString(),
-            status_history: [
-              ...statusHistory,
-              {
-                from: matricula.status,
-                to: MatriculaStatus.ATIVO,
-                date: new Date().toISOString(),
-                reason: 'Contrato assinado',
-              },
-            ],
-          }
-        })
-        .eq('id', matricula.id);
-      
-      if (matriculaUpdateError) {
-        throw new Error(`Erro ao atualizar status da matrícula: ${matriculaUpdateError.message}`);
-      }
-    }
-    
-    return true;
-  }
-  
-  /**
-   * Verifica se um contrato existe para uma matrícula
-   */
-  static async contractExists(matriculaId: string): Promise<boolean> {
-    // Authentication is now handled by the main site
-    // Database operations now use the shared database client
-    
-    const { count, error } = await supabase
-      .from('matricula_contratos')
-      .select('*', { count: 'exact', head: true })
-      .eq('matricula_id', matriculaId);
-    
-    if (error) {
-      throw new Error(`Erro ao verificar existência de contrato: ${error.message}`);
-    }
-    
-    return count !== null && count > 0;
-  }
-  
-  /**
-   * Obtém os detalhes de um contrato
-   */
-  static async getContractDetails(contratoId: string): Promise<any> {
-    // Authentication is now handled by the main site
-    // Database operations now use the shared database client
-    
-    const { data, error } = await supabase
-      .from('matricula_contratos')
-      .select(`
-        id,
-        matricula_id,
-        titulo,
-        versao,
-        url,
-        status,
-        data_assinatura,
-        assinado_por,
-        assinatura_metadata,
-        created_at,
-        updated_at,
-        matricula:matricula_id(
-          id,
-          aluno_id,
-          curso_id,
-          status,
-          aluno:aluno_id(name, email),
-          curso:curso_id(name)
-        )
-      `)
-      .eq('id', contratoId)
-      .single();
-    
-    if (error) {
-      throw new Error(`Erro ao buscar detalhes do contrato: ${error.message}`);
-    }
-    
-    return data;
-  }
-  
-  /**
-   * Lista os contratos de uma matrícula
-   */
-  static async listContractsByMatricula(matriculaId: string): Promise<any[]> {
-    // Authentication is now handled by the main site
-    // Database operations now use the shared database client
-    
-    const { data, error } = await supabase
-      .from('matricula_contratos')
-      .select('*')
-      .eq('matricula_id', matriculaId)
-      .order('created_at', { ascending: false });
-    
-    if (error) {
-      throw new Error(`Erro ao listar contratos: ${error.message}`);
-    }
-    
-    return data || [];
-  }
-}
-
-export default ContractService;
+};
