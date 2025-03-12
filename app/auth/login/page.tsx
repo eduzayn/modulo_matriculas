@@ -49,6 +49,25 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
     try {
+      // Verificar credenciais temporárias padronizadas
+      if (data.email === 'teste@edunexia.com.br' && data.password === 'Teste@123') {
+        console.log("Login com credenciais temporárias");
+        
+        // Login bem-sucedido com credenciais temporárias
+        toast({
+          title: "Login realizado com sucesso",
+          description: "Você será redirecionado para o sistema.",
+          variant: "default",
+        });
+        
+        // Redirecionar para a URL de callback ou dashboard
+        setTimeout(() => {
+          router.push(callbackUrl);
+        }, 1000);
+        
+        return;
+      }
+      
       // Simulação de login bem-sucedido sem verificação no banco de dados
       // Apenas para fins de teste e desenvolvimento
       
@@ -185,6 +204,10 @@ export default function LoginPage() {
               <a href="#" className="text-primary hover:underline">
                 Esqueceu sua senha?
               </a>
+            </div>
+            {/* Credenciais temporárias */}
+            <div className="text-center text-xs text-gray-500">
+              Credenciais temporárias: teste@edunexia.com.br / Teste@123
             </div>
           </CardFooter>
         </form>
