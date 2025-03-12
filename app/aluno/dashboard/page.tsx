@@ -1,80 +1,75 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
-import { Button } from '@/components/ui/Button'
-import Link from 'next/link'
-import { getAlunoMatriculas } from '../lib/services/aluno-service'
+'use client';
 
-export default async function AlunoDashboardPage() {
-  // Authentication is now handled by the main site
-  // TODO: Get user ID from main site's authentication
-  const userId = 'placeholder-user-id'
-  
-  // Obter matrículas do aluno
-  const matriculas = await getAlunoMatriculas(null, userId)
-  
+import React from 'react';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../../components/ui/Card';
+import { Button } from '../../components/ui/Button';
+import { ResponsiveLayout, ResponsiveContainer, ResponsiveHeader } from '../../components/ui/ResponsiveLayout';
+
+export default function AlunoDashboardPage() {
+  // Mock data instead of using supabase
+  const mockCourses = [
+    { id: 1, name: 'Desenvolvimento Web', progress: 75, nextClass: 'Amanhã, 14:00' },
+    { id: 2, name: 'Design UX/UI', progress: 45, nextClass: 'Quinta, 10:00' },
+    { id: 3, name: 'Marketing Digital', progress: 90, nextClass: 'Hoje, 19:00' },
+  ];
+
   return (
-    <div className="container py-10 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Portal do Aluno</h1>
-          <p className="text-neutral-500">
-            Bem-vindo ao seu portal acadêmico
-          </p>
-        </div>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Matrículas Ativas</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{matriculas.filter(m => m.status === 'ativo').length}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Documentos Pendentes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{matriculas.reduce((acc, m) => 
-              acc + (m.documentos?.filter(d => d.status === 'pendente').length || 0), 0)}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Pagamentos Pendentes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{matriculas.reduce((acc, m) => 
-              acc + (m.pagamentos?.filter(p => p.status === 'pendente' || p.status === 'atrasado').length || 0), 0)}</p>
-          </CardContent>
-        </Card>
-      </div>
-      
-      <h2 className="text-2xl font-semibold mt-8 mb-4">Suas Matrículas</h2>
-      
-      {matriculas.length === 0 ? (
-        <p className="text-neutral-500">Você não possui matrículas ativas.</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {matriculas.map((matricula) => (
-            <Card key={matricula.id}>
+    <ResponsiveLayout>
+      <ResponsiveContainer>
+        <ResponsiveHeader 
+          title="Dashboard do Aluno" 
+          subtitle="Visão geral dos seus cursos e progresso"
+        />
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+          {mockCourses.map((course) => (
+            <Card key={course.id}>
               <CardHeader>
-                <CardTitle>{matricula.curso?.name || 'Curso'}</CardTitle>
+                <CardTitle>{course.name}</CardTitle>
+                <CardDescription>Progresso: {course.progress}%</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-2">
-                <p><strong>Status:</strong> {matricula.status}</p>
-                <p><strong>Data de Matrícula:</strong> {new Date(matricula.created_at).toLocaleDateString('pt-BR')}</p>
-                <div className="flex justify-end mt-4">
-                  <Button asChild>
-                    <Link href={`/aluno/matricula/${matricula.id}`}>Ver Detalhes</Link>
-                  </Button>
+              <CardContent>
+                <div className="w-full bg-neutral-200 rounded-full h-2.5">
+                  <div 
+                    className="bg-primary-500 h-2.5 rounded-full" 
+                    style={{ width: `${course.progress}%` }}
+                  ></div>
                 </div>
+                <p className="mt-4 text-sm">Próxima aula: {course.nextClass}</p>
               </CardContent>
+              <CardFooter>
+                <Button className="w-full">Continuar Curso</Button>
+              </CardFooter>
             </Card>
           ))}
         </div>
-      )}
-    </div>
-  )
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Próximas Atividades</CardTitle>
+              <CardDescription>Atividades pendentes dos seus cursos</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2">
+                <li className="p-2 bg-neutral-100 rounded-md">Entrega do Projeto Final - Desenvolvimento Web</li>
+                <li className="p-2 bg-neutral-100 rounded-md">Quiz de Avaliação - Design UX/UI</li>
+                <li className="p-2 bg-neutral-100 rounded-md">Apresentação de Campanha - Marketing Digital</li>
+              </ul>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Desempenho</CardTitle>
+              <CardDescription>Seu desempenho nos cursos</CardDescription>
+            </CardHeader>
+            <CardContent className="h-60 flex items-center justify-center">
+              <p className="text-neutral-500">Gráfico de Desempenho</p>
+            </CardContent>
+          </Card>
+        </div>
+      </ResponsiveContainer>
+    </ResponsiveLayout>
+  );
 }

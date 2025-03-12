@@ -1,117 +1,84 @@
 'use client';
 
 import React from 'react';
-import { cn } from '../../../lib/utils';
 
-interface ResponsiveHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
+interface ResponsiveHeaderProps {
   title: string;
   subtitle?: string;
   actions?: React.ReactNode;
 }
 
-export function ResponsiveHeader({
-  title,
-  subtitle,
-  actions,
-  className,
-  ...props
-}: ResponsiveHeaderProps) {
+export function ResponsiveHeader({ title, subtitle, actions }: ResponsiveHeaderProps) {
   return (
-    <div className={cn("flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4", className)} {...props}>
+    <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
       <div>
-        <h1 className="text-2xl font-bold">{title}</h1>
+        <h1 className="text-2xl md:text-3xl font-bold">{title}</h1>
         {subtitle && <p className="text-neutral-500 mt-1">{subtitle}</p>}
       </div>
-      {actions && <div className="flex items-center gap-2 w-full md:w-auto">{actions}</div>}
+      {actions && <div className="mt-4 md:mt-0">{actions}</div>}
     </div>
   );
 }
 
-interface ResponsiveSectionProps extends React.HTMLAttributes<HTMLDivElement> {
-  title?: string;
-  description?: string;
+interface ResponsiveContainerProps {
   children: React.ReactNode;
+  className?: string;
 }
 
-export function ResponsiveSection({
-  title,
-  description,
-  children,
-  className,
-  ...props
-}: ResponsiveSectionProps) {
+export function ResponsiveContainer({ children, className }: ResponsiveContainerProps) {
   return (
-    <section className={cn("mb-8", className)} {...props}>
-      {(title || description) && (
-        <div className="mb-4">
-          {title && <h2 className="text-xl font-semibold">{title}</h2>}
-          {description && <p className="text-neutral-500 mt-1">{description}</p>}
-        </div>
-      )}
+    <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 ${className || ''}`}>
       {children}
-    </section>
+    </div>
   );
 }
 
-interface ResponsiveGridProps extends React.HTMLAttributes<HTMLDivElement> {
+interface ResponsiveLayoutProps {
   children: React.ReactNode;
-  columns?: 1 | 2 | 3 | 4;
+  className?: string;
 }
 
-export function ResponsiveGrid({
-  children,
-  columns = 2,
-  className,
-  ...props
-}: ResponsiveGridProps) {
+export function ResponsiveLayout({ children, className }: ResponsiveLayoutProps) {
+  return (
+    <div className={`min-h-screen bg-neutral-50 ${className || ''}`}>
+      {children}
+    </div>
+  );
+}
+
+interface ResponsiveFormProps {
+  children: React.ReactNode;
+  className?: string;
+  onSubmit?: (e: React.FormEvent) => void;
+}
+
+export function ResponsiveForm({ children, className, onSubmit }: ResponsiveFormProps) {
+  return (
+    <form 
+      onSubmit={onSubmit} 
+      className={`space-y-6 ${className || ''}`}
+    >
+      {children}
+    </form>
+  );
+}
+
+interface ResponsiveGridProps {
+  children: React.ReactNode;
+  columns?: number;
+  className?: string;
+}
+
+export function ResponsiveGrid({ children, columns = 3, className }: ResponsiveGridProps) {
   const gridCols = {
-    1: "grid-cols-1",
-    2: "grid-cols-1 md:grid-cols-2",
-    3: "grid-cols-1 md:grid-cols-2 lg:grid-cols-3",
-    4: "grid-cols-1 md:grid-cols-2 lg:grid-cols-4",
+    1: 'grid-cols-1',
+    2: 'grid-cols-1 md:grid-cols-2',
+    3: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
+    4: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4',
   };
 
   return (
-    <div className={cn(`grid ${gridCols[columns]} gap-4`, className)} {...props}>
-      {children}
-    </div>
-  );
-}
-
-interface ResponsiveContainerProps extends React.HTMLAttributes<HTMLDivElement> {
-  children: React.ReactNode;
-  maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full';
-}
-
-export function ResponsiveContainer({
-  children,
-  maxWidth = 'xl',
-  className,
-  ...props
-}: ResponsiveContainerProps) {
-  const maxWidthClasses = {
-    sm: 'max-w-screen-sm',
-    md: 'max-w-screen-md',
-    lg: 'max-w-screen-lg',
-    xl: 'max-w-screen-xl',
-    '2xl': 'max-w-screen-2xl',
-    'full': 'max-w-full',
-  };
-
-  return (
-    <div className={cn(`w-full ${maxWidthClasses[maxWidth]} mx-auto px-4`, className)} {...props}>
-      {children}
-    </div>
-  );
-}
-
-export function ResponsiveLayout({
-  children,
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div className={cn("min-h-screen bg-neutral-50", className)} {...props}>
+    <div className={`grid gap-6 ${gridCols[columns as keyof typeof gridCols]} ${className || ''}`}>
       {children}
     </div>
   );
