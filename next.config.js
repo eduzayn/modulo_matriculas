@@ -8,10 +8,10 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    domains: ['example.supabase.co', 'edunexia.com', 'uasnyifizdjxogowijip.supabase.co'],
-    unoptimized: true,
+    domains: ['example.com', 'edunexia.com'],
   },
-  productionBrowserSourceMaps: false,
+  swcMinify: true,
+  staticPageGenerationTimeout: 120
 }
 
 module.exports = nextConfig
