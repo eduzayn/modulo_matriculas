@@ -1,6 +1,15 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
+// Rotas públicas que não requerem autenticação
+const publicRoutes = [
+  '/test-responsive',
+  '/demo',
+  '/auth/login',
+  '/auth/register',
+  '/auth/reset-password',
+]
+
 // Rotas que requerem autenticação
 const protectedRoutes = [
   '/matricula/dashboard',
@@ -32,6 +41,16 @@ const alunoRoutes = [
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
+  // Verificar se a rota atual é pública
+  const isPublicRoute = publicRoutes.some(route => 
+    pathname.startsWith(route) || pathname === '/'
+  )
+
+  // Se for uma rota pública, permitir acesso sem autenticação
+  if (isPublicRoute) {
+    return NextResponse.next()
+  }
+
   // Verificar se a rota atual requer autenticação para o módulo de matrículas
   const isMatriculaProtectedRoute = protectedRoutes.some(route => 
     pathname.startsWith(route) || pathname.includes('/matricula/') && pathname.includes('/edit') || 
@@ -53,7 +72,7 @@ export async function middleware(request: NextRequest) {
 
   // Verificar autenticação através do site principal
   // Redirecionar para o site principal para autenticação
-  const mainSiteLoginUrl = new URL(process.env.MAIN_SITE_URL + '/login', request.url)
+  const mainSiteLoginUrl = new URL(process.env.MAIN_SITE_URL + '/login' || '/auth/login', request.url)
   mainSiteLoginUrl.searchParams.set('callbackUrl', request.url)
   return NextResponse.redirect(mainSiteLoginUrl)
 }
@@ -61,7 +80,6 @@ export async function middleware(request: NextRequest) {
 // Configurar em quais caminhos o middleware será executado
 export const config = {
   matcher: [
-    '/matricula/:path*',
-    '/aluno/:path*',
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 }
