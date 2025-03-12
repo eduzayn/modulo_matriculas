@@ -62,9 +62,11 @@ export default function LoginPage() {
         variant: "default",
       });
 
-      // Redirecionar para a URL de callback ou dashboard
+      // Redirecionar para a URL de callback ou dashboard usando window.location
+      // para garantir que o redirecionamento funcione mesmo em ambientes externos
       setTimeout(() => {
-        router.push(callbackUrl);
+        // Usar window.location.href para redirecionamento mais confiável
+        window.location.href = callbackUrl;
       }, 1000); // Pequeno atraso para mostrar o toast antes do redirecionamento
     } catch (error: any) {
       console.error("Erro de autenticação:", error);
