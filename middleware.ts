@@ -12,7 +12,7 @@ const publicRoutes = [
 
 // Rotas que requerem autenticação
 const protectedRoutes = [
-  '/matricula/dashboard',
+  '/matricula/pages/dashboard',
   '/matricula/reports',
   '/matricula/discounts',
   '/matricula/list',
@@ -22,7 +22,7 @@ const protectedRoutes = [
 
 // Rotas que requerem permissão de administrador
 const adminRoutes = [
-  '/matricula/dashboard',
+  '/matricula/pages/dashboard',
   '/matricula/reports',
   '/matricula/discounts',
 ]
