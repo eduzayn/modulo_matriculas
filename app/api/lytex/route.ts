@@ -122,8 +122,9 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const cookieStore = cookies();
-    const supabase = createClient(cookieStore);
+    // Authentication is now handled by the main site
+    // TODO: Get user information from main site's authentication system
+    const supabase = createServerSupabaseClient(); // Use a non-auth Supabase client for database operations
     
     // Get the request body
     const body = await request.json();

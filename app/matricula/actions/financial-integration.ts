@@ -44,8 +44,10 @@ const generatePaymentsSchema = z.object({
 // Gerar pagamentos para uma matrícula
 export const generatePayments = action(generatePaymentsSchema, async (data): Promise<ActionResponse<{ success: boolean }>> => {
     try {
+      // TODO: Get authenticated user from main site
+      // For now, maintain database operations but authentication is handled by main site
       const cookieStore = cookies();
-      const supabase = createClient(cookieStore);
+      const supabase = createClient(cookieStore); // Will be replaced with main site's database client
 
       // Verificar se a matrícula existe
       const { data: matricula, error: matriculaError } = await supabase
@@ -216,8 +218,10 @@ const registerPaymentSchema = z.object({
 // Registrar pagamento de uma parcela
 export const registerPayment = action(registerPaymentSchema, async (data): Promise<ActionResponse<{ success: boolean }>> => {
     try {
+      // TODO: Get authenticated user from main site
+      // For now, maintain database operations but authentication is handled by main site
       const cookieStore = cookies();
-      const supabase = createClient(cookieStore);
+      const supabase = createClient(cookieStore); // Will be replaced with main site's database client
 
       // Verificar se o pagamento existe
       const { data: pagamento, error: pagamentoError } = await supabase
@@ -312,8 +316,10 @@ const cancelPaymentSchema = z.object({
 // Cancelar pagamento de uma parcela
 export const cancelPayment = action(cancelPaymentSchema, async (data): Promise<ActionResponse<{ success: boolean }>> => {
     try {
+      // TODO: Get authenticated user from main site
+      // For now, maintain database operations but authentication is handled by main site
       const cookieStore = cookies();
-      const supabase = createClient(cookieStore);
+      const supabase = createClient(cookieStore); // Will be replaced with main site's database client
 
       // Verificar se o pagamento existe
       const { data: pagamento, error: pagamentoError } = await supabase

@@ -1,5 +1,3 @@
-import { cookies } from 'next/headers'
-import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { matriculaRoutes } from '@/app/matricula/routes'
@@ -9,10 +7,7 @@ import { Textarea } from '@/components/ui/textarea'
 import React from 'react'
 
 export default async function SupportPage() {
-  const cookieStore = cookies()
-  const supabase = createClient(cookieStore)
-
-  // A autenticação agora é feita pelo middleware
+  // Authentication is now handled by the main site through middleware
 
   return (
     <div className="container py-10 space-y-6">

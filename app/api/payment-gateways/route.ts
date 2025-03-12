@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { cookies } from 'next/headers';
 import { PaymentGateway, PaymentMethod } from '@/app/matricula/types/payment-integrations';
+import { db } from '@/lib/db'; // TODO: Update to use centralized database client
 
 /**
  * API para listar gateways de pagamento disponíveis
@@ -9,8 +8,8 @@ import { PaymentGateway, PaymentMethod } from '@/app/matricula/types/payment-int
  */
 export async function GET(request: NextRequest) {
   try {
-    const cookieStore = cookies();
-    const supabase = createClient(cookieStore);
+    // TODO: Add authentication check using main site's auth system
+    // Authentication is now handled by the main site
     
     // Verificar gateways configurados no banco de dados
     const { data: configuredGateways, error } = await supabase
@@ -95,8 +94,8 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const cookieStore = cookies();
-    const supabase = createClient(cookieStore);
+    // TODO: Add authentication check using main site's auth system
+    // Authentication is now handled by the main site
     
     // Obter dados da requisição
     const body = await request.json();

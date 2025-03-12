@@ -92,26 +92,13 @@ interface ContratoDetailsPageProps {
 
 export default async function ContratoDetailsPage({ params }: ContratoDetailsPageProps) {
   const { id } = params
-  const cookieStore = cookies()
-  const supabase = createClient(cookieStore)
+  // Authentication is now handled by the main site
+  // TODO: Replace with main site authentication
+  const userId = ''; // Get from main site auth
+  const userRole = ''; // Get from main site auth
   
-  // Obter usuário atual
-  const { data: { session } } = await supabase.auth.getSession()
-  
-  if (!session) {
-    redirect('/auth/login?callbackUrl=/aluno/contratos')
-  }
-  
-  // Obter aluno pelo user_id
-  const { data: aluno } = await supabase
-    .from('students')
-    .select('*')
-    .eq('user_id', session.user.id)
-    .single()
-  
-  if (!aluno) {
-    redirect('/auth/login?error=unauthorized')
-  }
+  // Get student data from API
+  const aluno = null; // TODO: Fetch from main site API
   
   // Obter detalhes do contrato
   const { data: contrato, error } = await supabase

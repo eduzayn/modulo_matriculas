@@ -1,5 +1,3 @@
-import { cookies } from 'next/headers'
-import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { matriculaRoutes } from '@/app/matricula/routes'
@@ -16,10 +14,8 @@ import {
 import { colors } from '@/app/styles/colors'
 
 export default async function ReportsPage() {
-  const cookieStore = cookies()
-  const supabase = createClient(cookieStore)
-
-  // A autenticação e verificação de permissões agora são feitas pelo middleware
+  // Authentication is now handled by the main site's middleware
+  // TODO: Update database queries to use the main site's data access layer
 
   // Buscar estatísticas de matrículas por mês (últimos 6 meses)
   const sixMonthsAgo = new Date()

@@ -5,8 +5,6 @@
  * como Excel e PDF, além de permitir o envio por email.
  */
 
-import { createClient } from '@/lib/supabase/server';
-import { cookies } from 'next/headers';
 import { PaymentStatus, TransactionType } from '@/app/matricula/types/financial';
 import { NotificationService } from './notification-service';
 import ExcelJS from 'exceljs';
@@ -16,10 +14,10 @@ export class ReportGenerationService {
   /**
    * Gera relatório de inadimplência
    */
-  static async generateOverdueReport(format = 'excel', options = {}) {
+  static async generateOverdueReport(db, format = 'excel', options = {}) {
     try {
-      const cookieStore = cookies();
-      const supabase = createClient(cookieStore);
+      // Authentication is now handled by the main site
+      // db parameter should be passed from the route handler with authenticated database access
       const today = new Date().toISOString().split('T')[0];
       
       // Buscar pagamentos vencidos
@@ -108,10 +106,10 @@ export class ReportGenerationService {
   /**
    * Gera relatório de fluxo de caixa
    */
-  static async generateCashFlowReport(startDate, endDate, format = 'excel') {
+  static async generateCashFlowReport(db, startDate, endDate, format = 'excel') {
     try {
-      const cookieStore = cookies();
-      const supabase = createClient(cookieStore);
+      // Authentication is now handled by the main site
+      // db parameter should be passed from the route handler with authenticated database access
       
       // Buscar transações no período
       const { data: transactions, error } = await supabase
@@ -214,10 +212,10 @@ export class ReportGenerationService {
   /**
    * Gera relatório de projeção financeira
    */
-  static async generateFinancialProjectionReport(months = 6, format = 'excel') {
+  static async generateFinancialProjectionReport(db, months = 6, format = 'excel') {
     try {
-      const cookieStore = cookies();
-      const supabase = createClient(cookieStore);
+      // Authentication is now handled by the main site
+      // db parameter should be passed from the route handler with authenticated database access
       const today = new Date();
       
       // Buscar pagamentos futuros

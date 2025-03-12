@@ -27,15 +27,11 @@ const feedbackSchema = z.object({
  */
 export async function POST(request: NextRequest) {
   try {
-    // Verificar autenticação
-    const supabase = createClient(
-      env.SUPABASE_URL || '',
-      env.SUPABASE_ANON_KEY || ''
-    );
+    // Authentication is now handled by the main site
+    // TODO: Implement user session validation using the main site's authentication system
+    const userId = request.headers.get('x-user-id');
     
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (!session) {
+    if (!userId) {
       return NextResponse.json(
         { error: 'Não autorizado' },
         { status: 401 }
@@ -90,29 +86,19 @@ export async function POST(request: NextRequest) {
  */
 export async function GET(request: NextRequest) {
   try {
-    // Verificar autenticação (apenas administradores para ver todos os feedbacks)
-    const supabase = createClient(
-      env.SUPABASE_URL || '',
-      env.SUPABASE_ANON_KEY || ''
-    );
+    // Authentication and role verification is now handled by the main site
+    // TODO: Implement user session and role validation using the main site's authentication system
+    const userId = request.headers.get('x-user-id');
+    const userRole = request.headers.get('x-user-role');
     
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (!session) {
+    if (!userId) {
       return NextResponse.json(
         { error: 'Não autorizado' },
         { status: 401 }
       );
     }
     
-    // Verificar se o usuário é administrador
-    const { data: userRole } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', session.user.id)
-      .single();
-    
-    const isAdmin = userRole && userRole.role === 'admin';
+    const isAdmin = userRole === 'admin';
     
     // Obter parâmetros da requisição
     const searchParams = request.nextUrl.searchParams;

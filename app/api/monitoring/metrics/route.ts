@@ -10,29 +10,29 @@ import { env } from 'process';
  */
 export async function GET(request: NextRequest) {
   try {
-    // Verificar autenticação (apenas administradores)
-    const supabase = createClient(
-      env.SUPABASE_URL || '',
-      env.SUPABASE_ANON_KEY || ''
-    );
+    // TODO: Verificar autenticação através do site principal
+    // A autenticação e verificação de permissões agora é feita pelo site principal
+    // Exemplo de como obter informações do usuário:
+    // const session = await mainSiteAuth.getSession(request);
+    // const userRole = await mainSiteAuth.getUserRole(session.userId);
     
-    const { data: { session } } = await supabase.auth.getSession();
+    if (!process.env.MAIN_SITE_URL) {
+      throw new Error('MAIN_SITE_URL environment variable is not set');
+    }
     
-    if (!session) {
+    // Placeholder: Verificar autenticação e permissões através do site principal
+    // Por enquanto, permitir acesso para testes
+    const isAuthenticated = true;
+    const isAdmin = true;
+    
+    if (!isAuthenticated) {
       return NextResponse.json(
         { error: 'Não autorizado' },
         { status: 401 }
       );
     }
     
-    // Verificar se o usuário é administrador
-    const { data: userRole } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', session.user.id)
-      .single();
-    
-    if (!userRole || userRole.role !== 'admin') {
+    if (!isAdmin) {
       return NextResponse.json(
         { error: 'Acesso negado' },
         { status: 403 }

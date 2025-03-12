@@ -1,5 +1,3 @@
-import { cookies } from 'next/headers'
-import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { getMatriculaDetails } from '../../lib/services/aluno-service'
 import { MatriculaAlunoDetails } from '../../components/matricula-aluno-details'
@@ -12,14 +10,13 @@ interface MatriculaDetailsPageProps {
 
 export default async function MatriculaDetailsPage({ params }: MatriculaDetailsPageProps) {
   const { id } = params
-  const cookieStore = cookies()
-  const supabase = createClient(cookieStore)
   
-  // Obter usuário atual
-  const { data: { session } } = await supabase.auth.getSession()
+  // Authentication is now handled by the main site
+  // TODO: Get user ID from main site's authentication system
+  const userId = 'placeholder-user-id'
   
   // Obter detalhes da matrícula
-  const matricula = await getMatriculaDetails(supabase, session?.user.id, id)
+  const matricula = await getMatriculaDetails(null, userId, id)
   
   if (!matricula) {
     notFound()

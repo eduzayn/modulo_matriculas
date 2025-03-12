@@ -1,5 +1,3 @@
-import { cookies } from 'next/headers'
-import { createClient } from '@/lib/supabase/server'
 import { MatriculaForm } from '@/app/matricula/components/matricula-form'
 import { notFound } from 'next/navigation'
 
@@ -11,55 +9,27 @@ interface EditMatriculaPageProps {
 
 export default async function EditMatriculaPage({ params }: EditMatriculaPageProps) {
   const { id } = params
-  const cookieStore = cookies()
-  const supabase = createClient(cookieStore)
 
-  // Buscar detalhes da matrícula
-  const { data: matricula, error } = await supabase
-    .from('matricula.registros')
-    .select(`
-      *,
-      aluno:students(id, name),
-      curso:courses(id, name)
-    `)
-    .eq('id', id)
-    .single()
-
-  if (error || !matricula) {
-    console.error('Erro ao buscar matrícula:', error)
+  // TODO: Fetch data from main site API
+  // Authentication is now handled by the main site
+  const response = await fetch(`${process.env.MAIN_SITE_URL}/api/matriculas/${id}`)
+  if (!response.ok) {
+    console.error('Erro ao buscar matrícula')
     notFound()
   }
+  
+  const matricula = await response.json()
 
-  // Buscar alunos
-  const { data: alunos, error: alunosError } = await supabase
-    .from('students')
-    .select('id, name')
-    .order('name')
+  // Fetch related data from main site API
+  const [alunosRes, cursosRes, descontosRes] = await Promise.all([
+    fetch(`${process.env.MAIN_SITE_URL}/api/alunos`),
+    fetch(`${process.env.MAIN_SITE_URL}/api/cursos`),
+    fetch(`${process.env.MAIN_SITE_URL}/api/descontos`)
+  ])
 
-  if (alunosError) {
-    console.error('Erro ao buscar alunos:', alunosError)
-  }
-
-  // Buscar cursos
-  const { data: cursos, error: cursosError } = await supabase
-    .from('courses')
-    .select('id, name')
-    .order('name')
-
-  if (cursosError) {
-    console.error('Erro ao buscar cursos:', cursosError)
-  }
-
-  // Buscar descontos
-  const { data: descontos, error: descontosError } = await supabase
-    .from('discounts')
-    .select('id, nome, tipo, valor')
-    .eq('ativo', true)
-    .order('nome')
-
-  if (descontosError) {
-    console.error('Erro ao buscar descontos:', descontosError)
-  }
+  const alunos = alunosRes.ok ? await alunosRes.json() : []
+  const cursos = cursosRes.ok ? await cursosRes.json() : []
+  const descontos = descontosRes.ok ? await descontosRes.json() : []
 
   return (
     <div className="container py-10 space-y-6">
