@@ -7,7 +7,7 @@ export const matriculaRoutes = {
   documents: (id: string) => `/matricula/${id}/documents`,
   payments: (id: string) => `/matricula/${id}/payments`,
   contract: (id: string) => `/matricula/${id}/contract`,
-  dashboard: '/matricula/dashboard',
+  dashboard: '/matricula/pages/dashboard',
   reports: '/matricula/reports',
   discounts: '/matricula/discounts',
   support: '/matricula/support',

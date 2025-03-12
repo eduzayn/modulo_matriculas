@@ -8,7 +8,7 @@ import * as z from "zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 import { supabase } from "@/lib/supabase/browser";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import {
   Card,
   CardContent,
@@ -16,8 +16,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+} from "@/components/ui/Card";
+import { Input } from "@/components/ui/Input";
 import { useToast } from "@/components/ui/use-toast";
 
 // Esquema de validação do formulário
@@ -62,12 +62,8 @@ export default function LoginPage() {
         variant: "default",
       });
 
-      // Redirecionar para a URL de callback ou dashboard usando window.location
-      // para garantir que o redirecionamento funcione mesmo em ambientes externos
-      setTimeout(() => {
-        // Usar window.location.href para redirecionamento mais confiável
-        window.location.href = callbackUrl;
-      }, 1000); // Pequeno atraso para mostrar o toast antes do redirecionamento
+      // Redirecionar imediatamente para o dashboard usando URL absoluta
+      window.location.href = window.location.origin + "/matricula/pages/dashboard";
     } catch (error: any) {
       console.error("Erro de autenticação:", error);
       
