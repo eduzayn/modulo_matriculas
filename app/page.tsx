@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
-import { ResponsiveLayout, ResponsiveContainer, ResponsiveHeader } from '../components/ui/ResponsiveLayout';
+import { ResponsiveLayout } from '../components/ui/ResponsiveLayout';
+import { ResponsiveContainer } from '../components/ui/ResponsiveContainer';
+import { ResponsiveHeader } from '../components/ui/ResponsiveHeader';
 
 export default function Home() {
   return (
