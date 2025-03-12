@@ -1,58 +1,104 @@
-import Link from 'next/link'
+import Link from 'next/link';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../components/ui/Card';
+import { Button } from '../components/ui/Button';
+import { ResponsiveLayout } from '../components/ui/ResponsiveLayout';
+import { ResponsiveContainer } from '../components/ui/ResponsiveContainer';
+import { ResponsiveHeader } from '../components/ui/ResponsiveHeader';
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-center font-mono text-sm lg:flex">
-        <h1 className="text-4xl font-bold text-center mb-8">Módulo de Matrículas - Edunexia</h1>
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-3 lg:text-left gap-4">
-        <Link
-          href="/matricula"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Matrículas{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Gerenciamento de matrículas de alunos.
+    <ResponsiveLayout>
+      <ResponsiveContainer>
+        <ResponsiveHeader 
+          title="Módulo de Matrículas - Edunexia" 
+          subtitle="Sistema de gerenciamento de matrículas para a plataforma Edunexia"
+        />
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+          <Card>
+            <CardHeader>
+              <CardTitle>Matrículas</CardTitle>
+              <CardDescription>Gerencie as matrículas dos alunos</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p>Acesse o sistema de matrículas para criar, visualizar e gerenciar matrículas de alunos em cursos.</p>
+            </CardContent>
+            <CardFooter>
+              <Button className="w-full">
+                <Link href="/matricula" className="w-full">Acessar Matrículas</Link>
+              </Button>
+            </CardFooter>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Alunos</CardTitle>
+              <CardDescription>Gerencie os dados dos alunos</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p>Acesse o cadastro de alunos para visualizar e gerenciar informações dos estudantes.</p>
+            </CardContent>
+            <CardFooter>
+              <Button className="w-full">
+                <Link href="/aluno" className="w-full">Acessar Alunos</Link>
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Cursos</CardTitle>
+              <CardDescription>Catálogo de cursos</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p>Visualize e gerencie o catálogo de cursos disponíveis.</p>
+            </CardContent>
+            <CardFooter>
+              <Button variant="outline" className="w-full">
+                <Link href="/curso" className="w-full">Ver Cursos</Link>
+              </Button>
+            </CardFooter>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Financeiro</CardTitle>
+              <CardDescription>Gestão financeira</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p>Acesse o módulo financeiro para gerenciar pagamentos e faturas.</p>
+            </CardContent>
+            <CardFooter>
+              <Button variant="outline" className="w-full">
+                <Link href="/financeiro" className="w-full">Ver Financeiro</Link>
+              </Button>
+            </CardFooter>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Relatórios</CardTitle>
+              <CardDescription>Análise de dados</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p>Gere relatórios e visualize estatísticas sobre matrículas e alunos.</p>
+            </CardContent>
+            <CardFooter>
+              <Button variant="outline" className="w-full">
+                <Link href="/relatorios" className="w-full">Ver Relatórios</Link>
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
+        
+        <div className="mt-12 text-center">
+          <p className="text-sm text-neutral-500">
+            Acesse também o <Link href="/test-responsive" className="text-primary-500 hover:underline">Teste de Componentes Responsivos</Link>
           </p>
-        </Link>
-
-        <Link
-          href="/test"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Teste de Componentes{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Página de teste para visualizar componentes UI.
-          </p>
-        </Link>
-
-        <Link
-          href="/api-docs"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Documentação API{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Documentação da API do módulo de matrículas.
-          </p>
-        </Link>
-      </div>
-    </main>
-  )
+        </div>
+      </ResponsiveContainer>
+    </ResponsiveLayout>
+  );
 }
