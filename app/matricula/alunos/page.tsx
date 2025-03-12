@@ -1,8 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../../components/ui/Card';
+import { Button } from '../../../components/ui/Button';
 import { ResponsiveLayout, ResponsiveContainer, ResponsiveHeader } from '../../../app/components/ui/ResponsiveLayout';
+import { NovoAlunoDialog, AlunoFormValues } from '../../../app/matricula/components/aluno/novo-aluno-dialog';
+import { VincularAlunoDialog } from '../../../app/matricula/components/aluno/vincular-aluno-dialog';
 
 export default function AlunosPage() {
   // Mock data for students
@@ -13,6 +16,31 @@ export default function AlunosPage() {
     { id: 4, nome: 'Pedro Costa', email: 'pedro.costa@exemplo.com', curso: 'Desenvolvimento Web', status: 'Ativo' },
     { id: 5, nome: 'Juliana Lima', email: 'juliana.lima@exemplo.com', curso: 'Marketing Digital', status: 'Pendente' },
   ];
+  
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isVincularDialogOpen, setIsVincularDialogOpen] = useState(false);
+  const [alunos, setAlunos] = useState(mockAlunos);
+
+  const handleAddAluno = (novoAluno: AlunoFormValues) => {
+    setAlunos([...alunos, { ...novoAluno, id: alunos.length + 1, curso: '' }]);
+    setIsDialogOpen(false);
+  };
+  
+  const handleVincularAluno = (alunoId: number, cursoNome: string) => {
+    setAlunos(alunos.map(aluno => 
+      aluno.id === alunoId ? { ...aluno, curso: cursoNome } : aluno
+    ));
+    setIsVincularDialogOpen(false);
+  };
+  
+  // Mock data for courses
+  const mockCursos = [
+    { id: 1, nome: 'Desenvolvimento Web' },
+    { id: 2, nome: 'Marketing Digital' },
+    { id: 3, nome: 'Design Gráfico' },
+    { id: 4, nome: 'Data Science' },
+    { id: 5, nome: 'UX/UI Design' },
+  ];
 
   return (
     <ResponsiveLayout>
@@ -20,6 +48,16 @@ export default function AlunosPage() {
         <ResponsiveHeader 
           title="Alunos" 
           subtitle="Gerenciamento de alunos matriculados"
+          actions={
+            <div className="flex space-x-2">
+              <Button onClick={() => setIsDialogOpen(true)}>
+                Novo Aluno
+              </Button>
+              <Button variant="outline" onClick={() => setIsVincularDialogOpen(true)}>
+                Vincular ao Curso
+              </Button>
+            </div>
+          }
         />
         
         <div className="mt-6">
@@ -41,7 +79,7 @@ export default function AlunosPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {mockAlunos.map((aluno) => (
+                    {alunos.map((aluno) => (
                       <tr key={aluno.id} className="bg-white border-b hover:bg-gray-50">
                         <td className="px-6 py-4 font-medium text-gray-900">{aluno.nome}</td>
                         <td className="px-6 py-4">{aluno.email}</td>
@@ -70,6 +108,18 @@ export default function AlunosPage() {
           </Card>
         </div>
       </ResponsiveContainer>
+      <NovoAlunoDialog 
+        isOpen={isDialogOpen} 
+        onClose={() => setIsDialogOpen(false)} 
+        onSave={handleAddAluno} 
+      />
+      <VincularAlunoDialog 
+        isOpen={isVincularDialogOpen} 
+        onClose={() => setIsVincularDialogOpen(false)} 
+        onSave={handleVincularAluno}
+        alunos={alunos}
+        cursos={mockCursos}
+      />
     </ResponsiveLayout>
   );
 }

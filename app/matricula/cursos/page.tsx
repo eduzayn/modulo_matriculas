@@ -1,8 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../../components/ui/Card';
+import { Button } from '../../../components/ui/Button';
 import { ResponsiveLayout, ResponsiveContainer, ResponsiveHeader } from '../../../app/components/ui/ResponsiveLayout';
+import { NovoCursoDialog, CursoFormValues } from '../components/curso/novo-curso-dialog';
 
 export default function CursosPage() {
   // Mock data for courses
@@ -13,6 +15,14 @@ export default function CursosPage() {
     { id: 4, nome: 'Data Science', duracao: '8 meses', preco: 'R$ 3.500,00', vagas: 15, ocupadas: 12 },
     { id: 5, nome: 'UX/UI Design', duracao: '4 meses', preco: 'R$ 2.000,00', vagas: 20, ocupadas: 18 },
   ];
+  
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [cursos, setCursos] = useState(mockCursos);
+
+  const handleAddCurso = (novoCurso: CursoFormValues) => {
+    setCursos([...cursos, { ...novoCurso, id: cursos.length + 1, ocupadas: 0 }]);
+    setIsDialogOpen(false);
+  };
 
   return (
     <ResponsiveLayout>
@@ -20,6 +30,11 @@ export default function CursosPage() {
         <ResponsiveHeader 
           title="Cursos" 
           subtitle="Gerenciamento de cursos disponíveis"
+          actions={
+            <Button onClick={() => setIsDialogOpen(true)}>
+              Novo Curso
+            </Button>
+          }
         />
         
         <div className="mt-6">
@@ -42,7 +57,7 @@ export default function CursosPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {mockCursos.map((curso) => (
+                    {cursos.map((curso) => (
                       <tr key={curso.id} className="bg-white border-b hover:bg-gray-50">
                         <td className="px-6 py-4 font-medium text-gray-900">{curso.nome}</td>
                         <td className="px-6 py-4">{curso.duracao}</td>
@@ -72,6 +87,11 @@ export default function CursosPage() {
           </Card>
         </div>
       </ResponsiveContainer>
+      <NovoCursoDialog 
+        isOpen={isDialogOpen} 
+        onClose={() => setIsDialogOpen(false)} 
+        onSave={handleAddCurso} 
+      />
     </ResponsiveLayout>
   );
 }
