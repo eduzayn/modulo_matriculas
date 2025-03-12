@@ -1,8 +1,9 @@
 import { ReactNode } from "react"
 import { Inter } from 'next/font/google'
 import './globals.css'
+import { ThemeProvider } from '../components/providers/ThemeProvider'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata = {
   title: 'Módulo de Matrículas - Edunéxia',
@@ -16,8 +17,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className={inter.className}>
-        {children}
+      <body className={`${inter.variable} antialiased bg-neutral-50`}>
+        <ThemeProvider module="enrollment">
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   )

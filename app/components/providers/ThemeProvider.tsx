@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, ReactNode } from 'react';
-import { colors } from '../../styles/colors';
+import { colors } from './colors';
 
 type ModuleType = 'communication' | 'student' | 'content' | 'enrollment';
 
