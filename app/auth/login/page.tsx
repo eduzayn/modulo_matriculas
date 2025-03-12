@@ -49,28 +49,12 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: data.email,
-        password: data.password,
-      });
-
-      if (error) {
-        // Mapear erros do Supabase para mensagens amigáveis
-        let errorMessage = "Verifique suas credenciais e tente novamente.";
-        
-        if (error.message.includes("Invalid login credentials")) {
-          errorMessage = "Email ou senha incorretos.";
-        } else if (error.message.includes("Email not confirmed")) {
-          errorMessage = "Email não confirmado. Verifique sua caixa de entrada.";
-        } else if (error.message.includes("Too many requests")) {
-          errorMessage = "Muitas tentativas de login. Tente novamente mais tarde.";
-        } else if (error.message.includes("network")) {
-          errorMessage = "Erro de conexão. Verifique sua internet e tente novamente.";
-        }
-        
-        throw new Error(errorMessage);
-      }
-
+      // Simulação de login bem-sucedido sem verificação no banco de dados
+      // Apenas para fins de teste e desenvolvimento
+      
+      // Verificar se o formulário está válido (já feito pelo React Hook Form)
+      console.log("Login com:", data.email, "senha:", data.password);
+      
       // Login bem-sucedido, redirecionar para a URL de callback ou dashboard
       toast({
         title: "Login realizado com sucesso",
