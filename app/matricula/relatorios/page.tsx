@@ -1,7 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../../components/ui/Card';
+import { Button } from '../../../components/ui/Button';
+import { Input } from '../../../components/ui/Input';
 import { ResponsiveLayout, ResponsiveContainer, ResponsiveHeader } from '../../../app/components/ui/ResponsiveLayout';
 
 export default function RelatoriosPage() {
@@ -14,6 +16,16 @@ export default function RelatoriosPage() {
     { id: 5, nome: 'Descontos Aplicados', descricao: 'Relatório de descontos aplicados', formato: 'PDF/Excel', ultimaGeracao: '25/02/2025' },
   ];
 
+  // Estado para os filtros de período
+  const [dataInicio, setDataInicio] = useState('');
+  const [dataFim, setDataFim] = useState('');
+
+  // Função para aplicar filtros
+  const aplicarFiltros = () => {
+    console.log('Filtrando relatórios por período:', { dataInicio, dataFim });
+    // Aqui seria implementada a lógica para filtrar os relatórios pelo período
+  };
+
   return (
     <ResponsiveLayout>
       <ResponsiveContainer>
@@ -23,6 +35,46 @@ export default function RelatoriosPage() {
         />
         
         <div className="mt-6">
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>Filtros de Período</CardTitle>
+              <CardDescription>Selecione um período para filtrar os relatórios</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex-1">
+                  <label htmlFor="dataInicio" className="block text-sm font-medium text-gray-700 mb-1">
+                    Data Início
+                  </label>
+                  <Input
+                    id="dataInicio"
+                    type="date"
+                    value={dataInicio}
+                    onChange={(e) => setDataInicio(e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+                <div className="flex-1">
+                  <label htmlFor="dataFim" className="block text-sm font-medium text-gray-700 mb-1">
+                    Data Fim
+                  </label>
+                  <Input
+                    id="dataFim"
+                    type="date"
+                    value={dataFim}
+                    onChange={(e) => setDataFim(e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+                <div className="flex items-end">
+                  <Button onClick={aplicarFiltros} className="mb-1">
+                    Aplicar Filtros
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader>
               <CardTitle>Relatórios Disponíveis</CardTitle>

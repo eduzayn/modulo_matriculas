@@ -59,7 +59,7 @@ const moduleConfig = {
     name: 'Matrículas',
     color: colors.primary.enrollment,
     routes: [
-      { path: '/matricula/dashboard', name: 'Dashboard', icon: <Home size={20} /> },
+      { path: '/matricula/pages/dashboard', name: 'Dashboard', icon: <Home size={20} /> },
       { path: '/matricula/alunos', name: 'Alunos', icon: <Users size={20} /> },
       { path: '/matricula/cursos', name: 'Cursos', icon: <File size={20} /> },
       { path: '/matricula/pagamentos', name: 'Pagamentos', icon: <CreditCard size={20} /> },

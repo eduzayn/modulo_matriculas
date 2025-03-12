@@ -1,18 +1,43 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../../components/ui/Card';
+import { Button } from '../../../components/ui/Button';
 import { ResponsiveLayout, ResponsiveContainer, ResponsiveHeader } from '../../../app/components/ui/ResponsiveLayout';
+import { NovoDescontoDialog, DescontoFormValues } from '../components/desconto/novo-desconto-dialog';
 
 export default function DescontosPage() {
   // Mock data for discounts
-  const mockDescontos = [
+  const [mockDescontos, setMockDescontos] = useState([
     { id: 1, nome: 'Desconto Antecipado', percentual: 15, aplicacao: 'Pagamento antecipado', status: 'Ativo', validade: '31/12/2025' },
     { id: 2, nome: 'Desconto Familiar', percentual: 10, aplicacao: 'Parentes de alunos', status: 'Ativo', validade: '31/12/2025' },
     { id: 3, nome: 'Bolsa Mérito', percentual: 50, aplicacao: 'Alunos com excelência acadêmica', status: 'Ativo', validade: '31/12/2025' },
     { id: 4, nome: 'Desconto Funcionário', percentual: 25, aplicacao: 'Funcionários da instituição', status: 'Ativo', validade: '31/12/2025' },
     { id: 5, nome: 'Promoção Verão', percentual: 20, aplicacao: 'Matrículas no período de verão', status: 'Inativo', validade: '28/02/2025' },
-  ];
+  ]);
+  
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleAddDesconto = (novoDesconto: DescontoFormValues) => {
+    // Format the date for display
+    const dataParts = novoDesconto.validade.split('-');
+    const dataFormatada = dataParts.length === 3 ? `${dataParts[2]}/${dataParts[1]}/${dataParts[0]}` : novoDesconto.validade;
+    
+    // Add the new discount to the state
+    setMockDescontos([
+      ...mockDescontos, 
+      { 
+        id: mockDescontos.length + 1, 
+        nome: novoDesconto.nome, 
+        percentual: parseInt(novoDesconto.percentual), 
+        aplicacao: novoDesconto.aplicacao, 
+        status: novoDesconto.status, 
+        validade: dataFormatada 
+      }
+    ]);
+    
+    setIsDialogOpen(false);
+  };
 
   return (
     <ResponsiveLayout>
@@ -20,6 +45,11 @@ export default function DescontosPage() {
         <ResponsiveHeader 
           title="Descontos" 
           subtitle="Gerenciamento de descontos e bolsas"
+          actions={
+            <Button onClick={() => setIsDialogOpen(true)}>
+              Novo Desconto
+            </Button>
+          }
         />
         
         <div className="mt-6">
@@ -70,6 +100,11 @@ export default function DescontosPage() {
           </Card>
         </div>
       </ResponsiveContainer>
+      <NovoDescontoDialog 
+        isOpen={isDialogOpen} 
+        onClose={() => setIsDialogOpen(false)} 
+        onSave={handleAddDesconto}
+      />
     </ResponsiveLayout>
   );
 }
