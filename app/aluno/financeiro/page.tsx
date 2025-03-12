@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/ui/Button'
 import Link from 'next/link'
 import { getAlunoMatriculas } from '../lib/services/aluno-service'
 import { Badge } from '@/components/ui/badge'

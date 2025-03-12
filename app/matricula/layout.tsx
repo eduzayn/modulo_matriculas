@@ -1,4 +1,5 @@
 import { ReactNode } from 'react'
+import { MainLayout } from '../components/layout/MainLayout'
 
 interface MatriculaLayoutProps {
   children: ReactNode
@@ -6,8 +7,8 @@ interface MatriculaLayoutProps {
 
 export default function MatriculaLayout({ children }: MatriculaLayoutProps) {
   return (
-    <div className="flex min-h-screen flex-col">
-      <main className="flex-1">{children}</main>
-    </div>
+    <MainLayout module="enrollment">
+      {children}
+    </MainLayout>
   )
 }

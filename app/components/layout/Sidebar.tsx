@@ -72,14 +72,23 @@ const moduleConfig = {
 
 interface SidebarProps {
   module?: 'communication' | 'student' | 'content' | 'enrollment';
+  navItems?: Array<{
+    path: string;
+    name: string;
+    icon: any;
+  }>;
 }
 
-export const Sidebar = ({ module = 'enrollment' }: SidebarProps) => {
+export const Sidebar = ({ module = 'enrollment', navItems }: SidebarProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
   const pathname = usePathname();
-  const config = moduleConfig[module];
+  const config = navItems ? { 
+    name: moduleConfig[module].name,
+    color: moduleConfig[module].color,
+    routes: navItems
+  } : moduleConfig[module];
   
   // Handle responsive behavior
   useEffect(() => {

@@ -1,7 +1,7 @@
 import { DocumentList } from '@/app/matricula/components/document-list'
 import { DocumentUpload } from '@/app/matricula/components/document-upload'
 import { notFound } from 'next/navigation'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/app/components/ui/Button'
 import Link from 'next/link'
 import { matriculaRoutes } from '@/app/matricula/routes'
 
