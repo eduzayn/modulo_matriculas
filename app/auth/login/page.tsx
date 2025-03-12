@@ -62,8 +62,8 @@ export default function LoginPage() {
         variant: "default",
       });
 
-      // Redirecionar imediatamente para o dashboard
-      window.location.href = "/matricula/pages/dashboard";
+      // Redirecionar imediatamente para o dashboard usando URL absoluta
+      window.location.href = window.location.origin + "/matricula/pages/dashboard";
     } catch (error: any) {
       console.error("Erro de autenticação:", error);
       

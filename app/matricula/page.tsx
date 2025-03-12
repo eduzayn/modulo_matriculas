@@ -7,8 +7,8 @@ export default function MatriculaRedirect() {
   const router = useRouter();
   
   useEffect(() => {
-    // Redirecionar para o dashboard
-    router.push('/matricula/pages/dashboard');
+    // Redirecionar para o dashboard usando redirecionamento absoluto
+    window.location.href = window.location.origin + '/matricula/pages/dashboard';
   }, [router]);
   
   return (
