@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Button } from '../../components/ui/Button';
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/button";
 import { Input } from '../../components/ui/Input';
 import { Textarea } from '../../components/ui/Textarea';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/Select';

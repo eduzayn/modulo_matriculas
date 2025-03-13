@@ -2,15 +2,15 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button } from "@/components/ui/button"'
-import { Input } from "@/components/ui/input"'
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/button"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"'
+} from "@/components/ui/button"
 import {
   Table,
   TableBody,
@@ -19,7 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Badge } from "@/components/ui/badge"'
+import { Badge } from "@/components/ui/button"
 import { MatriculaStatus } from '../types/matricula'
 import { matriculaRoutes } from '../routes'
 

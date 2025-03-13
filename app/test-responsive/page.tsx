@@ -17,7 +17,7 @@ import {
   ResponsiveSelect 
 } from '../components/ui/ResponsiveForm';
 import { Button } from '../../components/ui/Button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/button";
 
 export default function TestResponsivePage() {
   return (
