@@ -175,7 +175,7 @@ const DateRangePicker = ({ dateRange, setDateRange }: DateRangePickerProps) => {
             mode="range"
             defaultMonth={dateRange.from}
             selected={dateRange}
-            onSelect={(range) => {
+            onSelect={(range: any) => {
               if (range?.from && range?.to) {
                 setDateRange({ from: range.from, to: range.to });
               }
@@ -318,33 +318,55 @@ export function FinancialDashboard() {
         }
       }
       
-      const overdueCount = payments && payments.length > 0
-        ? payments.filter((p: Payment) => 
-            p.status === PaymentStatus.ATRASADO || (p.status === PaymentStatus.PENDENTE && new Date(p.data_vencimento) < new Date())
-          ).length
-        : 0;
+      // Calcular contagem de atrasados
+      let overdueCount = 0;
+      if (payments && payments.length > 0) {
+        for (const p of payments) {
+          if (p.status === PaymentStatus.ATRASADO || 
+              (p.status === PaymentStatus.PENDENTE && new Date(p.data_vencimento) < new Date())) {
+            overdueCount++;
+          }
+        }
+      }
       
-      const pendingCount = payments && payments.length > 0
-        ? payments.filter((p: Payment) => p.status === PaymentStatus.PENDENTE).length
-        : 0;
-      const paidCount = payments && payments.length > 0
-        ? payments.filter((p: Payment) => p.status === PaymentStatus.PAGO).length
-        : 0;
+      // Calcular contagens
+      let pendingCount = 0;
+      let paidCount = 0;
+      if (payments && payments.length > 0) {
+        for (const p of payments) {
+          if (p.status === PaymentStatus.PENDENTE) {
+            pendingCount++;
+          } else if (p.status === PaymentStatus.PAGO) {
+            paidCount++;
+          }
+        }
+      }
       
       // Formatar pagamentos recentes
-      const recentPayments = payments && payments.length > 0
-        ? payments
-            .filter((p: Payment) => p.status === PaymentStatus.PAGO)
-            .slice(0, 5)
-            .map((p: Payment) => ({
-          id: p.id,
-          student: p.matricula?.aluno?.nome || 'N/A',
-          course: p.matricula?.curso?.nome || 'N/A',
-          amount: p.valor_total || p.valor,
-          date: new Date(p.data_pagamento || p.updated_at).toLocaleDateString('pt-BR'),
-          method: p.forma_pagamento
-        }))
-        : [];
+      const recentPayments = [];
+      if (payments && payments.length > 0) {
+        const pagosList = [];
+        for (const p of payments) {
+          if (p.status === PaymentStatus.PAGO) {
+            pagosList.push(p);
+          }
+        }
+        
+        // Pegar apenas os 5 primeiros
+        const recentPagos = pagosList.slice(0, 5);
+        
+        // Mapear para o formato desejado
+        for (const p of recentPagos) {
+          recentPayments.push({
+            id: p.id,
+            student: p.matricula?.aluno?.nome || 'N/A',
+            course: p.matricula?.curso?.nome || 'N/A',
+            amount: p.valor_total || p.valor,
+            date: new Date(p.data_pagamento || p.updated_at).toLocaleDateString('pt-BR'),
+            method: p.forma_pagamento
+          });
+        }
+      }
       
       // Agrupar receita por mês
       const monthlyData: Record<string, number> = {};
