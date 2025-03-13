@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from '../components/ui/button';
-import { ResponsiveLayout } from "@/app/components/ui/responsiveLayout";
-import { ResponsiveContainer } from '@/app/components/ui/responsiveContainer';
-import { ResponsiveHeader } from '@/app/components/ui/responsiveHeader';
+import { ResponsiveLayout } from "@/app/components/ui/responsivelayout";
+import { ResponsiveContainer } from '@/app/components/ui/responsivecontainer';
+import { ResponsiveHeader } from '@/app/components/ui/responsiveheader';
 import { Users, BookOpen, CreditCard, BarChart2 } from 'lucide-react';
 
 export default function Home() {
