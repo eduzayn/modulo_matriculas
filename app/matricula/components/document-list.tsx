@@ -26,8 +26,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
+} from "@/components/ui/Select"
+import { Textarea } from "@/components/ui/Textarea"
 import { DocumentoStatus } from '../types/matricula'
 import { avaliarDocumento } from '../actions/matricula-actions'
 import { toast } from '@/components/ui/use-toast'
