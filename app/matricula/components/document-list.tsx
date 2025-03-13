@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/Button'
-import { Badge } from '@/components/ui/Badge'
+import { Button } from "@/components/ui/button"'
+import { Badge } from "@/components/ui/badge"'
 import {
   Card,
   CardContent,
@@ -19,15 +19,15 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/Dialog'
+} from "@/components/ui/dialog"'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/Select'
-import { Textarea } from '@/components/ui/Textarea'
+} from "@/components/ui/select"'
+import { Textarea } from "@/components/ui/textarea"'
 import { DocumentoStatus } from '../types/matricula'
 import { avaliarDocumento } from '../actions/matricula-actions'
 import { toast } from '@/components/ui/use-toast'

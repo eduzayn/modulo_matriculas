@@ -8,7 +8,7 @@ import * as z from "zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 import { supabase } from "@/lib/supabase/browser";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button"";
 import {
   Card,
   CardContent,
@@ -17,7 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"";
-import { Input } from "@/components/ui/Input";
+import { Input } from "@/components/ui/input"";
 import { useToast } from "@/components/ui/use-toast";
 
 // Esquema de validação do formulário

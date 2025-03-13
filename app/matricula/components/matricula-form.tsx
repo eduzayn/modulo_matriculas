@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
+import { Button } from "@/components/ui/button"'
+import { Input } from "@/components/ui/input"'
 import {
   Form,
   FormControl,
@@ -19,7 +19,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/Select'
+} from "@/components/ui/select"'
 import { MatriculaStatus, FormaPagamento } from '../types/matricula'
 import { matriculaSchema } from '../lib/schemas'
 import { createMatricula, updateMatriculaStatus } from '../actions/matricula-actions'

@@ -7,10 +7,10 @@ import { z } from 'zod';
 import { FeedbackType, SatisfactionLevel } from '@/app/matricula/lib/services/feedback-service';
 import { Button } from '@/app/components/ui/Button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"';
-import { Input } from '@/components/ui/Input';
+import { Input } from "@/components/ui/input"';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/Textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select';
+import { Textarea } from "@/components/ui/textarea"';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"';
 import { toast } from '@/components/ui/use-toast';
 
 // Schema para validação do formulário
