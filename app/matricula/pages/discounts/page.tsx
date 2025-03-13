@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../../../components/ui/card';
-import { Button } from '../../../components/ui/Button';
+import { Button } from "@/components/ui/button"';
 import { ResponsiveLayout, ResponsiveContainer, ResponsiveHeader } from '../../../components/ui/ResponsiveLayout';
 
 export default function DiscountsPage() {
