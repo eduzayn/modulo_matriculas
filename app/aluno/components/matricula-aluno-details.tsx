@@ -8,14 +8,14 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/Card"
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
+} from "@/components/ui/Tabs"
+import { Badge } from "@/components/ui/Badge"
 import { Separator } from '@/components/ui/separator'
 import Link from 'next/link'
 
