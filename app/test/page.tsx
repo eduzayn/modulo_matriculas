@@ -58,7 +58,7 @@ export default function TestPage() {
             <div className="flex flex-wrap gap-2">
               <Badge>Padrão</Badge>
               <Badge variant="secondary">Secundário</Badge>
-              <Badge variant="destructive">Erro</Badge>
+              <Badge variant="outline">Erro</Badge>
               <Badge variant="outline">Contorno</Badge>
               <Badge variant="success">Sucesso</Badge>
             </div>
