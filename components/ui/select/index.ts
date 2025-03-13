@@ -1,10 +1,8 @@
-// Re-export Select components from the uppercase Select.tsx file
+// Re-export Select components from uppercase files
 export { 
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue
 } from '../Select';

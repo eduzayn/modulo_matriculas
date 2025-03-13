@@ -1,8 +1,9 @@
 'use client';
 
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"';
-import { ResponsiveLayout, ResponsiveContainer, ResponsiveHeader } from '../../../app/components/ui/ResponsiveLayout';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Button } from '../../../components/ui/button';
+import { ResponsiveLayout, ResponsiveContainer, ResponsiveHeader } from '../../../app/components/ui/responsiveLayout';
 
 export default function ConfiguracoesPage() {
   return (
@@ -10,171 +11,128 @@ export default function ConfiguracoesPage() {
       <ResponsiveContainer>
         <ResponsiveHeader 
           title="Configurações" 
-          subtitle="Configurações do módulo de matrículas"
+          subtitle="Configurações do sistema de matrículas"
         />
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
               <CardTitle>Configurações Gerais</CardTitle>
-              <CardDescription>Configurações gerais do sistema de matrículas</CardDescription>
+              <CardDescription>Configurações gerais do sistema</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Nome da Instituição
-                </label>
-                <input
-                  type="text"
-                  className="w-full p-2 border border-gray-300 rounded-md"
-                  defaultValue="Edunexia"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email de Contato
-                </label>
-                <input
-                  type="email"
-                  className="w-full p-2 border border-gray-300 rounded-md"
-                  defaultValue="contato@edunexia.com.br"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Moeda
-                </label>
-                <select className="w-full p-2 border border-gray-300 rounded-md">
-                  <option value="BRL">Real Brasileiro (R$)</option>
-                  <option value="USD">Dólar Americano ($)</option>
-                  <option value="EUR">Euro (€)</option>
-                </select>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-sm font-medium">Tema do Sistema</h3>
+                  <div className="mt-2 flex space-x-2">
+                    <Button variant="outline" size="sm">Claro</Button>
+                    <Button variant="outline" size="sm">Escuro</Button>
+                    <Button variant="default" size="sm">Sistema</Button>
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="text-sm font-medium">Idioma</h3>
+                  <div className="mt-2 flex space-x-2">
+                    <Button variant="default" size="sm">Português</Button>
+                    <Button variant="outline" size="sm">English</Button>
+                    <Button variant="outline" size="sm">Español</Button>
+                  </div>
+                </div>
               </div>
             </CardContent>
-            <CardFooter>
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                Salvar Alterações
-              </button>
-            </CardFooter>
           </Card>
           
           <Card>
             <CardHeader>
-              <CardTitle>Configurações de Matrícula</CardTitle>
-              <CardDescription>Configurações específicas para matrículas</CardDescription>
+              <CardTitle>Notificações</CardTitle>
+              <CardDescription>Configurações de notificações</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Período de Matrícula
-                </label>
-                <div className="grid grid-cols-2 gap-4">
-                  <input
-                    type="date"
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                    defaultValue="2025-01-15"
-                  />
-                  <input
-                    type="date"
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                    defaultValue="2025-03-15"
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Taxa de Matrícula
-                </label>
-                <input
-                  type="text"
-                  className="w-full p-2 border border-gray-300 rounded-md"
-                  defaultValue="R$ 100,00"
-                />
-              </div>
-              
-              <div className="flex items-center">
-                <input
-                  id="permitir-parcelamento"
-                  type="checkbox"
-                  className="h-4 w-4 text-blue-600 border-gray-300 rounded"
-                  defaultChecked
-                />
-                <label htmlFor="permitir-parcelamento" className="ml-2 block text-sm text-gray-700">
-                  Permitir parcelamento de matrículas
-                </label>
-              </div>
-              
-              <div className="flex items-center">
-                <input
-                  id="enviar-email"
-                  type="checkbox"
-                  className="h-4 w-4 text-blue-600 border-gray-300 rounded"
-                  defaultChecked
-                />
-                <label htmlFor="enviar-email" className="ml-2 block text-sm text-gray-700">
-                  Enviar email de confirmação após matrícula
-                </label>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                Salvar Alterações
-              </button>
-            </CardFooter>
-          </Card>
-          
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle>Integrações</CardTitle>
-              <CardDescription>Configure integrações com outros sistemas</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center p-4 border border-gray-200 rounded-md">
-                  <div className="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                    </svg>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-medium">Email</h3>
+                    <p className="text-sm text-gray-500">Receber notificações por email</p>
                   </div>
-                  <div className="ml-4">
-                    <h3 className="text-sm font-medium text-gray-900">Sistema Financeiro</h3>
-                    <p className="text-xs text-gray-500">Integração com o sistema financeiro</p>
-                  </div>
-                  <div className="ml-auto">
-                    <label className="inline-flex items-center cursor-pointer">
-                      <input type="checkbox" className="sr-only peer" defaultChecked />
-                      <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                    </label>
-                  </div>
+                  <Button variant="outline" size="sm">Ativado</Button>
                 </div>
                 
-                <div className="flex items-center p-4 border border-gray-200 rounded-md">
-                  <div className="flex-shrink-0 h-10 w-10 bg-green-100 rounded-full flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-medium">SMS</h3>
+                    <p className="text-sm text-gray-500">Receber notificações por SMS</p>
                   </div>
-                  <div className="ml-4">
-                    <h3 className="text-sm font-medium text-gray-900">Portal do Aluno</h3>
-                    <p className="text-xs text-gray-500">Integração com o portal do aluno</p>
+                  <Button variant="outline" size="sm">Desativado</Button>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-medium">Push</h3>
+                    <p className="text-sm text-gray-500">Receber notificações push</p>
                   </div>
-                  <div className="ml-auto">
-                    <label className="inline-flex items-center cursor-pointer">
-                      <input type="checkbox" className="sr-only peer" defaultChecked />
-                      <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                    </label>
-                  </div>
+                  <Button variant="outline" size="sm">Desativado</Button>
                 </div>
               </div>
             </CardContent>
-            <CardFooter>
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                Salvar Integrações
-              </button>
-            </CardFooter>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Segurança</CardTitle>
+              <CardDescription>Configurações de segurança</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-medium">Autenticação de dois fatores</h3>
+                    <p className="text-sm text-gray-500">Aumenta a segurança da sua conta</p>
+                  </div>
+                  <Button variant="outline" size="sm">Ativar</Button>
+                </div>
+                
+                <div>
+                  <h3 className="text-sm font-medium">Alterar senha</h3>
+                  <p className="text-sm text-gray-500">Altere sua senha periodicamente</p>
+                  <Button variant="outline" size="sm" className="mt-2">Alterar senha</Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Integrações</CardTitle>
+              <CardDescription>Configurações de integrações com outros sistemas</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-medium">API</h3>
+                    <p className="text-sm text-gray-500">Gerenciar chaves de API</p>
+                  </div>
+                  <Button variant="outline" size="sm">Configurar</Button>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-medium">Webhooks</h3>
+                    <p className="text-sm text-gray-500">Configurar webhooks</p>
+                  </div>
+                  <Button variant="outline" size="sm">Configurar</Button>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-medium">Exportação de dados</h3>
+                    <p className="text-sm text-gray-500">Configurar exportação automática</p>
+                  </div>
+                  <Button variant="outline" size="sm">Configurar</Button>
+                </div>
+              </div>
+            </CardContent>
           </Card>
         </div>
       </ResponsiveContainer>

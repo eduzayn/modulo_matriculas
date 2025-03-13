@@ -1,2 +1,2 @@
-// Re-export Badge component from the uppercase Badge.tsx file
+// Re-export Badge components from uppercase files
 export { Badge } from '../Badge';

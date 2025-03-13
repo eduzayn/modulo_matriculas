@@ -1,2 +1,2 @@
-// Re-export Textarea component from the uppercase Textarea.tsx file
+// Re-export Textarea components from uppercase files
 export { Textarea } from '../Textarea';
