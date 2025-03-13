@@ -1,1 +1,1 @@
-export { Tabs, TabsContent, TabsList, TabsTrigger } from '../Tabs';
+export * from "../tabs"

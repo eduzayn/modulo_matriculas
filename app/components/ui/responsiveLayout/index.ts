@@ -1,1 +1,1 @@
-export * from '../ResponsiveLayout'
+export * from "../responsiveLayout"

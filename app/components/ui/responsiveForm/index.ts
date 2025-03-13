@@ -1,1 +1,1 @@
-export * from '../ResponsiveForm'
+export * from "../responsiveForm"
