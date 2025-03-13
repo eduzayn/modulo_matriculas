@@ -20,7 +20,7 @@ export default function AlunoFinanceiroPage() {
       case 'paid':
         return <Badge variant="success">Pago</Badge>;
       case 'pending':
-        return <Badge variant="warning">Pendente</Badge>;
+        return <Badge variant="outline">Pendente</Badge>;
       case 'overdue':
         return <Badge variant="destructive">Atrasado</Badge>;
       default:
