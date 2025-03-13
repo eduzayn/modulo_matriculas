@@ -17,9 +17,6 @@ import {
   Table,
   TableBody,
   TableCaption,
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MatriculaStatus } from '../types/matricula';
-import { matriculaRoutes } from '../routes';
   TableCell,
   TableHead,
   TableHeader,
@@ -33,8 +30,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MatriculaStatus } from '@/app/matricula/types/matricula';
-import { matriculaRoutes } from '@/app/matricula/routes';
+import { MatriculaStatus } from '../types/matricula';
+import { matriculaRoutes } from '../routes';
 
 interface MatriculaListProps {
   matriculas: any[]
@@ -159,7 +156,7 @@ export function MatriculaList({
                   <TableCell>{matricula.aluno?.name || 'N/A'}</TableCell>
                   <TableCell>{matricula.curso?.name || 'N/A'}</TableCell>
                   <TableCell>
-                    <Badge variant={getStatusBadgeVariant(matricula.status)}>
+                    <Badge variant={getStatusBadgeVariant(matricula.status) as any}>
                       {matricula.status}
                     </Badge>
                   </TableCell>
