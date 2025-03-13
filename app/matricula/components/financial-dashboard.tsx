@@ -332,15 +332,17 @@ export function FinancialDashboard() {
       
       // Agrupar receita por mês
       const monthlyData: Record<string, number> = {};
-      payments.forEach((p: Payment) => {
-        if (p.status === PaymentStatus.PAGO) {
-          const month = p.data_pagamento?.substring(0, 7) || p.updated_at.substring(0, 7);
-          if (!monthlyData[month]) {
-            monthlyData[month] = 0;
+      if (payments && payments.length > 0) {
+        payments.forEach((p: Payment) => {
+          if (p.status === PaymentStatus.PAGO) {
+            const month = p.data_pagamento?.substring(0, 7) || p.updated_at.substring(0, 7);
+            if (!monthlyData[month]) {
+              monthlyData[month] = 0;
+            }
+            monthlyData[month] += (p.valor_total || p.valor);
           }
-          monthlyData[month] += (p.valor_total || p.valor);
-        }
-      });
+        });
+      }
       
       const monthlyRevenue = Object.entries(monthlyData)
         .map(([month, value]) => ({
@@ -351,15 +353,17 @@ export function FinancialDashboard() {
       
       // Agrupar por método de pagamento
       const methodData: Record<string, number> = {};
-      payments.forEach((p: Payment) => {
-        if (p.status === PaymentStatus.PAGO) {
-          const method = p.forma_pagamento || 'Não especificado';
-          if (!methodData[method]) {
-            methodData[method] = 0;
+      if (payments && payments.length > 0) {
+        payments.forEach((p: Payment) => {
+          if (p.status === PaymentStatus.PAGO) {
+            const method = p.forma_pagamento || 'Não especificado';
+            if (!methodData[method]) {
+              methodData[method] = 0;
+            }
+            methodData[method] += (p.valor_total || p.valor);
           }
-          methodData[method] += (p.valor_total || p.valor);
-        }
-      });
+        });
+      }
       
       const paymentMethods = Object.entries(methodData)
         .map(([method, value]) => ({
@@ -370,15 +374,17 @@ export function FinancialDashboard() {
       
       // Agrupar por curso
       const courseData: Record<string, number> = {};
-      payments.forEach((p: Payment) => {
-        if (p.status === PaymentStatus.PAGO) {
-          const course = p.matricula?.curso?.nome || 'Não especificado';
-          if (!courseData[course]) {
-            courseData[course] = 0;
+      if (payments && payments.length > 0) {
+        payments.forEach((p: Payment) => {
+          if (p.status === PaymentStatus.PAGO) {
+            const course = p.matricula?.curso?.nome || 'Não especificado';
+            if (!courseData[course]) {
+              courseData[course] = 0;
+            }
+            courseData[course] += (p.valor_total || p.valor);
           }
-          courseData[course] += (p.valor_total || p.valor);
-        }
-      });
+        });
+      }
       
       const courseRevenue = Object.entries(courseData)
         .map(([course, value]) => ({
@@ -414,7 +420,7 @@ export function FinancialDashboard() {
     }
   }, [dateRange]);
   
-  // Tipagem para o onSelect do Calendar
+  // Função definida antes de ser usada
   const handleDateRangeSelect = (range: { from: Date; to?: Date | undefined }) => {
     if (range.from && range.to) {
       setDateRange({ from: range.from, to: range.to });
