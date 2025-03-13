@@ -17,8 +17,8 @@ const nextConfig = {
   swcMinify: false,
   // Increase timeout for static generation
   staticPageGenerationTimeout: 300,
-  // Use export output for static site generation
-  output: 'export',
+  // Use standalone output for Vercel compatibility
+  output: 'standalone',
   // Environment variables with fallbacks
   env: {
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://uasnyifizdjxogowijip.supabase.co',
@@ -29,9 +29,7 @@ const nextConfig = {
   // Disable experimental features
   experimental: {
     serverActions: false
-  },
-  // Disable image optimization
-  distDir: 'out'
+  }
 }
 
 module.exports = nextConfig
