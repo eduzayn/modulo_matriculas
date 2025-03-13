@@ -1,9 +1,10 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Button } from "@/components/ui/button"
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -11,79 +12,73 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
+} from '@/components/ui/form';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
+} from '@/components/ui/select'
+import { Input } from '@/components/ui/input'
 import { uploadDocumento } from '../actions/matricula-actions'
 import { toast } from '@/components/ui/use-toast'
 import { useRouter } from 'next/navigation'
-import { z } from 'zod'
 
-const documentUploadSchema = z.object({
-  tipo: z.string().min(1, { message: 'Tipo de documento é obrigatório' }),
-  arquivo: z.any().refine((file) => file?.size > 0, { message: 'Arquivo é obrigatório' }),
-})
+const documentoSchema = z.object({
+  tipo: z.string().min(1, { message: 'Selecione o tipo de documento' }),
+  arquivo: z.any()
+    .refine((file) => file?.length === 1, 'Selecione um arquivo')
+    .refine(
+      (file) => file?.[0]?.size <= 5000000,
+      'O tamanho máximo do arquivo é 5MB'
+    ),
+});
 
-interface DocumentUploadProps {
-  matriculaId: string
-  onSuccess?: () => void
-}
-
-export function DocumentUpload({ matriculaId, onSuccess }: DocumentUploadProps) {
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
+export function DocumentUpload({ matriculaId }) {
+  const [isUploading, setIsUploading] = useState(false);
+  const router = useRouter();
 
   const form = useForm({
-    resolver: zodResolver(documentUploadSchema),
+    resolver: zodResolver(documentoSchema),
     defaultValues: {
       tipo: '',
-      arquivo: null,
+      arquivo: undefined,
     },
-  })
+  });
 
-  const onSubmit = async (data: z.infer<typeof documentUploadSchema>) => {
-    setIsLoading(true)
+  const onSubmit = async (data) => {
     try {
-      const result = await uploadDocumento({
-        matricula_id: matriculaId,
-        tipo: data.tipo,
-        arquivo: data.arquivo,
-      })
-
+      setIsUploading(true);
+      
+      const formData = new FormData();
+      formData.append('matriculaId', matriculaId);
+      formData.append('tipo', data.tipo);
+      formData.append('arquivo', data.arquivo[0]);
+      
+      const result = await uploadDocumento(formData);
+      
       if (result.success) {
         toast({
-          title: 'Documento enviado',
-          description: 'O documento foi enviado com sucesso.',
-        })
-        form.reset()
-        if (onSuccess) {
-          onSuccess()
-        }
-        router.refresh()
+          title: 'Documento enviado com sucesso',
+          description: 'O documento foi adicionado à matrícula',
+          variant: 'default',
+        });
+        form.reset();
+        router.refresh();
       } else {
-        toast({
-          title: 'Erro',
-          description: result.error?.message || 'Ocorreu um erro ao enviar o documento.',
-          variant: 'destructive',
-        })
+        throw new Error(result.error || 'Erro ao enviar documento');
       }
     } catch (error) {
-      console.error('Erro ao enviar documento:', error)
       toast({
-        title: 'Erro',
-        description: 'Ocorreu um erro inesperado. Tente novamente mais tarde.',
+        title: 'Erro ao enviar documento',
+        description: error.message,
         variant: 'destructive',
-      })
+      });
     } finally {
-      setIsLoading(false)
+      setIsUploading(false);
     }
-  }
+  };
 
   return (
     <Form {...form}>
@@ -94,11 +89,7 @@ export function DocumentUpload({ matriculaId, onSuccess }: DocumentUploadProps) 
           render={({ field }) => (
             <FormItem>
               <FormLabel>Tipo de Documento</FormLabel>
-              <Select
-                disabled={isLoading}
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-              >
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione o tipo de documento" />
@@ -107,10 +98,9 @@ export function DocumentUpload({ matriculaId, onSuccess }: DocumentUploadProps) 
                 <SelectContent>
                   <SelectItem value="rg">RG</SelectItem>
                   <SelectItem value="cpf">CPF</SelectItem>
+                  <SelectItem value="comprovante_residencia">Comprovante de Residência</SelectItem>
                   <SelectItem value="historico_escolar">Histórico Escolar</SelectItem>
                   <SelectItem value="diploma">Diploma</SelectItem>
-                  <SelectItem value="comprovante_residencia">Comprovante de Residência</SelectItem>
-                  <SelectItem value="foto">Foto</SelectItem>
                   <SelectItem value="outros">Outros</SelectItem>
                 </SelectContent>
               </Select>
@@ -118,35 +108,30 @@ export function DocumentUpload({ matriculaId, onSuccess }: DocumentUploadProps) 
             </FormItem>
           )}
         />
-
+        
         <FormField
           control={form.control}
           name="arquivo"
-          render={({ field: { value, onChange, ...field } }) => (
+          render={({ field: { value, onChange, ...fieldProps } }) => (
             <FormItem>
               <FormLabel>Arquivo</FormLabel>
               <FormControl>
                 <Input
+                  {...fieldProps}
                   type="file"
-                  disabled={isLoading}
-                  {...field}
-                  onChange={(e) => {
-                    const file = e.target.files?.[0]
-                    if (file) {
-                      onChange(file)
-                    }
-                  }}
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  onChange={(e) => onChange(e.target.files)}
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? 'Enviando...' : 'Enviar Documento'}
+        
+        <Button type="submit" disabled={isUploading}>
+          {isUploading ? 'Enviando...' : 'Enviar Documento'}
         </Button>
       </form>
     </Form>
-  )
+  );
 }

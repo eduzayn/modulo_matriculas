@@ -12,10 +12,10 @@ import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader,
 
 export default function TestPage() {
   return (
-    <div className="container mx-auto py-10">
-      <h1 className="text-3xl font-bold mb-6">Módulo de Matrículas - Teste de Componentes</h1>
+    <div className="container mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-6">Teste de Componentes</h1>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <Card>
           <CardHeader>
             <CardTitle>Formulário de Teste</CardTitle>
@@ -25,7 +25,10 @@ export default function TestPage() {
               <label className="block text-sm font-medium mb-1">Nome</label>
               <Input placeholder="Digite seu nome" />
             </div>
-            
+            <div>
+              <label className="block text-sm font-medium mb-1">Email</label>
+              <Input type="email" placeholder="Digite seu email" />
+            </div>
             <div>
               <label className="block text-sm font-medium mb-1">Curso</label>
               <Select>
@@ -33,16 +36,15 @@ export default function TestPage() {
                   <SelectValue placeholder="Selecione um curso" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="curso1">Desenvolvimento Web</SelectItem>
-                  <SelectItem value="curso2">Design UX/UI</SelectItem>
-                  <SelectItem value="curso3">Marketing Digital</SelectItem>
+                  <SelectItem value="desenvolvimento-web">Desenvolvimento Web</SelectItem>
+                  <SelectItem value="data-science">Ciência de Dados</SelectItem>
+                  <SelectItem value="mobile">Desenvolvimento Mobile</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            
             <div>
-              <label className="block text-sm font-medium mb-1">Observações</label>
-              <Textarea placeholder="Digite suas observações" />
+              <label className="block text-sm font-medium mb-1">Mensagem</label>
+              <Textarea placeholder="Digite sua mensagem" />
             </div>
           </CardContent>
           <CardFooter>
@@ -52,28 +54,35 @@ export default function TestPage() {
         
         <Card>
           <CardHeader>
-            <CardTitle>Status e Alertas</CardTitle>
+            <CardTitle>Status de Matrícula</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex flex-wrap gap-2">
-              <Badge>Padrão</Badge>
-              <Badge variant="secondary">Secundário</Badge>
-              <Badge variant="destructive">Erro</Badge>
-              <Badge variant="outline">Contorno</Badge>
-              <Badge variant="success">Sucesso</Badge>
+            <div className="flex justify-between items-center">
+              <span>Status:</span>
+              <Badge variant="success">Ativa</Badge>
             </div>
-            
-            <Separator className="my-4" />
-            
+            <Separator />
+            <div className="flex justify-between items-center">
+              <span>Pagamento:</span>
+              <Badge variant="warning">Pendente</Badge>
+            </div>
+            <Separator />
+            <div className="flex justify-between items-center">
+              <span>Documentos:</span>
+              <Badge variant="destructive">Incompletos</Badge>
+            </div>
+          </CardContent>
+          <CardFooter>
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="outline">Abrir Diálogo</Button>
+                <Button variant="destructive">Cancelar Matrícula</Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Confirmação</AlertDialogTitle>
+                  <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Tem certeza que deseja continuar com esta ação?
+                    Esta ação não pode ser desfeita. Isso cancelará permanentemente sua matrícula
+                    e removerá seus dados do nosso servidor.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -82,9 +91,15 @@ export default function TestPage() {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-          </CardContent>
+          </CardFooter>
         </Card>
       </div>
+      
+      <Button variant="outline" className="mr-2">Botão Outline</Button>
+      <Button variant="secondary" className="mr-2">Botão Secundário</Button>
+      <Button variant="destructive" className="mr-2">Botão Destrutivo</Button>
+      <Button variant="ghost" className="mr-2">Botão Ghost</Button>
+      <Button variant="link">Botão Link</Button>
     </div>
   );
 }
