@@ -1,27 +1,37 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Button } from "@/components/ui/button"'
-import { Input } from "@/components/ui/input"'
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import { Badge } from "@/components/ui/badge"'
-import { MatriculaStatus } from '../types/matricula'
-import { matriculaRoutes } from '../routes'
+} from "@/components/ui/select";
+import { MatriculaStatus } from '../types/matricula';
+import { matriculaRoutes } from '../routes';
 
 interface MatriculaListProps {
   matriculas: any[]
@@ -146,7 +156,7 @@ export function MatriculaList({
                   <TableCell>{matricula.aluno?.name || 'N/A'}</TableCell>
                   <TableCell>{matricula.curso?.name || 'N/A'}</TableCell>
                   <TableCell>
-                    <Badge variant={getStatusBadgeVariant(matricula.status)}>
+                    <Badge variant={getStatusBadgeVariant(matricula.status) as any}>
                       {matricula.status}
                     </Badge>
                   </TableCell>

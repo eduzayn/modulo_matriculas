@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"';
-import { Button } from "@/components/ui/button"';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
@@ -12,8 +12,51 @@ import { CalendarIcon, Download, FileText, PieChart, TrendingUp, AlertTriangle, 
 import { createClient } from '@/lib/supabase/client';
 import { PaymentStatus } from '../types/financial';
 
+// Interface para tipagem do Supabase
+interface MatriculaJoin {
+  aluno_id: string;
+  curso_id: string;
+  aluno: {
+    nome: string;
+  };
+  curso: {
+    nome: string;
+  };
+}
+
+interface Payment {
+  id: string;
+  matricula_id: string;
+  valor: number;
+  data_vencimento: string;
+  data_pagamento?: string;
+  status: PaymentStatus;
+  forma_pagamento: string;
+  numero_parcela?: number;
+  total_parcelas?: number;
+  valor_desconto?: number;
+  valor_juros?: number;
+  valor_multa?: number;
+  valor_total?: number;
+  created_at: string;
+  updated_at: string;
+  matricula?: MatriculaJoin;
+}
+
+// Interfaces para componentes
+interface ChartData {
+  label: string;
+  value: number;
+}
+
+interface BarChartProps {
+  data: ChartData[];
+  title: string;
+  description: string;
+}
+
 // Componente de gráfico de barras
-const BarChart = ({ data, title, description }) => {
+const BarChart = ({ data, title, description }: BarChartProps) => {
   const maxValue = Math.max(...data.map(item => item.value));
   
   return (
@@ -46,8 +89,23 @@ const BarChart = ({ data, title, description }) => {
   );
 };
 
+interface TrendInfo {
+  positive: boolean;
+  value: string;
+  label: string;
+}
+
+interface StatCardProps {
+  title: string;
+  value: number | string;
+  icon: React.ReactNode;
+  description: string;
+  trend?: TrendInfo;
+  color?: string;
+}
+
 // Componente de cartão de estatística
-const StatCard = ({ title, value, icon, description, trend, color = 'bg-primary' }) => {
+const StatCard = ({ title, value, icon, description, trend, color = 'bg-primary' }: StatCardProps) => {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -74,8 +132,18 @@ const StatCard = ({ title, value, icon, description, trend, color = 'bg-primary'
   );
 };
 
+interface DateRange {
+  from: Date;
+  to: Date;
+}
+
+interface DateRangePickerProps {
+  dateRange: DateRange;
+  setDateRange: (range: DateRange) => void;
+}
+
 // Componente de seletor de data
-const DateRangePicker = ({ dateRange, setDateRange }) => {
+const DateRangePicker = ({ dateRange, setDateRange }: DateRangePickerProps) => {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   
   return (
@@ -107,8 +175,8 @@ const DateRangePicker = ({ dateRange, setDateRange }) => {
             mode="range"
             defaultMonth={dateRange.from}
             selected={dateRange}
-            onSelect={(range) => {
-              setDateRange(range);
+            onSelect={handleDateRangeSelect}
+            onChange={(range: { from: Date; to?: Date | undefined }) => {
               if (range.from && range.to) {
                 setIsCalendarOpen(false);
               }
@@ -130,7 +198,29 @@ export function FinancialDashboard() {
     to: new Date()
   });
   const [loading, setLoading] = useState(true);
-  const [dashboardData, setDashboardData] = useState({
+  interface PaymentData {
+    id: string;
+    student: string;
+    course: string;
+    amount: number;
+    date: string;
+    method: string;
+  }
+  
+  interface DashboardData {
+    totalReceived: number;
+    totalPending: number;
+    totalOverdue: number;
+    overdueCount: number;
+    pendingCount: number;
+    paidCount: number;
+    recentPayments: PaymentData[];
+    monthlyRevenue: ChartData[];
+    paymentMethods: ChartData[];
+    courseRevenue: ChartData[];
+  }
+  
+  const [dashboardData, setDashboardData] = useState<DashboardData>({
     totalReceived: 0,
     totalPending: 0,
     totalOverdue: 0,
@@ -155,7 +245,7 @@ export function FinancialDashboard() {
       const toDate = dateRange.to.toISOString().split('T')[0];
       
       // Buscar pagamentos no período
-      const { data: payments, error: paymentsError } = await supabase
+      const { data: payments = [], error: paymentsError } = await supabase
         .from('financial.payments')
         .select(`
           id,
@@ -194,49 +284,65 @@ export function FinancialDashboard() {
       }
       
       // Calcular estatísticas
-      const totalReceived = payments
-        .filter(p => p.status === PaymentStatus.PAGO)
-        .reduce((sum, p) => sum + (p.valor_total || p.valor), 0);
+      const totalReceived = payments && payments.length > 0 
+        ? payments
+            .filter((p: Payment) => p.status === PaymentStatus.PAGO)
+            .reduce((sum: number, p: Payment) => sum + (p.valor_total || p.valor), 0)
+        : 0;
       
-      const totalPending = payments
-        .filter(p => p.status === PaymentStatus.PENDENTE)
-        .reduce((sum, p) => sum + p.valor, 0);
+      const totalPending = payments && payments.length > 0
+        ? payments
+            .filter((p: Payment) => p.status === PaymentStatus.PENDENTE)
+            .reduce((sum: number, p: Payment) => sum + p.valor, 0)
+        : 0;
       
-      const totalOverdue = payments
-        .filter(p => p.status === PaymentStatus.ATRASADO || (p.status === PaymentStatus.PENDENTE && new Date(p.data_vencimento) < new Date()))
-        .reduce((sum, p) => sum + p.valor, 0);
+      const totalOverdue = payments && payments.length > 0
+        ? payments
+            .filter((p: Payment) => p.status === PaymentStatus.ATRASADO || (p.status === PaymentStatus.PENDENTE && new Date(p.data_vencimento) < new Date()))
+            .reduce((sum: number, p: Payment) => sum + p.valor, 0)
+        : 0;
       
-      const overdueCount = payments.filter(p => 
-        p.status === PaymentStatus.ATRASADO || (p.status === PaymentStatus.PENDENTE && new Date(p.data_vencimento) < new Date())
-      ).length;
+      const overdueCount = payments && payments.length > 0
+        ? payments.filter((p: Payment) => 
+            p.status === PaymentStatus.ATRASADO || (p.status === PaymentStatus.PENDENTE && new Date(p.data_vencimento) < new Date())
+          ).length
+        : 0;
       
-      const pendingCount = payments.filter(p => p.status === PaymentStatus.PENDENTE).length;
-      const paidCount = payments.filter(p => p.status === PaymentStatus.PAGO).length;
+      const pendingCount = payments && payments.length > 0
+        ? payments.filter((p: Payment) => p.status === PaymentStatus.PENDENTE).length
+        : 0;
+      const paidCount = payments && payments.length > 0
+        ? payments.filter((p: Payment) => p.status === PaymentStatus.PAGO).length
+        : 0;
       
       // Formatar pagamentos recentes
-      const recentPayments = payments
-        .filter(p => p.status === PaymentStatus.PAGO)
-        .slice(0, 5)
-        .map(p => ({
+      const recentPayments = payments && payments.length > 0
+        ? payments
+            .filter((p: Payment) => p.status === PaymentStatus.PAGO)
+            .slice(0, 5)
+            .map((p: Payment) => ({
           id: p.id,
           student: p.matricula?.aluno?.nome || 'N/A',
           course: p.matricula?.curso?.nome || 'N/A',
           amount: p.valor_total || p.valor,
           date: new Date(p.data_pagamento || p.updated_at).toLocaleDateString('pt-BR'),
           method: p.forma_pagamento
-        }));
+        }))
+        : [];
       
       // Agrupar receita por mês
-      const monthlyData = {};
-      payments.forEach(p => {
-        if (p.status === PaymentStatus.PAGO) {
-          const month = p.data_pagamento?.substring(0, 7) || p.updated_at.substring(0, 7);
-          if (!monthlyData[month]) {
-            monthlyData[month] = 0;
+      const monthlyData: Record<string, number> = {};
+      if (payments && payments.length > 0) {
+        payments.forEach((p: Payment) => {
+          if (p.status === PaymentStatus.PAGO) {
+            const month = p.data_pagamento?.substring(0, 7) || p.updated_at.substring(0, 7);
+            if (!monthlyData[month]) {
+              monthlyData[month] = 0;
+            }
+            monthlyData[month] += (p.valor_total || p.valor);
           }
-          monthlyData[month] += (p.valor_total || p.valor);
-        }
-      });
+        });
+      }
       
       const monthlyRevenue = Object.entries(monthlyData)
         .map(([month, value]) => ({
@@ -246,16 +352,18 @@ export function FinancialDashboard() {
         .sort((a, b) => a.label.localeCompare(b.label));
       
       // Agrupar por método de pagamento
-      const methodData = {};
-      payments.forEach(p => {
-        if (p.status === PaymentStatus.PAGO) {
-          const method = p.forma_pagamento || 'Não especificado';
-          if (!methodData[method]) {
-            methodData[method] = 0;
+      const methodData: Record<string, number> = {};
+      if (payments && payments.length > 0) {
+        payments.forEach((p: Payment) => {
+          if (p.status === PaymentStatus.PAGO) {
+            const method = p.forma_pagamento || 'Não especificado';
+            if (!methodData[method]) {
+              methodData[method] = 0;
+            }
+            methodData[method] += (p.valor_total || p.valor);
           }
-          methodData[method] += (p.valor_total || p.valor);
-        }
-      });
+        });
+      }
       
       const paymentMethods = Object.entries(methodData)
         .map(([method, value]) => ({
@@ -265,16 +373,18 @@ export function FinancialDashboard() {
         .sort((a, b) => b.value - a.value);
       
       // Agrupar por curso
-      const courseData = {};
-      payments.forEach(p => {
-        if (p.status === PaymentStatus.PAGO) {
-          const course = p.matricula?.curso?.nome || 'Não especificado';
-          if (!courseData[course]) {
-            courseData[course] = 0;
+      const courseData: Record<string, number> = {};
+      if (payments && payments.length > 0) {
+        payments.forEach((p: Payment) => {
+          if (p.status === PaymentStatus.PAGO) {
+            const course = p.matricula?.curso?.nome || 'Não especificado';
+            if (!courseData[course]) {
+              courseData[course] = 0;
+            }
+            courseData[course] += (p.valor_total || p.valor);
           }
-          courseData[course] += (p.valor_total || p.valor);
-        }
-      });
+        });
+      }
       
       const courseRevenue = Object.entries(courseData)
         .map(([course, value]) => ({
@@ -310,8 +420,15 @@ export function FinancialDashboard() {
     }
   }, [dateRange]);
   
+  // Função definida antes de ser usada
+  const handleDateRangeSelect = (range: { from: Date; to?: Date | undefined }) => {
+    if (range.from && range.to) {
+      setDateRange({ from: range.from, to: range.to });
+    }
+  };
+  
   // Função para gerar relatório
-  const generateReport = async (reportType) => {
+  const generateReport = async (reportType: string) => {
     try {
       const fromDate = dateRange.from.toISOString().split('T')[0];
       const toDate = dateRange.to.toISOString().split('T')[0];

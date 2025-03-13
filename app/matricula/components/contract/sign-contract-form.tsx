@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button } from "@/components/ui/button"';
+import { Button } from "@/components/ui/button";
 import { assinarContrato } from '@/app/matricula/actions/matricula-actions';
 // Simplified toast implementation
 const useToast = () => {

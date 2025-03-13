@@ -6,11 +6,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { FeedbackType, SatisfactionLevel } from '@/app/matricula/lib/services/feedback-service';
 import { Button } from '@/app/components/ui/Button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"';
-import { Input } from "@/components/ui/input"';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/button";
+import { Input } from "@/components/ui/button";
 import { Label } from '@/components/ui/label';
-import { Textarea } from "@/components/ui/textarea"';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"';
+import { Textarea } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/button";
 import { toast } from '@/components/ui/use-toast';
 
 // Schema para validação do formulário
