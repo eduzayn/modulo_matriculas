@@ -12,8 +12,20 @@ import { CalendarIcon, Download, FileText, PieChart, TrendingUp, AlertTriangle, 
 import { createClient } from '@/lib/supabase/client';
 import { PaymentStatus } from '../types/financial';
 
+// Interfaces para componentes
+interface ChartData {
+  label: string;
+  value: number;
+}
+
+interface BarChartProps {
+  data: ChartData[];
+  title: string;
+  description: string;
+}
+
 // Componente de gráfico de barras
-const BarChart = ({ data, title, description }) => {
+const BarChart = ({ data, title, description }: BarChartProps) => {
   const maxValue = Math.max(...data.map(item => item.value));
   
   return (
@@ -46,8 +58,23 @@ const BarChart = ({ data, title, description }) => {
   );
 };
 
+interface TrendInfo {
+  positive: boolean;
+  value: string;
+  label: string;
+}
+
+interface StatCardProps {
+  title: string;
+  value: number | string;
+  icon: React.ReactNode;
+  description: string;
+  trend?: TrendInfo;
+  color?: string;
+}
+
 // Componente de cartão de estatística
-const StatCard = ({ title, value, icon, description, trend, color = 'bg-primary' }) => {
+const StatCard = ({ title, value, icon, description, trend, color = 'bg-primary' }: StatCardProps) => {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -74,8 +101,18 @@ const StatCard = ({ title, value, icon, description, trend, color = 'bg-primary'
   );
 };
 
+interface DateRange {
+  from: Date;
+  to: Date;
+}
+
+interface DateRangePickerProps {
+  dateRange: DateRange;
+  setDateRange: (range: DateRange) => void;
+}
+
 // Componente de seletor de data
-const DateRangePicker = ({ dateRange, setDateRange }) => {
+const DateRangePicker = ({ dateRange, setDateRange }: DateRangePickerProps) => {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   
   return (
@@ -311,7 +348,7 @@ export function FinancialDashboard() {
   }, [dateRange]);
   
   // Função para gerar relatório
-  const generateReport = async (reportType) => {
+  const generateReport = async (reportType: string) => {
     try {
       const fromDate = dateRange.from.toISOString().split('T')[0];
       const toDate = dateRange.to.toISOString().split('T')[0];
