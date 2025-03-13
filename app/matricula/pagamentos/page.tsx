@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../../components/ui/Card';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"';
 import { Button } from '../../../components/ui/Button';
 import { ResponsiveLayout, ResponsiveContainer, ResponsiveHeader } from '../../../app/components/ui/ResponsiveLayout';
 import { NovaCobrancaDialog, PagamentoFormValues } from '../components/pagamento/nova-cobranca-dialog';
