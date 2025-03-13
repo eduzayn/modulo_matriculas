@@ -1,0 +1,26 @@
+{
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "outputDirectory": ".next",
+  "regions": ["sfo1"],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://*.supabase.co https://*.vercel-insights.com https://*.vercel.app;"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/(.*)", "destination": "/$1" }
+  ],
+  "env": {
+    "NEXT_PUBLIC_SUPABASE_URL": "https://uasnyifizdjxogowijip.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "sbp_057451a19b2fcdc89fc94ac28289e321ffc6e6a0"
+  }
+}
