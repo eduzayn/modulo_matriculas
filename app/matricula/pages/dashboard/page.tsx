@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../../components/ui/Card';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../../../components/ui/card';
 import { ResponsiveLayout, ResponsiveContainer, ResponsiveHeader } from '../../../components/ui/ResponsiveLayout';
 
 export default function DashboardPage() {

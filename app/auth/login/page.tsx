@@ -16,7 +16,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/Card";
+} from "@/components/ui/card"";
 import { Input } from "@/components/ui/Input";
 import { useToast } from "@/components/ui/use-toast";
 

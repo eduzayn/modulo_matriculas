@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../../components/ui/Card';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"';
 import { Button } from '../../components/ui/Button';
 import { ResponsiveLayout, ResponsiveContainer, ResponsiveHeader } from '../../components/ui/ResponsiveLayout';
 
