@@ -144,8 +144,8 @@ const DateRangePicker = ({ dateRange, setDateRange }: DateRangePickerProps) => {
             mode="range"
             defaultMonth={dateRange.from}
             selected={dateRange}
-            onSelect={(range) => {
-              setDateRange(range);
+            onSelect={handleDateRangeSelect}
+            onChange={(range) => {
               if (range.from && range.to) {
                 setIsCalendarOpen(false);
               }
@@ -167,7 +167,29 @@ export function FinancialDashboard() {
     to: new Date()
   });
   const [loading, setLoading] = useState(true);
-  const [dashboardData, setDashboardData] = useState({
+  interface PaymentData {
+    id: string;
+    student: string;
+    course: string;
+    amount: number;
+    date: string;
+    method: string;
+  }
+  
+  interface DashboardData {
+    totalReceived: number;
+    totalPending: number;
+    totalOverdue: number;
+    overdueCount: number;
+    pendingCount: number;
+    paidCount: number;
+    recentPayments: PaymentData[];
+    monthlyRevenue: ChartData[];
+    paymentMethods: ChartData[];
+    courseRevenue: ChartData[];
+  }
+  
+  const [dashboardData, setDashboardData] = useState<DashboardData>({
     totalReceived: 0,
     totalPending: 0,
     totalOverdue: 0,
@@ -264,7 +286,7 @@ export function FinancialDashboard() {
         }));
       
       // Agrupar receita por mês
-      const monthlyData = {};
+      const monthlyData: Record<string, number> = {};
       payments.forEach(p => {
         if (p.status === PaymentStatus.PAGO) {
           const month = p.data_pagamento?.substring(0, 7) || p.updated_at.substring(0, 7);
@@ -283,7 +305,7 @@ export function FinancialDashboard() {
         .sort((a, b) => a.label.localeCompare(b.label));
       
       // Agrupar por método de pagamento
-      const methodData = {};
+      const methodData: Record<string, number> = {};
       payments.forEach(p => {
         if (p.status === PaymentStatus.PAGO) {
           const method = p.forma_pagamento || 'Não especificado';
@@ -302,7 +324,7 @@ export function FinancialDashboard() {
         .sort((a, b) => b.value - a.value);
       
       // Agrupar por curso
-      const courseData = {};
+      const courseData: Record<string, number> = {};
       payments.forEach(p => {
         if (p.status === PaymentStatus.PAGO) {
           const course = p.matricula?.curso?.nome || 'Não especificado';
@@ -346,6 +368,13 @@ export function FinancialDashboard() {
       loadDashboardData();
     }
   }, [dateRange]);
+  
+  // Tipagem para o onSelect do Calendar
+  const handleDateRangeSelect = (range: DateRange | { from: Date; to?: Date | undefined }) => {
+    if (range.from && range.to) {
+      setDateRange(range as DateRange);
+    }
+  };
   
   // Função para gerar relatório
   const generateReport = async (reportType: string) => {
