@@ -284,37 +284,51 @@ export function FinancialDashboard() {
       }
       
       // Calcular estatísticas
-      const totalReceived = payments
-        .filter((p: Payment) => p.status === PaymentStatus.PAGO)
-        .reduce((sum: number, p: Payment) => sum + (p.valor_total || p.valor), 0);
+      const totalReceived = payments && payments.length > 0 
+        ? payments
+            .filter((p: Payment) => p.status === PaymentStatus.PAGO)
+            .reduce((sum: number, p: Payment) => sum + (p.valor_total || p.valor), 0)
+        : 0;
       
-      const totalPending = payments
-        .filter((p: Payment) => p.status === PaymentStatus.PENDENTE)
-        .reduce((sum: number, p: Payment) => sum + p.valor, 0);
+      const totalPending = payments && payments.length > 0
+        ? payments
+            .filter((p: Payment) => p.status === PaymentStatus.PENDENTE)
+            .reduce((sum: number, p: Payment) => sum + p.valor, 0)
+        : 0;
       
-      const totalOverdue = payments
-        .filter((p: Payment) => p.status === PaymentStatus.ATRASADO || (p.status === PaymentStatus.PENDENTE && new Date(p.data_vencimento) < new Date()))
-        .reduce((sum: number, p: Payment) => sum + p.valor, 0);
+      const totalOverdue = payments && payments.length > 0
+        ? payments
+            .filter((p: Payment) => p.status === PaymentStatus.ATRASADO || (p.status === PaymentStatus.PENDENTE && new Date(p.data_vencimento) < new Date()))
+            .reduce((sum: number, p: Payment) => sum + p.valor, 0)
+        : 0;
       
-      const overdueCount = payments.filter((p: Payment) => 
-        p.status === PaymentStatus.ATRASADO || (p.status === PaymentStatus.PENDENTE && new Date(p.data_vencimento) < new Date())
-      ).length;
+      const overdueCount = payments && payments.length > 0
+        ? payments.filter((p: Payment) => 
+            p.status === PaymentStatus.ATRASADO || (p.status === PaymentStatus.PENDENTE && new Date(p.data_vencimento) < new Date())
+          ).length
+        : 0;
       
-      const pendingCount = payments.filter((p: Payment) => p.status === PaymentStatus.PENDENTE).length;
-      const paidCount = payments.filter((p: Payment) => p.status === PaymentStatus.PAGO).length;
+      const pendingCount = payments && payments.length > 0
+        ? payments.filter((p: Payment) => p.status === PaymentStatus.PENDENTE).length
+        : 0;
+      const paidCount = payments && payments.length > 0
+        ? payments.filter((p: Payment) => p.status === PaymentStatus.PAGO).length
+        : 0;
       
       // Formatar pagamentos recentes
-      const recentPayments = payments
-        .filter((p: Payment) => p.status === PaymentStatus.PAGO)
-        .slice(0, 5)
-        .map((p: Payment) => ({
+      const recentPayments = payments && payments.length > 0
+        ? payments
+            .filter((p: Payment) => p.status === PaymentStatus.PAGO)
+            .slice(0, 5)
+            .map((p: Payment) => ({
           id: p.id,
           student: p.matricula?.aluno?.nome || 'N/A',
           course: p.matricula?.curso?.nome || 'N/A',
           amount: p.valor_total || p.valor,
           date: new Date(p.data_pagamento || p.updated_at).toLocaleDateString('pt-BR'),
           method: p.forma_pagamento
-        }));
+        }))
+        : [];
       
       // Agrupar receita por mês
       const monthlyData: Record<string, number> = {};
