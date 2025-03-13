@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { Button } from "@/components/ui/button"'
+import { Button } from "@/components/ui/button"
 import Link from 'next/link'
 import { matriculaRoutes } from '@/app/matricula/routes'
 // TODO: Import API client for main site authentication and data access
@@ -11,9 +11,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Badge } from "@/components/ui/badge"'
+import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { colors } from "@/components/providers/themeprovider"'
+import { colors } from "@/components/providers/themeprovider"
 
 interface PaymentsPageProps {
   params: {
