@@ -5,6 +5,9 @@ import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import SignContractForm from '@/app/matricula/components/contract/sign-contract-form'
 
+// Initialize Supabase client
+const supabase = createClient(cookies())
+
 // Interfaces para componentes UI
 interface ComponentBaseProps {
   children: React.ReactNode;

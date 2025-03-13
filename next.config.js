@@ -11,13 +11,14 @@ const nextConfig = {
   // Simplified configuration for images
   images: {
     unoptimized: true,
+    domains: ['uasnyifizdjxogowijip.supabase.co', 'example.supabase.co', 'edunexia.com'],
   },
   // Disable optimization for faster builds
   swcMinify: false,
   // Increase timeout for static generation
   staticPageGenerationTimeout: 300,
-  // Use export output for static site generation
-  output: 'export',
+  // Use standalone output for Vercel compatibility
+  output: 'standalone',
   // Environment variables with fallbacks
   env: {
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://uasnyifizdjxogowijip.supabase.co',
@@ -25,10 +26,7 @@ const nextConfig = {
   },
   // Disable powered by header
   poweredByHeader: false,
-  // Disable experimental features
-  experimental: {
-    serverActions: false
-  },
+  // Remove invalid experimental configuration
   // Disable trailing slash
   trailingSlash: false
 }
