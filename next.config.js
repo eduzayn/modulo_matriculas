@@ -8,26 +8,17 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Simplified configuration for images
+  // Simplified configuration for images - use domains instead of remotePatterns for better compatibility
   images: {
     unoptimized: true,
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**.supabase.co',
-      },
-      {
-        protocol: 'https',
-        hostname: 'edunexia.com',
-      }
-    ],
+    domains: ['uasnyifizdjxogowijip.supabase.co', 'edunexia.com'],
   },
   // Disable optimization for faster builds
   swcMinify: false,
   // Increase timeout for static generation
   staticPageGenerationTimeout: 300,
-  // Use standalone output for Vercel compatibility
-  output: 'standalone',
+  // Use export output for static site generation
+  output: 'export',
   // Environment variables with fallbacks
   env: {
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://uasnyifizdjxogowijip.supabase.co',
@@ -38,7 +29,9 @@ const nextConfig = {
   // Disable experimental features
   experimental: {
     serverActions: false
-  }
+  },
+  // Disable image optimization
+  distDir: 'out'
 }
 
 module.exports = nextConfig
