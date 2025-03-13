@@ -37,19 +37,13 @@ export function createClient(request: NextRequest) {
         },
         remove(name: string, options: CookieOptions) {
           // If the cookie is removed, update the cookies for the request and response
-          request.cookies.delete({
-            name,
-            ...options,
-          })
+          request.cookies.delete(name)
           response = NextResponse.next({
             request: {
               headers: request.headers,
             },
           })
-          response.cookies.delete({
-            name,
-            ...options,
-          })
+          response.cookies.delete(name)
         },
       },
     }
