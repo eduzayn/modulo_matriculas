@@ -45,6 +45,18 @@ export function ResponsiveLayout({ children, className }: ResponsiveLayoutProps)
     </div>
   );
 }
+interface ResponsiveSectionProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+export function ResponsiveSection({ children, className }: ResponsiveSectionProps) {
+  return (
+    <section className={`mb-8 ${className || ''}`}>
+      {children}
+    </section>
+  );
+}
 
 interface ResponsiveFormProps {
   children: React.ReactNode;
