@@ -1,9 +1,9 @@
-import { Button } from '@/components/ui/Button'
+import { Button } from "@/components/ui/button"'
 import Link from 'next/link'
 import { matriculaRoutes } from '@/app/matricula/routes'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { redirect } from 'next/navigation'
-import { Textarea } from '@/components/ui/Textarea'
+import { Textarea } from "@/components/ui/textarea"'
 import React from 'react'
 
 export default async function SupportPage() {

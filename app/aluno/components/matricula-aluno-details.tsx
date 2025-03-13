@@ -1,6 +1,6 @@
 'use client'
 
-import { Button } from '@/components/ui/Button'
+import { Button } from "@/components/ui/button"'
 import {
   Card,
   CardContent,
@@ -14,8 +14,8 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-} from '@/components/ui/Tabs'
-import { Badge } from '@/components/ui/Badge'
+} from "@/components/ui/tabs"'
+import { Badge } from "@/components/ui/badge"'
 import { Separator } from '@/components/ui/separator'
 import Link from 'next/link'
 

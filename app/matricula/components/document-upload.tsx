@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button } from '@/components/ui/Button'
+import { Button } from "@/components/ui/button"'
 import {
   Form,
   FormControl,
@@ -18,8 +18,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/Select'
-import { Input } from '@/components/ui/Input'
+} from "@/components/ui/select"'
+import { Input } from "@/components/ui/input"'
 import { uploadDocumento } from '../actions/matricula-actions'
 import { toast } from '@/components/ui/use-toast'
 import { useRouter } from 'next/navigation'
