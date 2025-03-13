@@ -1,150 +1,141 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { colors } from "@/components/providers/themeProvider";
-
-import {
-  Home,
-  Users,
-  BookOpen,
-  DollarSign,
-  BarChart2,
+import { 
+  LayoutDashboard, 
+  Users, 
+  BookOpen, 
+  Percent, 
+  CreditCard, 
+  FileText, 
   Settings,
-  HelpCircle,
   Menu,
-  X,
+  X
 } from 'lucide-react';
 
-import { matriculaRoutes } from '@/app/matricula/routes';
+// Import colors directly from our themeProvider
+const colors = {
+  primary: 'blue-600',
+  secondary: 'purple-600',
+  success: 'green-600',
+  danger: 'red-600',
+  warning: 'yellow-600',
+  info: 'cyan-600',
+};
 
 interface SidebarProps {
-  isMobile?: boolean;
+  module?: 'communication' | 'student' | 'content' | 'enrollment';
+  navItems?: Array<{
+    path: string;
+    name: string;
+    icon: any;
+  }>;
 }
 
-export default function Sidebar({ isMobile = false }: SidebarProps) {
-  const [isOpen, setIsOpen] = useState(!isMobile);
+export function Sidebar({ 
+  module = 'enrollment',
+  navItems
+}: SidebarProps) {
   const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
 
-  // Close sidebar on mobile when navigating
-  useEffect(() => {
-    if (isMobile) {
-      setIsOpen(false);
-    }
-  }, [pathname, isMobile]);
-
-  const sidebarItems = [
+  const defaultNavItems = [
     {
+      path: '/matricula/dashboard',
       name: 'Dashboard',
-      href: matriculaRoutes.dashboard,
-      icon: <Home className="h-5 w-5" />,
+      icon: <LayoutDashboard className="h-5 w-5" />,
     },
     {
+      path: '/matricula/alunos',
       name: 'Alunos',
-      href: matriculaRoutes.alunos,
       icon: <Users className="h-5 w-5" />,
     },
     {
+      path: '/matricula/cursos',
       name: 'Cursos',
-      href: matriculaRoutes.cursos,
       icon: <BookOpen className="h-5 w-5" />,
     },
     {
-      name: 'Pagamentos',
-      href: matriculaRoutes.pagamentos,
-      icon: <DollarSign className="h-5 w-5" />,
-    },
-    {
+      path: '/matricula/descontos',
       name: 'Descontos',
-      href: matriculaRoutes.descontos,
-      icon: <BarChart2 className="h-5 w-5" />,
+      icon: <Percent className="h-5 w-5" />,
     },
     {
+      path: '/matricula/pagamentos',
+      name: 'Pagamentos',
+      icon: <CreditCard className="h-5 w-5" />,
+    },
+    {
+      path: '/matricula/relatorios',
       name: 'Relatórios',
-      href: matriculaRoutes.relatorios,
-      icon: <BarChart2 className="h-5 w-5" />,
+      icon: <FileText className="h-5 w-5" />,
     },
     {
+      path: '/matricula/configuracoes',
       name: 'Configurações',
-      href: matriculaRoutes.configuracoes,
       icon: <Settings className="h-5 w-5" />,
-    },
-    {
-      name: 'Suporte',
-      href: matriculaRoutes.suporte,
-      icon: <HelpCircle className="h-5 w-5" />,
     },
   ];
 
+  const items = navItems || defaultNavItems;
+
+  const toggleSidebar = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
     <>
-      {isMobile && (
-        <div className="flex items-center justify-between p-4 border-b">
-          <div className="font-bold text-xl">Módulo Matrículas</div>
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="p-2 rounded-md hover:bg-gray-100"
-          >
-            {isOpen ? <X /> : <Menu />}
-          </button>
-        </div>
-      )}
-
-      <div
-        className={`${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
-        } ${
-          isMobile
-            ? 'fixed inset-0 z-50 w-64 transition-transform duration-300 ease-in-out bg-white shadow-lg'
-            : 'w-64 h-screen bg-white border-r'
-        }`}
+      {/* Mobile menu button */}
+      <button
+        type="button"
+        className="fixed top-4 left-4 z-50 md:hidden"
+        onClick={toggleSidebar}
       >
-        {isMobile && (
-          <div className="flex items-center justify-between p-4 border-b">
-            <div className="font-bold text-xl">Módulo Matrículas</div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="p-2 rounded-md hover:bg-gray-100"
-            >
-              <X />
-            </button>
-          </div>
+        {isOpen ? (
+          <X className="h-6 w-6 text-gray-600" />
+        ) : (
+          <Menu className="h-6 w-6 text-gray-600" />
         )}
+      </button>
 
-        <div className={`${isMobile ? 'mt-0' : 'mt-6'} px-4`}>
-          {!isMobile && (
-            <div className="font-bold text-xl mb-6">Módulo Matrículas</div>
-          )}
-
-          <nav className="space-y-1">
-            {sidebarItems.map((item) => {
-              const isActive = pathname === item.href;
+      {/* Sidebar */}
+      <aside
+        className={`fixed top-0 left-0 z-40 h-screen transition-transform ${
+          isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+        } w-64 md:w-16 lg:w-64 bg-white border-r border-gray-200 md:block`}
+      >
+        <div className="h-full px-3 py-4 overflow-y-auto">
+          <div className="flex items-center justify-center h-14 mb-5">
+            <span className="text-xl font-semibold md:hidden lg:block">Edunexia</span>
+            <span className="text-xl font-semibold hidden md:block lg:hidden">E</span>
+          </div>
+          <ul className="space-y-2">
+            {items.map((item) => {
+              const isActive = pathname === item.path;
+              
               return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`flex items-center px-4 py-3 text-sm rounded-md transition-colors ${
-                    isActive
-                      ? `text-white bg-${colors.primary}`
-                      : 'text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  <span className="mr-3">{item.icon}</span>
-                  {item.name}
-                </Link>
+                <li key={item.path}>
+                  <Link
+                    href={item.path}
+                    className={`flex items-center p-2 rounded-md group ${
+                      isActive
+                        ? `text-white bg-${colors.primary}`
+                        : `text-gray-700 hover:bg-gray-100`
+                    }`}
+                  >
+                    {item.icon}
+                    <span className="ml-3 md:hidden lg:block">{item.name}</span>
+                  </Link>
+                </li>
               );
             })}
-          </nav>
+          </ul>
         </div>
-      </div>
-
-      {isMobile && isOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black bg-opacity-50"
-          onClick={() => setIsOpen(false)}
-        ></div>
-      )}
+      </aside>
     </>
   );
 }
+
+export default Sidebar;
