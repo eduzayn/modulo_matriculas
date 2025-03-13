@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from '../components/ui/button';
 import { ResponsiveLayout } from '../components/ui/ResponsiveLayout';
 import { ResponsiveContainer } from '../components/ui/ResponsiveContainer';
