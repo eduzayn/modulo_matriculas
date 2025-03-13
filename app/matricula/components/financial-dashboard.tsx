@@ -12,6 +12,37 @@ import { CalendarIcon, Download, FileText, PieChart, TrendingUp, AlertTriangle, 
 import { createClient } from '@/lib/supabase/client';
 import { PaymentStatus } from '../types/financial';
 
+// Interface para tipagem do Supabase
+interface MatriculaJoin {
+  aluno_id: string;
+  curso_id: string;
+  aluno: {
+    nome: string;
+  };
+  curso: {
+    nome: string;
+  };
+}
+
+interface Payment {
+  id: string;
+  matricula_id: string;
+  valor: number;
+  data_vencimento: string;
+  data_pagamento?: string;
+  status: PaymentStatus;
+  forma_pagamento: string;
+  numero_parcela?: number;
+  total_parcelas?: number;
+  valor_desconto?: number;
+  valor_juros?: number;
+  valor_multa?: number;
+  valor_total?: number;
+  created_at: string;
+  updated_at: string;
+  matricula?: MatriculaJoin;
+}
+
 // Interfaces para componentes
 interface ChartData {
   label: string;
@@ -145,7 +176,7 @@ const DateRangePicker = ({ dateRange, setDateRange }: DateRangePickerProps) => {
             defaultMonth={dateRange.from}
             selected={dateRange}
             onSelect={handleDateRangeSelect}
-            onChange={(range) => {
+            onChange={(range: { from: Date; to?: Date | undefined }) => {
               if (range.from && range.to) {
                 setIsCalendarOpen(false);
               }
@@ -214,7 +245,7 @@ export function FinancialDashboard() {
       const toDate = dateRange.to.toISOString().split('T')[0];
       
       // Buscar pagamentos no período
-      const { data: payments, error: paymentsError } = await supabase
+      const { data: payments = [], error: paymentsError } = await supabase
         .from('financial.payments')
         .select(`
           id,
@@ -254,29 +285,29 @@ export function FinancialDashboard() {
       
       // Calcular estatísticas
       const totalReceived = payments
-        .filter(p => p.status === PaymentStatus.PAGO)
-        .reduce((sum, p) => sum + (p.valor_total || p.valor), 0);
+        .filter((p: Payment) => p.status === PaymentStatus.PAGO)
+        .reduce((sum: number, p: Payment) => sum + (p.valor_total || p.valor), 0);
       
       const totalPending = payments
-        .filter(p => p.status === PaymentStatus.PENDENTE)
-        .reduce((sum, p) => sum + p.valor, 0);
+        .filter((p: Payment) => p.status === PaymentStatus.PENDENTE)
+        .reduce((sum: number, p: Payment) => sum + p.valor, 0);
       
       const totalOverdue = payments
-        .filter(p => p.status === PaymentStatus.ATRASADO || (p.status === PaymentStatus.PENDENTE && new Date(p.data_vencimento) < new Date()))
-        .reduce((sum, p) => sum + p.valor, 0);
+        .filter((p: Payment) => p.status === PaymentStatus.ATRASADO || (p.status === PaymentStatus.PENDENTE && new Date(p.data_vencimento) < new Date()))
+        .reduce((sum: number, p: Payment) => sum + p.valor, 0);
       
-      const overdueCount = payments.filter(p => 
+      const overdueCount = payments.filter((p: Payment) => 
         p.status === PaymentStatus.ATRASADO || (p.status === PaymentStatus.PENDENTE && new Date(p.data_vencimento) < new Date())
       ).length;
       
-      const pendingCount = payments.filter(p => p.status === PaymentStatus.PENDENTE).length;
-      const paidCount = payments.filter(p => p.status === PaymentStatus.PAGO).length;
+      const pendingCount = payments.filter((p: Payment) => p.status === PaymentStatus.PENDENTE).length;
+      const paidCount = payments.filter((p: Payment) => p.status === PaymentStatus.PAGO).length;
       
       // Formatar pagamentos recentes
       const recentPayments = payments
-        .filter(p => p.status === PaymentStatus.PAGO)
+        .filter((p: Payment) => p.status === PaymentStatus.PAGO)
         .slice(0, 5)
-        .map(p => ({
+        .map((p: Payment) => ({
           id: p.id,
           student: p.matricula?.aluno?.nome || 'N/A',
           course: p.matricula?.curso?.nome || 'N/A',
@@ -287,7 +318,7 @@ export function FinancialDashboard() {
       
       // Agrupar receita por mês
       const monthlyData: Record<string, number> = {};
-      payments.forEach(p => {
+      payments.forEach((p: Payment) => {
         if (p.status === PaymentStatus.PAGO) {
           const month = p.data_pagamento?.substring(0, 7) || p.updated_at.substring(0, 7);
           if (!monthlyData[month]) {
@@ -306,7 +337,7 @@ export function FinancialDashboard() {
       
       // Agrupar por método de pagamento
       const methodData: Record<string, number> = {};
-      payments.forEach(p => {
+      payments.forEach((p: Payment) => {
         if (p.status === PaymentStatus.PAGO) {
           const method = p.forma_pagamento || 'Não especificado';
           if (!methodData[method]) {
@@ -325,7 +356,7 @@ export function FinancialDashboard() {
       
       // Agrupar por curso
       const courseData: Record<string, number> = {};
-      payments.forEach(p => {
+      payments.forEach((p: Payment) => {
         if (p.status === PaymentStatus.PAGO) {
           const course = p.matricula?.curso?.nome || 'Não especificado';
           if (!courseData[course]) {
@@ -370,9 +401,9 @@ export function FinancialDashboard() {
   }, [dateRange]);
   
   // Tipagem para o onSelect do Calendar
-  const handleDateRangeSelect = (range: DateRange | { from: Date; to?: Date | undefined }) => {
+  const handleDateRangeSelect = (range: { from: Date; to?: Date | undefined }) => {
     if (range.from && range.to) {
-      setDateRange(range as DateRange);
+      setDateRange({ from: range.from, to: range.to });
     }
   };
   
