@@ -60,7 +60,7 @@ export default function TestPage() {
               <Badge variant="secondary">Secundário</Badge>
               <Badge variant="outline">Erro</Badge>
               <Badge variant="outline">Contorno</Badge>
-              <Badge variant="success">Sucesso</Badge>
+              <Badge variant="outline">Sucesso</Badge>
             </div>
             
             <Separator className="my-4" />
