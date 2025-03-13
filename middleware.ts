@@ -42,7 +42,8 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // MODO DE DESENVOLVIMENTO: Bypass de autenticação para testes
-  // Remover esta linha em produção
+  // Remover esta linha em produção antes do deploy final
+  // TODO: Remover esta linha e descomentar o código abaixo para produção
   return NextResponse.next()
 
   // Código original comentado para testes
