@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Button } from '../../../components/ui/Button';
+import { Button } from '../../../components/ui/button';
 import { ResponsiveLayout, ResponsiveContainer, ResponsiveHeader } from '../../../app/components/ui/ResponsiveLayout';
 import { NovoAlunoDialog, AlunoFormValues } from '../../../app/matricula/components/aluno/novo-aluno-dialog';
 import { VincularAlunoDialog } from '../../../app/matricula/components/aluno/vincular-aluno-dialog';
