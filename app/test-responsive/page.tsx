@@ -7,7 +7,7 @@ import {
   ResponsiveHeader, 
   ResponsiveSection, 
   ResponsiveGrid 
-} from "@/app/components/ui/responsiveLayout"';
+} from "@/app/components/ui/responsiveLayout";
 import { 
   ResponsiveForm, 
   ResponsiveFormGroup, 
