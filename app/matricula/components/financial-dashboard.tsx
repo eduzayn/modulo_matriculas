@@ -371,7 +371,7 @@ export function FinancialDashboard() {
       // Agrupar receita por mês
       const monthlyData: Record<string, number> = {};
       if (payments && payments.length > 0) {
-        payments.forEach((p: Payment) => {
+        for (const p of payments) {
           if (p.status === PaymentStatus.PAGO) {
             const month = p.data_pagamento?.substring(0, 7) || p.updated_at.substring(0, 7);
             if (!monthlyData[month]) {
@@ -379,7 +379,7 @@ export function FinancialDashboard() {
             }
             monthlyData[month] += (p.valor_total || p.valor);
           }
-        });
+        }
       }
       
       const monthlyRevenue = Object.entries(monthlyData)
@@ -392,7 +392,7 @@ export function FinancialDashboard() {
       // Agrupar por método de pagamento
       const methodData: Record<string, number> = {};
       if (payments && payments.length > 0) {
-        payments.forEach((p: Payment) => {
+        for (const p of payments) {
           if (p.status === PaymentStatus.PAGO) {
             const method = p.forma_pagamento || 'Não especificado';
             if (!methodData[method]) {
@@ -400,7 +400,7 @@ export function FinancialDashboard() {
             }
             methodData[method] += (p.valor_total || p.valor);
           }
-        });
+        }
       }
       
       const paymentMethods = Object.entries(methodData)
@@ -413,7 +413,7 @@ export function FinancialDashboard() {
       // Agrupar por curso
       const courseData: Record<string, number> = {};
       if (payments && payments.length > 0) {
-        payments.forEach((p: Payment) => {
+        for (const p of payments) {
           if (p.status === PaymentStatus.PAGO) {
             const course = p.matricula?.curso?.nome || 'Não especificado';
             if (!courseData[course]) {
@@ -421,7 +421,7 @@ export function FinancialDashboard() {
             }
             courseData[course] += (p.valor_total || p.valor);
           }
-        });
+        }
       }
       
       const courseRevenue = Object.entries(courseData)
