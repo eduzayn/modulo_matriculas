@@ -1,11 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 
 export function PaymentStatusChart() {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<Array<{name: string, value: number}>>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
@@ -28,8 +28,8 @@ export function PaymentStatusChart() {
           { name: 'Pendentes', value: totalPendentes },
           { name: 'Atrasados', value: totalAtrasados }
         ]);
-      } catch (err) {
-        setError(err.message);
+      } catch (err: any) {
+        setError(err.message || 'Erro ao carregar dados financeiros');
       } finally {
         setLoading(false);
       }

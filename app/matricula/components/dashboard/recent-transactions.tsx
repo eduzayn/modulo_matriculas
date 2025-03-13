@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 
 export function RecentTransactions() {
-  const [transactions, setTransactions] = useState([]);
+  const [transactions, setTransactions] = useState<Array<{aluno: string, curso: string, data: string, valor: number, forma_pagamento: string}>>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
@@ -17,8 +17,8 @@ export function RecentTransactions() {
         }
         const result = await response.json();
         setTransactions(result.data.recentPayments);
-      } catch (err) {
-        setError(err.message);
+      } catch (err: any) {
+        setError(err.message || 'Erro ao carregar transações recentes');
       } finally {
         setLoading(false);
       }

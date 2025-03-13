@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 
 export function FinancialMetrics() {
   const [metrics, setMetrics] = useState({
@@ -22,8 +22,8 @@ export function FinancialMetrics() {
         }
         const result = await response.json();
         setMetrics(result.data.metrics);
-      } catch (err) {
-        setError(err.message);
+      } catch (err: any) {
+        setError(err.message || 'Erro ao carregar métricas financeiras');
       } finally {
         setLoading(false);
       }
