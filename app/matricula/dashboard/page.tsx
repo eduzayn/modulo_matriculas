@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { ResponsiveLayout, ResponsiveContainer, ResponsiveHeader } from '../../components/ui/ResponsiveLayout';
+import { ResponsiveLayout, ResponsiveContainer, ResponsiveHeader } from "@/app/components/ui/responsiveLayout"';
 import { FinancialMetrics } from '../components/dashboard/financial-metrics';
 import { FinancialSummary } from '../components/dashboard/financial-summary';
 import { PaymentStatusChart } from '../components/dashboard/payment-status-chart';

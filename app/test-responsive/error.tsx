@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import ServerErrorHandler from '../../components/ui/ServerErrorHandler';
+import ServerErrorHandler from "@/app/components/ui/serverErrorHandler"';
 
 export default function TestResponsiveError({
   error,
