@@ -2,16 +2,15 @@
 
 import React from 'react';
 import { 
-  ResponsiveLayout, 
   ResponsiveContainer, 
   ResponsiveHeader, 
   ResponsiveSection, 
   ResponsiveGrid 
-} from "@/app/components/ui/responsiveLayout";
+} from '@/app/components/ui/responsiveLayout';
 import { 
   ResponsiveForm, 
   ResponsiveFormGroup, 
-  ResponsiveFormRow, 
+  ResponsiveLabel, 
   ResponsiveInput, 
   ResponsiveTextarea, 
   ResponsiveSelect 
@@ -21,116 +20,86 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 
 export default function TestResponsivePage() {
   return (
-    <ResponsiveLayout>
-      <ResponsiveContainer>
-        <ResponsiveHeader 
-          title="Teste de Componentes Responsivos" 
-          subtitle="Demonstração dos componentes UI responsivos"
-          actions={
-            <div className="flex gap-2">
-              <Button variant="outline">Cancelar</Button>
-              <Button>Salvar</Button>
-            </div>
-          }
-        />
-
-        <ResponsiveSection 
-          title="Formulário Responsivo" 
-          description="Exemplo de formulário com diferentes tipos de campos"
-        >
+    <ResponsiveContainer>
+      <ResponsiveHeader>
+        <h1 className="text-2xl font-bold">Teste de Componentes Responsivos</h1>
+      </ResponsiveHeader>
+      
+      <ResponsiveSection>
+        <h2 className="text-xl font-semibold mb-4">Formulário Responsivo</h2>
+        <ResponsiveForm onSubmit={(e) => e.preventDefault()}>
+          <ResponsiveFormGroup>
+            <ResponsiveLabel htmlFor="name">Nome</ResponsiveLabel>
+            <ResponsiveInput id="name" placeholder="Digite seu nome" />
+          </ResponsiveFormGroup>
+          
+          <ResponsiveFormGroup>
+            <ResponsiveLabel htmlFor="email">Email</ResponsiveLabel>
+            <ResponsiveInput id="email" type="email" placeholder="Digite seu email" />
+          </ResponsiveFormGroup>
+          
+          <ResponsiveFormGroup>
+            <ResponsiveLabel htmlFor="course">Curso</ResponsiveLabel>
+            <ResponsiveSelect id="course">
+              <option value="">Selecione um curso</option>
+              <option value="web">Desenvolvimento Web</option>
+              <option value="mobile">Desenvolvimento Mobile</option>
+              <option value="data">Ciência de Dados</option>
+            </ResponsiveSelect>
+          </ResponsiveFormGroup>
+          
+          <ResponsiveFormGroup>
+            <ResponsiveLabel htmlFor="message">Mensagem</ResponsiveLabel>
+            <ResponsiveTextarea id="message" placeholder="Digite sua mensagem" />
+          </ResponsiveFormGroup>
+          
+          <Button type="submit">Enviar</Button>
+        </ResponsiveForm>
+      </ResponsiveSection>
+      
+      <ResponsiveSection>
+        <h2 className="text-xl font-semibold mb-4">Grid Responsivo</h2>
+        <ResponsiveGrid columns={3}>
           <Card>
             <CardHeader>
-              <CardTitle>Dados do Aluno</CardTitle>
-              <CardDescription>Preencha os dados do aluno para matrícula</CardDescription>
+              <CardTitle>Card 1</CardTitle>
+              <CardDescription>Descrição do card 1</CardDescription>
             </CardHeader>
             <CardContent>
-              <ResponsiveForm onSubmit={(e) => e.preventDefault()}>
-                <ResponsiveFormRow>
-                  <ResponsiveInput 
-                    label="Nome Completo" 
-                    placeholder="Digite o nome completo" 
-                    id="nome"
-                  />
-                  <ResponsiveInput 
-                    label="E-mail" 
-                    type="email" 
-                    placeholder="exemplo@email.com" 
-                    id="email"
-                  />
-                </ResponsiveFormRow>
-                
-                <ResponsiveFormRow>
-                  <ResponsiveInput 
-                    label="CPF" 
-                    placeholder="000.000.000-00" 
-                    id="cpf"
-                  />
-                  <ResponsiveInput 
-                    label="Data de Nascimento" 
-                    type="date" 
-                    id="data_nascimento"
-                  />
-                </ResponsiveFormRow>
-                
-                <ResponsiveFormRow>
-                  <ResponsiveSelect 
-                    label="Curso" 
-                    id="curso"
-                    options={[
-                      { value: "", label: "Selecione um curso" },
-                      { value: "1", label: "Desenvolvimento Web" },
-                      { value: "2", label: "Design UX/UI" },
-                      { value: "3", label: "Marketing Digital" },
-                    ]}
-                  />
-                  <ResponsiveSelect 
-                    label="Forma de Pagamento" 
-                    id="pagamento"
-                    options={[
-                      { value: "", label: "Selecione uma forma de pagamento" },
-                      { value: "cartao", label: "Cartão de Crédito" },
-                      { value: "boleto", label: "Boleto Bancário" },
-                      { value: "pix", label: "PIX" },
-                    ]}
-                  />
-                </ResponsiveFormRow>
-                
-                <ResponsiveTextarea 
-                  label="Observações" 
-                  placeholder="Digite observações adicionais" 
-                  id="observacoes"
-                />
-              </ResponsiveForm>
+              <p>Conteúdo do card 1</p>
             </CardContent>
-            <CardFooter className="flex justify-end gap-2">
-              <Button variant="outline">Cancelar</Button>
-              <Button>Enviar Matrícula</Button>
+            <CardFooter>
+              <Button variant="outline" size="sm">Ação</Button>
             </CardFooter>
           </Card>
-        </ResponsiveSection>
-
-        <ResponsiveSection 
-          title="Grid Responsivo" 
-          description="Exemplo de grid com diferentes números de colunas"
-        >
-          <ResponsiveGrid columns={3}>
-            {[1, 2, 3, 4, 5, 6].map((item) => (
-              <Card key={item}>
-                <CardHeader>
-                  <CardTitle>Card {item}</CardTitle>
-                  <CardDescription>Descrição do card {item}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p>Conteúdo do card {item}</p>
-                </CardContent>
-                <CardFooter>
-                  <Button variant="outline" className="w-full">Ver Detalhes</Button>
-                </CardFooter>
-              </Card>
-            ))}
-          </ResponsiveGrid>
-        </ResponsiveSection>
-      </ResponsiveContainer>
-    </ResponsiveLayout>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Card 2</CardTitle>
+              <CardDescription>Descrição do card 2</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p>Conteúdo do card 2</p>
+            </CardContent>
+            <CardFooter>
+              <Button variant="outline" size="sm">Ação</Button>
+            </CardFooter>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Card 3</CardTitle>
+              <CardDescription>Descrição do card 3</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p>Conteúdo do card 3</p>
+            </CardContent>
+            <CardFooter>
+              <Button variant="outline" size="sm">Ação</Button>
+            </CardFooter>
+          </Card>
+        </ResponsiveGrid>
+      </ResponsiveSection>
+    </ResponsiveContainer>
   );
 }

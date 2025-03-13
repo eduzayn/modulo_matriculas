@@ -19,11 +19,11 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Input } from '@/components/ui/input'
-import { uploadDocumento } from '../actions/matricula-actions'
-import { toast } from '@/components/ui/use-toast'
-import { useRouter } from 'next/navigation'
+} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { uploadDocumento } from '../actions/matricula-actions';
+import { toast } from '@/components/ui/use-toast';
+import { useRouter } from 'next/navigation';
 
 const documentoSchema = z.object({
   tipo: z.string().min(1, { message: 'Selecione o tipo de documento' }),
