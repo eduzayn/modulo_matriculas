@@ -9,18 +9,17 @@ const nextConfig = {
     serverActions: true,
   },
   webpack: (config, { isServer }) => {
-    // This will completely ignore the case of the path
+    // Handle case sensitivity issues
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@/components/ui/button': require('path').resolve('./components/ui/button'),
-      '@/components/ui/badge': require('path').resolve('./components/ui/badge'),
-      '@/components/ui/card': require('path').resolve('./components/ui/card'),
-      '@/components/ui/input': require('path').resolve('./components/ui/input'),
-      '@/components/ui/select': require('path').resolve('./components/ui/select'),
-      '@/components/ui/textarea': require('path').resolve('./components/ui/textarea'),
-      '@/components/ui/dialog': require('path').resolve('./components/ui/dialog'),
-      '@/components/ui/tabs': require('path').resolve('./components/ui/tabs'),
     };
+    
+    // Make module resolution case-insensitive
+    const origTest = config.module.rules[1].oneOf[2].test;
+    config.module.rules[1].oneOf[2].test = function(path) {
+      return origTest.test(path.toLowerCase());
+    };
+    
     return config;
   },
 };
