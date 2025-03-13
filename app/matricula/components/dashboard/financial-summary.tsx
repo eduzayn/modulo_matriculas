@@ -1,60 +1,57 @@
-'use client';
+import React from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { TrendingUp, TrendingDown } from 'lucide-react';
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../../components/ui/card';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+interface FinancialSummaryProps {
+  data: {
+    currentMonth: string;
+    lastMonth: string;
+    percentageChange: number;
+    trend: 'up' | 'down';
+  };
+}
 
-export function FinancialSummary() {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await fetch('/api/dashboard/financial-summary');
-        if (!response.ok) {
-          throw new Error('Erro ao carregar dados financeiros');
-        }
-        const result = await response.json();
-        setData(result.data.monthlyData);
-      } catch (err: any) {
-        setError(err.message || 'Erro ao carregar dados financeiros');
-      } finally {
-        setLoading(false);
-      }
-    }
-    
-    fetchData();
-  }, []);
-  
-  if (loading) return <div className="flex justify-center items-center h-64">
-    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-  </div>;
-  
-  if (error) return <div className="p-4 text-red-500">Erro: {error}</div>;
-  
+export function FinancialSummary({ data }: FinancialSummaryProps) {
   return (
     <Card>
       <CardHeader>
         <CardTitle>Resumo Financeiro</CardTitle>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip formatter={(value) => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} />
-            <Legend />
-            <Bar dataKey="receitas" fill="#4CAF50" name="Receitas" />
-            <Bar dataKey="pendentes" fill="#FFC107" name="Pendentes" />
-            <Bar dataKey="atrasados" fill="#F44336" name="Atrasados" />
-          </BarChart>
-        </ResponsiveContainer>
+        <div className="space-y-6">
+          <div className="flex flex-col space-y-2">
+            <span className="text-sm font-medium">Mês Atual</span>
+            <span className="text-3xl font-bold">{data.currentMonth}</span>
+          </div>
+          
+          <div className="flex flex-col space-y-2">
+            <span className="text-sm font-medium">Mês Anterior</span>
+            <span className="text-xl font-medium text-gray-500">{data.lastMonth}</span>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            {data.trend === 'up' ? (
+              <>
+                <div className="p-1 bg-green-100 rounded-full">
+                  <TrendingUp className="h-4 w-4 text-green-600" />
+                </div>
+                <span className="text-sm font-medium text-green-600">
+                  +{data.percentageChange}% em relação ao mês anterior
+                </span>
+              </>
+            ) : (
+              <>
+                <div className="p-1 bg-red-100 rounded-full">
+                  <TrendingDown className="h-4 w-4 text-red-600" />
+                </div>
+                <span className="text-sm font-medium text-red-600">
+                  -{data.percentageChange}% em relação ao mês anterior
+                </span>
+              </>
+            )}
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
 }
-
-export default FinancialSummary;

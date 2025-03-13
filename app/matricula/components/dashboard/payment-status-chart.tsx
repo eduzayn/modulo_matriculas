@@ -1,48 +1,16 @@
-'use client';
+import React from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../../components/ui/card';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+interface PaymentStatusChartProps {
+  data: {
+    paid: number;
+    pending: number;
+    overdue: number;
+  };
+}
 
-export function PaymentStatusChart() {
-  const [data, setData] = useState<Array<{name: string, value: number}>>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  
-  const COLORS = ['#4CAF50', '#FFC107', '#F44336'];
-  
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await fetch('/api/dashboard/financial-summary');
-        if (!response.ok) {
-          throw new Error('Erro ao carregar dados financeiros');
-        }
-        const result = await response.json();
-        
-        // Transformar dados para o gráfico de pizza
-        const { totalReceitas, totalPendentes, totalAtrasados } = result.data.metrics;
-        
-        setData([
-          { name: 'Pagos', value: totalReceitas },
-          { name: 'Pendentes', value: totalPendentes },
-          { name: 'Atrasados', value: totalAtrasados }
-        ]);
-      } catch (err: any) {
-        setError(err.message || 'Erro ao carregar dados financeiros');
-      } finally {
-        setLoading(false);
-      }
-    }
-    
-    fetchData();
-  }, []);
-  
-  if (loading) return <div className="flex justify-center items-center h-64">
-    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-  </div>;
-  
-  if (error) return <div className="p-4 text-red-500">Erro: {error}</div>;
+export function PaymentStatusChart({ data }: PaymentStatusChartProps) {
+  const total = data.paid + data.pending + data.overdue;
   
   return (
     <Card>
@@ -50,29 +18,65 @@ export function PaymentStatusChart() {
         <CardTitle>Status de Pagamentos</CardTitle>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
-          <PieChart>
-            <Pie
-              data={data}
-              cx="50%"
-              cy="50%"
-              labelLine={false}
-              outerRadius={80}
-              fill="#8884d8"
-              dataKey="value"
-              label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-            >
-              {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip formatter={(value) => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} />
-            <Legend />
-          </PieChart>
-        </ResponsiveContainer>
+        <div className="flex justify-center">
+          <div className="relative w-40 h-40">
+            <svg viewBox="0 0 100 100" className="w-full h-full">
+              {/* Paid segment */}
+              <circle
+                cx="50"
+                cy="50"
+                r="40"
+                fill="transparent"
+                stroke="#22c55e"
+                strokeWidth="20"
+                strokeDasharray={`${(data.paid / total) * 251.2} 251.2`}
+                transform="rotate(-90 50 50)"
+              />
+              
+              {/* Pending segment */}
+              <circle
+                cx="50"
+                cy="50"
+                r="40"
+                fill="transparent"
+                stroke="#eab308"
+                strokeWidth="20"
+                strokeDasharray={`${(data.pending / total) * 251.2} 251.2`}
+                strokeDashoffset={`${-((data.paid / total) * 251.2)}`}
+                transform="rotate(-90 50 50)"
+              />
+              
+              {/* Overdue segment */}
+              <circle
+                cx="50"
+                cy="50"
+                r="40"
+                fill="transparent"
+                stroke="#ef4444"
+                strokeWidth="20"
+                strokeDasharray={`${(data.overdue / total) * 251.2} 251.2`}
+                strokeDashoffset={`${-(((data.paid + data.pending) / total) * 251.2)}`}
+                transform="rotate(-90 50 50)"
+              />
+            </svg>
+          </div>
+        </div>
+        
+        <div className="flex justify-between mt-6">
+          <div className="flex items-center">
+            <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+            <span className="text-sm">Pagos ({data.paid}%)</span>
+          </div>
+          <div className="flex items-center">
+            <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
+            <span className="text-sm">Pendentes ({data.pending}%)</span>
+          </div>
+          <div className="flex items-center">
+            <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+            <span className="text-sm">Atrasados ({data.overdue}%)</span>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
 }
-
-export default PaymentStatusChart;
