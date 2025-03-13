@@ -18,11 +18,11 @@ export default function AlunoFinanceiroPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'paid':
-        return <Badge variant="success">Pago</Badge>;
+        return <Badge variant="outline">Pago</Badge>;
       case 'pending':
-        return <Badge variant="warning">Pendente</Badge>;
+        return <Badge variant="outline">Pendente</Badge>;
       case 'overdue':
-        return <Badge variant="destructive">Atrasado</Badge>;
+        return <Badge variant="outline">Atrasado</Badge>;
       default:
         return <Badge>Desconhecido</Badge>;
     }

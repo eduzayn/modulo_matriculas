@@ -102,7 +102,7 @@ export default function ContractPage({ params }: ContractPageProps) {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>Detalhes do Contrato</CardTitle>
-                <Badge variant={contractSigned ? 'success' : 'warning'}>
+                <Badge variant={contractSigned ? 'outline' : 'outline'}>
                   {contractSigned ? 'Assinado' : 'Pendente'}
                 </Badge>
               </div>

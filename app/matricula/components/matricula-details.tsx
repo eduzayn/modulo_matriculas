@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from "@/components/ui/button"'
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -9,14 +9,14 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"'
+} from "@/components/ui/card"
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@/components/ui/tabs"'
-import { Badge } from "@/components/ui/badge"'
+} from "@/components/ui/tabs"
+import { Badge } from "@/components/ui/badge"
 import { Separator } from '@/components/ui/separator'
 import { useRouter } from 'next/navigation'
 import { matriculaRoutes } from '../routes'
@@ -77,23 +77,23 @@ export function MatriculaDetails({ matricula }: MatriculaDetailsProps) {
     }
   }
 
-  const getStatusBadgeVariant = (status: string) => {
-    const variants: Record<string, string> = {
+  const getStatusBadgeVariant = (status: string): "outline" | "secondary" | "destructive" | "default" | null | undefined => {
+    const variants: Record<string, "outline" | "secondary" | "destructive" | "default" | null | undefined> = {
       [MatriculaStatus.PENDENTE]: 'outline',
       [MatriculaStatus.APROVADO]: 'secondary',
       [MatriculaStatus.REJEITADO]: 'destructive',
       [MatriculaStatus.ATIVO]: 'default',
-      [MatriculaStatus.TRANCADO]: 'warning',
+      [MatriculaStatus.TRANCADO]: 'outline',
       [MatriculaStatus.CANCELADO]: 'destructive',
-      [MatriculaStatus.CONCLUIDO]: 'success',
+      [MatriculaStatus.CONCLUIDO]: 'outline',
     }
     return variants[status] || 'outline'
   }
 
-  const getDocumentStatusBadgeVariant = (status: string) => {
-    const variants: Record<string, string> = {
+  const getDocumentStatusBadgeVariant = (status: string): "outline" | "secondary" | "destructive" | "default" | null | undefined => {
+    const variants: Record<string, "outline" | "secondary" | "destructive" | "default" | null | undefined> = {
       [DocumentoStatus.PENDENTE]: 'outline',
-      [DocumentoStatus.APROVADO]: 'success',
+      [DocumentoStatus.APROVADO]: 'outline',
       [DocumentoStatus.REJEITADO]: 'destructive',
     }
     return variants[status] || 'outline'
@@ -391,7 +391,7 @@ export function MatriculaDetails({ matricula }: MatriculaDetailsProps) {
                             <td className="p-2">{formatDate(pagamento.data_vencimento)}</td>
                             <td className="p-2">{formatCurrency(pagamento.valor)}</td>
                             <td className="p-2">
-                              <Badge variant={pagamento.status === 'pago' ? 'success' : pagamento.status === 'atrasado' ? 'destructive' : 'outline'}>
+                              <Badge variant={pagamento.status === 'pago' ? 'outline' : pagamento.status === 'atrasado' ? 'outline' : 'outline'}>
                                 {pagamento.status}
                               </Badge>
                             </td>

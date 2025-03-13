@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import {
   Card,
   CardContent,
@@ -10,7 +10,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/button"
+} from "@/components/ui/card"
 import {
   Dialog,
   DialogContent,
@@ -19,15 +19,15 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/button"
+} from "@/components/ui/dialog"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/button"
-import { Textarea } from "@/components/ui/button"
+} from "@/components/ui/Select"
+import { Textarea } from "@/components/ui/Textarea"
 import { DocumentoStatus } from '../types/matricula'
 import { avaliarDocumento } from '../actions/matricula-actions'
 import { toast } from '@/components/ui/use-toast'
@@ -90,10 +90,10 @@ export function DocumentList({ documents, isAdmin = false }: DocumentListProps) 
     setIsDialogOpen(true)
   }
 
-  const getStatusBadgeVariant = (status: DocumentoStatus) => {
-    const variants: Record<DocumentoStatus, string> = {
+  const getStatusBadgeVariant = (status: DocumentoStatus): "outline" | "secondary" | "destructive" | "default" | null | undefined => {
+    const variants: Record<DocumentoStatus, "outline" | "secondary" | "destructive" | "default" | null | undefined> = {
       [DocumentoStatus.PENDENTE]: 'outline',
-      [DocumentoStatus.APROVADO]: 'success',
+      [DocumentoStatus.APROVADO]: 'outline',
       [DocumentoStatus.REJEITADO]: 'destructive',
     }
     return variants[status] || 'outline'
