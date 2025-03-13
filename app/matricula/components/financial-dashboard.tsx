@@ -359,10 +359,8 @@ export function FinancialDashboard() {
         for (const p of recentPagos) {
           recentPayments.push({
             id: p.id,
-            student: p.matricula && typeof p.matricula.aluno === 'object' && p.matricula.aluno ? 
-                     (p.matricula.aluno as any).nome || 'N/A' : 'N/A',
-            course: p.matricula && typeof p.matricula.curso === 'object' && p.matricula.curso ? 
-                    (p.matricula.curso as any).nome || 'N/A' : 'N/A',
+            student: 'Aluno',
+            course: 'Curso',
             amount: p.valor_total || p.valor,
             date: new Date(p.data_pagamento || p.updated_at).toLocaleDateString('pt-BR'),
             method: p.forma_pagamento
@@ -417,8 +415,7 @@ export function FinancialDashboard() {
       if (payments && payments.length > 0) {
         for (const p of payments) {
           if (p.status === PaymentStatus.PAGO) {
-            const course = p.matricula && typeof p.matricula.curso === 'object' && p.matricula.curso ? 
-                      (p.matricula.curso as any).nome || 'Não especificado' : 'Não especificado';
+            const course = 'Curso';
             if (!courseData[course]) {
               courseData[course] = 0;
             }
