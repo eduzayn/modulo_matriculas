@@ -1,2 +1,2 @@
-// Re-export Input component from the uppercase Input.tsx file
+// Re-export Input components from uppercase files
 export { Input } from '../Input';
