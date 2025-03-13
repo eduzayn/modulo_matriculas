@@ -17,8 +17,8 @@ const nextConfig = {
   swcMinify: false,
   // Increase timeout for static generation
   staticPageGenerationTimeout: 300,
-  // Use standalone output for Vercel compatibility
-  output: 'standalone',
+  // Use export output for static site generation
+  output: 'export',
   // Environment variables with fallbacks
   env: {
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://uasnyifizdjxogowijip.supabase.co',
@@ -26,7 +26,6 @@ const nextConfig = {
   },
   // Disable powered by header
   poweredByHeader: false,
-  // Remove invalid experimental configuration
   // Disable trailing slash
   trailingSlash: false
 }
