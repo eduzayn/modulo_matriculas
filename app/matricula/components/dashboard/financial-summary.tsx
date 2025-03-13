@@ -18,8 +18,8 @@ export function FinancialSummary() {
         }
         const result = await response.json();
         setData(result.data.monthlyData);
-      } catch (err) {
-        setError(err.message);
+      } catch (err: any) {
+        setError(err.message || 'Erro ao carregar dados financeiros');
       } finally {
         setLoading(false);
       }
