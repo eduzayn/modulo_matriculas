@@ -7,8 +7,9 @@ export default function DashboardRedirect() {
   const router = useRouter();
   
   useEffect(() => {
-    router.push('/matricula/pages/dashboard');
-  }, [router]);
+    // Use window.location for more reliable redirection in static export
+    window.location.href = window.location.origin + '/matricula/pages/dashboard';
+  }, []);
   
   return (
     <div className="flex min-h-screen items-center justify-center">
