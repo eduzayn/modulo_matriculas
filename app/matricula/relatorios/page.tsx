@@ -2,9 +2,9 @@
 
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Button } from '../../../components/ui/Button';
-import { Input } from '../../../components/ui/Input';
-import { ResponsiveLayout, ResponsiveContainer, ResponsiveHeader } from '../../../app/components/ui/ResponsiveLayout';
+import { Button } from '../../../components/ui/button';
+import { Input } from '../../../components/ui/input';
+import { ResponsiveLayout, ResponsiveContainer, ResponsiveHeader } from '../../../app/components/ui/responsiveLayout';
 
 export default function RelatoriosPage() {
   // Mock data for reports

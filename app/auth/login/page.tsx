@@ -31,10 +31,11 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/matricula/pages/dashboard";
+  const callbackUrl = searchParams.get("callbackUrl") || "/matricula/dashboard";
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
 
   // Configurar o formulário com React Hook Form e validação Zod
   const form = useForm<LoginFormValues>({
@@ -48,14 +49,20 @@ export default function LoginPage() {
   // Função para lidar com o envio do formulário
   const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
+    setAuthError(null);
+    
     try {
-      // Verificar credenciais temporárias padronizadas
-      if (data.email === 'teste@edunexia.com.br' && data.password === 'Teste@123') {
-        console.log("Login com credenciais temporárias");
+      // Verificar credenciais temporárias padronizadas para desenvolvimento
+      const isDevelopment = process.env.NODE_ENV === 'development';
+      if (isDevelopment && data.email === 'teste@edunexia.com.br' && data.password === 'Teste@123') {
+        console.log("Login com credenciais temporárias de desenvolvimento");
+        
+        // Configurar cookie de bypass para desenvolvimento
+        document.cookie = "bypass-auth=true; path=/; max-age=86400";
         
         // Login bem-sucedido com credenciais temporárias
         toast({
-          title: "Login realizado com sucesso",
+          title: "Login realizado com sucesso (modo de teste)",
           description: "Você será redirecionado para o sistema.",
           variant: "default",
         });
@@ -68,28 +75,47 @@ export default function LoginPage() {
         return;
       }
       
-      // Simulação de login bem-sucedido sem verificação no banco de dados
-      // Apenas para fins de teste e desenvolvimento
+      // Autenticação real com Supabase
+      const { data: authData, error } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
+      });
+
+      if (error) {
+        console.error("Erro de autenticação:", error.message);
+        setAuthError(error.message);
+        
+        toast({
+          title: "Erro ao fazer login",
+          description: error.message || "Verifique suas credenciais e tente novamente.",
+          variant: "destructive",
+        });
+        return;
+      }
       
-      // Verificar se o formulário está válido (já feito pelo React Hook Form)
-      console.log("Login com:", data.email, "senha:", data.password);
-      
-      // Login bem-sucedido, redirecionar para a URL de callback ou dashboard
+      // Login bem-sucedido
       toast({
         title: "Login realizado com sucesso",
         description: "Você será redirecionado para o sistema.",
         variant: "default",
       });
 
-      // Redirecionar imediatamente para o dashboard usando URL absoluta
-      window.location.href = window.location.origin + "/matricula/pages/dashboard";
+      // Determinar para onde redirecionar com base no papel do usuário
+      const userRole = authData.user?.user_metadata?.role || 'user';
+      const redirectPath = userRole === 'aluno' 
+        ? '/aluno/dashboard' 
+        : '/matricula/dashboard';
+      
+      // Redirecionar para a URL de callback ou dashboard baseado no papel
+      router.push(callbackUrl || redirectPath);
+      
     } catch (error: any) {
-      console.error("Erro de autenticação:", error);
+      console.error("Erro inesperado:", error);
       
       // Exibir mensagem de erro
       toast({
         title: "Erro ao fazer login",
-        description: error.message || "Verifique suas credenciais e tente novamente.",
+        description: error.message || "Ocorreu um erro inesperado. Tente novamente mais tarde.",
         variant: "destructive",
       });
     } finally {
@@ -110,6 +136,11 @@ export default function LoginPage() {
         </CardHeader>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
+            {authError && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-md text-red-600 text-sm">
+                {authError}
+              </div>
+            )}
             <div className="space-y-2">
               <label
                 htmlFor="email"
@@ -201,10 +232,12 @@ export default function LoginPage() {
                 Esqueceu sua senha?
               </a>
             </div>
-            {/* Credenciais temporárias */}
-            <div className="text-center text-xs text-gray-500">
-              Credenciais temporárias: teste@edunexia.com.br / Teste@123
-            </div>
+            {/* Credenciais temporárias - apenas em desenvolvimento */}
+            {process.env.NODE_ENV === 'development' && (
+              <div className="text-center text-xs text-gray-500">
+                Credenciais temporárias: teste@edunexia.com.br / Teste@123
+              </div>
+            )}
           </CardFooter>
         </form>
       </Card>

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
 
 // Rotas públicas que não requerem autenticação
 const publicRoutes = [
@@ -8,23 +9,24 @@ const publicRoutes = [
   '/auth/login',
   '/auth/register',
   '/auth/reset-password',
+  '/api/auth/callback',
+  '/auth/signout',
 ]
 
 // Rotas que requerem autenticação
 const protectedRoutes = [
-  '/matricula/pages/dashboard',
-  '/matricula/reports',
-  '/matricula/discounts',
-  '/matricula/list',
-  '/matricula/create',
-  '/matricula/support',
+  '/matricula/dashboard',
+  '/matricula/relatorios',
+  '/matricula/descontos',
+  '/matricula/alunos',
+  '/matricula/cursos',
+  '/matricula/pagamentos',
+  '/matricula/configuracoes',
 ]
 
 // Rotas que requerem permissão de administrador
 const adminRoutes = [
-  '/matricula/pages/dashboard',
-  '/matricula/reports',
-  '/matricula/discounts',
+  '/matricula/configuracoes',
 ]
 
 // Rotas do portal do aluno
@@ -41,14 +43,105 @@ const alunoRoutes = [
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // MODO DE DESENVOLVIMENTO: Bypass de autenticação para testes
-  // Remover esta linha em produção antes do deploy final
-  return NextResponse.next()
+  // Verificar se estamos em modo de desenvolvimento
+  const isDevelopment = process.env.NODE_ENV === 'development'
+  
+  // Verificar se a rota atual é pública
+  const isPublicRoute = publicRoutes.some(route => 
+    pathname.startsWith(route) || pathname === '/'
+  )
+
+  // Se for uma rota pública, permitir acesso sem autenticação
+  if (isPublicRoute) {
+    return NextResponse.next()
+  }
+
+  // Em modo de desenvolvimento, podemos opcionalmente permitir bypass de autenticação
+  if (isDevelopment && request.cookies.get('bypass-auth')?.value === 'true') {
+    console.log('Bypass de autenticação ativado para desenvolvimento')
+    return NextResponse.next()
+  }
+
+  // Criar resposta inicial
+  let response = NextResponse.next()
+
+  // Inicializar o cliente Supabase
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
+      },
+    }
+  )
+
+  // Obter token de autenticação do cookie
+  const authCookie = request.cookies.get('sb-auth-token')?.value
+  
+  // Se não houver cookie de autenticação, redirecionar para login
+  if (!authCookie) {
+    const redirectUrl = new URL('/auth/login', request.url)
+    redirectUrl.searchParams.set('callbackUrl', request.url)
+    return NextResponse.redirect(redirectUrl)
+  }
+
+  try {
+    // Verificar se o token é válido
+    const { data: { session }, error } = await supabase.auth.getSession()
+
+    // Se houver erro ou não houver sessão, redirecionar para login
+    if (error || !session) {
+      const redirectUrl = new URL('/auth/login', request.url)
+      redirectUrl.searchParams.set('callbackUrl', request.url)
+      return NextResponse.redirect(redirectUrl)
+    }
+
+    // Verificar se a rota atual requer autenticação para o módulo de matrículas
+    const isMatriculaProtectedRoute = protectedRoutes.some(route => 
+      pathname.startsWith(route) || pathname.includes('/matricula/') && pathname.includes('/edit') || 
+      pathname.includes('/matricula/') && pathname.includes('/documents') ||
+      pathname.includes('/matricula/') && pathname.includes('/contract') ||
+      pathname.includes('/matricula/') && pathname.includes('/payments')
+    )
+
+    // Verificar se a rota atual é do portal do aluno
+    const isAlunoRoute = pathname.startsWith('/aluno')
+
+    // Verificar se a rota atual requer permissão de administrador
+    const isAdminRoute = adminRoutes.some(route => pathname.startsWith(route))
+
+    // Verificar permissões de administrador para rotas que requerem
+    if (isAdminRoute) {
+      const userRole = session.user?.user_metadata?.role
+      if (userRole !== 'admin') {
+        return NextResponse.redirect(new URL('/matricula/dashboard', request.url))
+      }
+    }
+
+    // Verificar permissões para rotas do portal do aluno
+    if (isAlunoRoute) {
+      const userRole = session.user?.user_metadata?.role
+      if (userRole !== 'aluno') {
+        return NextResponse.redirect(new URL('/matricula/dashboard', request.url))
+      }
+    }
+
+    return response
+  } catch (error) {
+    console.error('Erro ao verificar autenticação:', error)
+    // Em caso de erro, redirecionar para login
+    const redirectUrl = new URL('/auth/login', request.url)
+    redirectUrl.searchParams.set('callbackUrl', request.url)
+    return NextResponse.redirect(redirectUrl)
+  }
 }
 
 // Configurar em quais caminhos o middleware será executado
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/((?!api/auth/callback|_next/static|_next/image|favicon.ico).*)',
   ],
 }

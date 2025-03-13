@@ -1,70 +1,56 @@
-'use client';
+import React from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../../components/ui/card';
+interface RecentTransactionsProps {
+  data: Array<{
+    id: number;
+    student: string;
+    amount: string;
+    date: string;
+    status: string;
+  }>;
+}
 
-export function RecentTransactions() {
-  const [transactions, setTransactions] = useState<Array<{aluno: string, curso: string, data: string, valor: number, forma_pagamento: string}>>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await fetch('/api/dashboard/financial-summary');
-        if (!response.ok) {
-          throw new Error('Erro ao carregar transações recentes');
-        }
-        const result = await response.json();
-        setTransactions(result.data.recentPayments);
-      } catch (err: any) {
-        setError(err.message || 'Erro ao carregar transações recentes');
-      } finally {
-        setLoading(false);
-      }
-    }
-    
-    fetchData();
-  }, []);
-  
-  if (loading) return <div className="flex justify-center items-center h-64">
-    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-  </div>;
-  
-  if (error) return <div className="p-4 text-red-500">Erro: {error}</div>;
-  
+export function RecentTransactions({ data }: RecentTransactionsProps) {
   return (
     <Card>
       <CardHeader>
         <CardTitle>Transações Recentes</CardTitle>
       </CardHeader>
       <CardContent>
-        {transactions.length > 0 ? (
-          <div className="space-y-4">
-            {transactions.map((transaction, index) => (
-              <div key={index} className="flex items-center justify-between border-b pb-2">
-                <div>
-                  <p className="font-medium">{transaction.aluno}</p>
-                  <p className="text-sm text-muted-foreground">{transaction.curso}</p>
-                  <p className="text-xs text-muted-foreground">{transaction.data}</p>
-                </div>
-                <div className="text-right">
-                  <p className="font-medium">
-                    {transaction.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                  </p>
-                  <p className="text-xs text-muted-foreground">{transaction.forma_pagamento}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-center text-muted-foreground py-4">
-            Nenhuma transação recente encontrada
-          </p>
-        )}
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-left">
+            <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+              <tr>
+                <th scope="col" className="px-4 py-3">Aluno</th>
+                <th scope="col" className="px-4 py-3">Valor</th>
+                <th scope="col" className="px-4 py-3">Data</th>
+                <th scope="col" className="px-4 py-3">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((transaction) => (
+                <tr key={transaction.id} className="bg-white border-b hover:bg-gray-50">
+                  <td className="px-4 py-3 font-medium text-gray-900">{transaction.student}</td>
+                  <td className="px-4 py-3">{transaction.amount}</td>
+                  <td className="px-4 py-3">{transaction.date}</td>
+                  <td className="px-4 py-3">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      transaction.status === 'Pago' 
+                        ? 'bg-green-100 text-green-800' 
+                        : transaction.status === 'Pendente' 
+                          ? 'bg-yellow-100 text-yellow-800' 
+                          : 'bg-red-100 text-red-800'
+                    }`}>
+                      {transaction.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </CardContent>
     </Card>
   );
 }
-
-export default RecentTransactions;

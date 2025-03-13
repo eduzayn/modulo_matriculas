@@ -1,1 +1,2 @@
-export { Badge, badgeVariants } from '../Badge';
+// Re-export Badge components from uppercase files
+export { Badge } from '../Badge';
