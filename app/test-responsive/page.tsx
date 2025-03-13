@@ -15,7 +15,7 @@ import {
   ResponsiveInput, 
   ResponsiveTextarea, 
   ResponsiveSelect 
-} from "@/app/components/ui/responsiveForm"';
+} from '@/app/components/ui/responsiveForm';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 

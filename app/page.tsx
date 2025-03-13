@@ -2,8 +2,8 @@ import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from '../components/ui/button';
 import { ResponsiveLayout } from "@/app/components/ui/responsiveLayout";
-import { ResponsiveContainer } from "@/app/components/ui/responsiveContainer"';
-import { ResponsiveHeader } from "@/app/components/ui/responsiveHeader"';
+import { ResponsiveContainer } from '@/app/components/ui/responsiveContainer';
+import { ResponsiveHeader } from '@/app/components/ui/responsiveHeader';
 import { Users, BookOpen, CreditCard, BarChart2 } from 'lucide-react';
 
 export default function Home() {
