@@ -7,7 +7,7 @@ import {
   ResponsiveHeader, 
   ResponsiveSection, 
   ResponsiveGrid 
-} from '../components/ui/ResponsiveLayout';
+} from '@/components/ui/responsiveLayout';
 import { 
   ResponsiveForm, 
   ResponsiveFormGroup, 
@@ -15,7 +15,7 @@ import {
   ResponsiveInput, 
   ResponsiveTextarea, 
   ResponsiveSelect 
-} from '../components/ui/ResponsiveForm';
+} from '@/components/ui/responsiveForm';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 
