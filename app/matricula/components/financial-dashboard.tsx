@@ -175,7 +175,11 @@ const DateRangePicker = ({ dateRange, setDateRange }: DateRangePickerProps) => {
             mode="range"
             defaultMonth={dateRange.from}
             selected={dateRange}
-            onSelect={handleDateRangeSelect}
+            onSelect={(range) => {
+              if (range?.from && range?.to) {
+                setDateRange({ from: range.from, to: range.to });
+              }
+            }}
             onChange={(range: { from: Date; to?: Date | undefined }) => {
               if (range.from && range.to) {
                 setIsCalendarOpen(false);
@@ -284,23 +288,35 @@ export function FinancialDashboard() {
       }
       
       // Calcular estatísticas
-      const totalReceived = payments && payments.length > 0 
-        ? payments
-            .filter((p: Payment) => p.status === PaymentStatus.PAGO)
-            .reduce((sum: number, p: Payment) => sum + (p.valor_total || p.valor), 0)
-        : 0;
+      // Calcular total recebido
+      let totalReceived = 0;
+      if (payments && payments.length > 0) {
+        const pagos = payments.filter(p => p.status === PaymentStatus.PAGO);
+        for (const p of pagos) {
+          totalReceived += (p.valor_total || p.valor);
+        }
+      }
       
-      const totalPending = payments && payments.length > 0
-        ? payments
-            .filter((p: Payment) => p.status === PaymentStatus.PENDENTE)
-            .reduce((sum: number, p: Payment) => sum + p.valor, 0)
-        : 0;
+      // Calcular total pendente
+      let totalPending = 0;
+      if (payments && payments.length > 0) {
+        const pendentes = payments.filter(p => p.status === PaymentStatus.PENDENTE);
+        for (const p of pendentes) {
+          totalPending += p.valor;
+        }
+      }
       
-      const totalOverdue = payments && payments.length > 0
-        ? payments
-            .filter((p: Payment) => p.status === PaymentStatus.ATRASADO || (p.status === PaymentStatus.PENDENTE && new Date(p.data_vencimento) < new Date()))
-            .reduce((sum: number, p: Payment) => sum + p.valor, 0)
-        : 0;
+      // Calcular total atrasado
+      let totalOverdue = 0;
+      if (payments && payments.length > 0) {
+        const atrasados = payments.filter(p => 
+          p.status === PaymentStatus.ATRASADO || 
+          (p.status === PaymentStatus.PENDENTE && new Date(p.data_vencimento) < new Date())
+        );
+        for (const p of atrasados) {
+          totalOverdue += p.valor;
+        }
+      }
       
       const overdueCount = payments && payments.length > 0
         ? payments.filter((p: Payment) => 
@@ -420,12 +436,12 @@ export function FinancialDashboard() {
     }
   }, [dateRange]);
   
-  // Função definida antes de ser usada
-  const handleDateRangeSelect = (range: { from: Date; to?: Date | undefined }) => {
+  // Função para lidar com seleção de datas
+  function handleDateRangeSelect(range: { from: Date; to?: Date | undefined }) {
     if (range.from && range.to) {
       setDateRange({ from: range.from, to: range.to });
     }
-  };
+  }
   
   // Função para gerar relatório
   const generateReport = async (reportType: string) => {
