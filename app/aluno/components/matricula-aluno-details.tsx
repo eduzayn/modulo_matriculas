@@ -8,14 +8,14 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"'
+} from "@/components/ui/card"
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@/components/ui/tabs"'
-import { Badge } from "@/components/ui/badge"'
+} from "@/components/ui/tabs"
+import { Badge } from "@/components/ui/badge"
 import { Separator } from '@/components/ui/separator'
 import Link from 'next/link'
 
@@ -24,15 +24,15 @@ interface MatriculaAlunoDetailsProps {
 }
 
 export function MatriculaAlunoDetails({ matricula }: MatriculaAlunoDetailsProps) {
-  const getStatusBadgeVariant = (status: string) => {
-    const variants: Record<string, string> = {
+  const getStatusBadgeVariant = (status: string): "outline" | "secondary" | "destructive" | "default" | null | undefined => {
+    const variants: Record<string, "outline" | "secondary" | "destructive" | "default" | null | undefined> = {
       'pendente': 'outline',
       'aprovado': 'secondary',
       'rejeitado': 'destructive',
       'ativo': 'default',
-      'trancado': 'warning',
+      'trancado': 'outline',
       'cancelado': 'destructive',
-      'concluido': 'success',
+      'concluido': 'outline',
     }
     return variants[status] || 'outline'
   }
@@ -252,7 +252,7 @@ export function MatriculaAlunoDetails({ matricula }: MatriculaAlunoDetailsProps)
                             <td className="p-2">{formatDate(pagamento.data_vencimento)}</td>
                             <td className="p-2">{formatCurrency(pagamento.valor)}</td>
                             <td className="p-2">
-                              <Badge variant={pagamento.status === 'pago' ? 'success' : pagamento.status === 'atrasado' ? 'destructive' : 'outline'}>
+                              <Badge variant={pagamento.status === 'pago' ? 'outline' : pagamento.status === 'atrasado' ? 'outline' : 'outline'}>
                                 {pagamento.status}
                               </Badge>
                             </td>
