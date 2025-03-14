@@ -14,7 +14,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@/components/ui/Tabs"
+} from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/Badge"
 import { Separator } from '@/components/ui/separator'
 import Link from 'next/link'
