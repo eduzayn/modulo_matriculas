@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/Button"
+import { Button } from "@/components/ui/button"
 import Link from 'next/link'
 import { matriculaRoutes } from '@/app/matricula/routes'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { redirect } from 'next/navigation'
 import { Textarea } from "@/components/ui/Textarea";
 import React from 'react'
