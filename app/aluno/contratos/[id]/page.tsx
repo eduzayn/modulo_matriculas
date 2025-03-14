@@ -5,6 +5,9 @@ import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import SignContractForm from '@/app/matricula/components/contract/sign-contract-form'
 import { getContratoData } from './actions'
+// Import generateStaticParams
+import { generateStaticParams } from './generateStaticParams'
+export { generateStaticParams }
 
 // Interfaces para componentes UI
 interface ComponentBaseProps {
