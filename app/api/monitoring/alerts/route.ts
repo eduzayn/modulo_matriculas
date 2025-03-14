@@ -1,74 +1,28 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { env } from 'process';
+import { NextResponse } from 'next/server';
 
-/**
- * API para obter alertas de monitoramento
- * 
- * @route GET /api/monitoring/alerts
- */
-export async function GET(request: NextRequest) {
-  try {
-    // Authentication is now handled by the main site
-    // TODO: Implement authentication check using main site's auth system
-    // Example:
-    // const session = await mainSiteAuth.getSession(request);
-    // if (!session.isAuthenticated) {
-    //   return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
-    // }
-    // if (!session.isAdmin) {
-    //   return NextResponse.json({ error: 'Acesso negado' }, { status: 403 });
-    // }
-    
-    // For now, we'll assume the request is authenticated and authorized
-    const userId = 'placeholder-user-id';
-    
-    // Obter parâmetros da requisição
-    const searchParams = request.nextUrl.searchParams;
-    const severity = searchParams.get('severity');
-    const startDate = searchParams.get('start_date');
-    const endDate = searchParams.get('end_date');
-    const limit = parseInt(searchParams.get('limit') || '100');
-    
-    // Construir consulta
-    let query = supabase
-      .from('monitoring_alerts')
-      .select('*')
-      .order('timestamp', { ascending: false })
-      .limit(limit);
-    
-    if (severity) {
-      query = query.eq('severity', severity);
+// Force static generation
+export const dynamic = 'force-static';
+
+export async function GET() {
+  // Mock data for monitoring alerts
+  const mockAlertData = {
+    alerts: [
+      { id: 1, type: 'payment_overdue', message: 'Pagamento atrasado: Aluno João Silva', severity: 'high', created_at: new Date().toISOString() },
+      { id: 2, type: 'document_pending', message: 'Documento pendente: Aluna Maria Oliveira', severity: 'medium', created_at: new Date().toISOString() },
+      { id: 3, type: 'contract_expiring', message: 'Contrato expirando: Aluno Pedro Santos', severity: 'low', created_at: new Date().toISOString() },
+      { id: 4, type: 'system_notification', message: 'Manutenção programada: 15/04/2025', severity: 'info', created_at: new Date().toISOString() }
+    ],
+    stats: {
+      total: 4,
+      high: 1,
+      medium: 1,
+      low: 1,
+      info: 1
     }
-    
-    if (startDate) {
-      query = query.gte('timestamp', new Date(startDate).toISOString());
-    }
-    
-    if (endDate) {
-      query = query.lte('timestamp', new Date(endDate).toISOString());
-    }
-    
-    // Executar consulta
-    const { data, error } = await query;
-    
-    if (error) {
-      throw error;
-    }
-    
-    return NextResponse.json({
-      success: true,
-      data: data.map(alert => ({
-        ...alert,
-        metadata: alert.metadata ? JSON.parse(alert.metadata) : {}
-      }))
-    });
-  } catch (error) {
-    console.error('Erro ao processar requisição de alertas:', error);
-    
-    return NextResponse.json(
-      { error: 'Erro interno do servidor' },
-      { status: 500 }
-    );
-  }
+  };
+
+  return NextResponse.json({
+    success: true,
+    data: mockAlertData
+  });
 }
