@@ -1,6 +1,6 @@
 'use client'
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/Button"
 import {
   Card,
   CardContent,
@@ -252,7 +252,7 @@ export function MatriculaAlunoDetails({ matricula }: MatriculaAlunoDetailsProps)
                             <td className="p-2">{formatDate(pagamento.data_vencimento)}</td>
                             <td className="p-2">{formatCurrency(pagamento.valor)}</td>
                             <td className="p-2">
-                              <Badge variant={pagamento.status === 'pago' ? 'outline' : pagamento.status === 'atrasado' ? 'outline' : 'outline'}>
+                              <Badge variant={pagamento.status === 'pago' ? 'outline' : pagamento.status === 'atrasado' ? 'destructive' : 'outline'}>
                                 {pagamento.status}
                               </Badge>
                             </td>

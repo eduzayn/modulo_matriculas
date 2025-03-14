@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/Card";
-import { Input } from '@/components/ui/input';
+import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/Select';
 import { Badge } from '@/components/ui/Badge';
@@ -58,7 +58,7 @@ export default function TestPage() {
             <div className="flex flex-wrap gap-2">
               <Badge>Padrão</Badge>
               <Badge variant="secondary">Secundário</Badge>
-              <Badge variant="outline">Erro</Badge>
+              <Badge variant="destructive">Erro</Badge>
               <Badge variant="outline">Contorno</Badge>
               <Badge variant="outline">Sucesso</Badge>
             </div>

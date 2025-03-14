@@ -1,12 +1,10 @@
-import React from 'react'
-import { cookies } from 'next/headers'
-import { createClient } from '@/lib/supabase/server'
+'use client'
+
+import React, { useEffect, useState } from 'react'
 import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import SignContractForm from '@/app/matricula/components/contract/sign-contract-form'
-
-// Initialize Supabase client
-const supabase = createClient(cookies())
+import { getContratoData } from './actions'
 
 // Interfaces para componentes UI
 interface ComponentBaseProps {
@@ -87,123 +85,142 @@ const Button: React.FC<ButtonProps> = ({
   )
 }
 
-interface ContratoDetailsPageProps {
-  params: {
-    id: string
-  }
-}
+export default function ContratoDetailsPage({ params }: { params: { id: string } }) {
+  const [contratoData, setContratoData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-export default async function ContratoDetailsPage({ params }: ContratoDetailsPageProps) {
-  const { id } = params
-  // Authentication is now handled by the main site
-  // TODO: Replace with main site authentication
-  const userId = ''; // Get from main site auth
-  const userRole = ''; // Get from main site auth
-  
-  // Get student data from API
-  const aluno = null; // TODO: Fetch from main site API
-  
-  // Obter detalhes do contrato
-  const { data: contrato, error } = await supabase
-    .from('matricula_contratos')
-    .select(`
-      *,
-      matricula:matricula_id(
-        id,
-        curso:courses(*)
-      )
-    `)
-    .eq('id', id)
-    .single()
-  
-  if (error || !contrato) {
-    notFound()
+  useEffect(() => {
+    async function loadContratoData() {
+      try {
+        const data = await getContratoData(params.id);
+        if (data.error) {
+          setError(data.error);
+        } else {
+          setContratoData(data);
+        }
+      } catch (err) {
+        setError('Failed to load contract data');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadContratoData();
+  }, [params.id]);
+
+  if (loading) {
+    return <div className="p-8 text-center">Carregando detalhes do contrato...</div>;
   }
-  
-  // Verificar se o contrato pertence a uma matrícula do aluno
-  const { data: matricula } = await supabase
-    .from('matricula.registros')
-    .select('id')
-    .eq('id', contrato.matricula_id)
-    .eq('aluno_id', aluno.id)
-    .single()
-  
-  if (!matricula) {
-    redirect('/aluno/contratos')
+
+  if (error) {
+    return <div className="p-8 text-center text-red-500">Erro: {error}</div>;
   }
+
+  if (!contratoData?.contrato) {
+    return <div className="p-8 text-center">Contrato não encontrado</div>;
+  }
+
+  const { contrato, matricula } = contratoData;
   
-  // Função para formatar data
   const formatDate = (dateString: string) => {
-    if (!dateString) return 'N/A'
-    return new Date(dateString).toLocaleDateString('pt-BR', {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('pt-BR', {
       day: '2-digit',
       month: '2-digit',
-      year: 'numeric',
-    })
-  }
+      year: 'numeric'
+    }).format(date);
+  };
   
   return (
-    <div className="container py-10 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Detalhes do Contrato</h1>
-          <p className="text-neutral-500">
-            Visualize e assine seu contrato de matrícula
-          </p>
-        </div>
-        <Button variant="outline" asChild>
-          <Link href="/aluno/contratos">
-            Voltar
-          </Link>
-        </Button>
+    <div className="container mx-auto py-8">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Detalhes do Contrato</h1>
+        <Link href="/aluno/contratos" className="text-blue-500 hover:underline">
+          Voltar para lista
+        </Link>
       </div>
-      
-      <Card>
-        <CardHeader>
-          <CardTitle>{contrato.titulo}</CardTitle>
-          <CardDescription>Versão: {contrato.versao}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <h3 className="font-medium">Curso</h3>
-              <p>{(contrato.matricula as any)?.curso?.name || 'N/A'}</p>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="md:col-span-2">
+          <div className="bg-white rounded-lg border shadow-sm">
+            <div className="p-6 flex flex-col space-y-1.5">
+              <h3 className="text-2xl font-semibold leading-none tracking-tight">Contrato #{contrato.id}</h3>
+              <p className="text-sm text-muted-foreground">
+                Emitido em {formatDate(contrato.data_emissao)}
+              </p>
             </div>
-            <div>
-              <h3 className="font-medium">Status</h3>
-              <p>{contrato.status === 'assinado' ? 'Assinado' : 'Pendente'}</p>
-            </div>
-            {contrato.status === 'assinado' && (
-              <div>
-                <h3 className="font-medium">Data de Assinatura</h3>
-                <p>{formatDate(contrato.data_assinatura)}</p>
+            <div className="p-6 pt-0">
+              <div className="space-y-4">
+                <div>
+                  <h3 className="font-medium">Status</h3>
+                  <p className={`mt-1 ${contrato.status === 'Assinado' ? 'text-green-600' : 'text-yellow-600'}`}>
+                    {contrato.status || 'Pendente'}
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className="font-medium">Matrícula</h3>
+                  <p className="mt-1">#{matricula?.id || 'N/A'}</p>
+                </div>
+
+                <div>
+                  <h3 className="font-medium">Curso</h3>
+                  <p className="mt-1">{matricula?.curso_nome || 'N/A'}</p>
+                </div>
+
+                <div>
+                  <h3 className="font-medium">Valor</h3>
+                  <p className="mt-1">R$ {matricula?.valor_total?.toFixed(2) || '0.00'}</p>
+                </div>
+
+                <div>
+                  <h3 className="font-medium">Data de Início</h3>
+                  <p className="mt-1">{formatDate(matricula?.data_inicio)}</p>
+                </div>
+
+                <div>
+                  <h3 className="font-medium">Data de Término</h3>
+                  <p className="mt-1">{formatDate(matricula?.data_termino)}</p>
+                </div>
               </div>
-            )}
-          </div>
-          
-          <div className="flex justify-center mt-4">
-            <iframe 
-              src={contrato.url} 
-              className="w-full h-[500px] border rounded-md"
-              title="Visualização do Contrato"
-            />
-          </div>
-        </CardContent>
-        <CardFooter className="flex flex-col items-stretch gap-4">
-          {contrato.status !== 'assinado' ? (
-            <div className="w-full">
-              <SignContractForm contratoId={contrato.id} />
             </div>
-          ) : (
-            <div className="text-center w-full">
-              <p className="text-green-600 font-medium">Este contrato já foi assinado em {formatDate(contrato.data_assinatura)}</p>
+            <div className="p-6 pt-0 flex items-center">
+              {contrato.status !== 'Assinado' && (
+                <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                  Assinar Contrato
+                </button>
+              )}
+              {contrato.status === 'Assinado' && (
+                <Link href={contrato.arquivo_url || '#'} target="_blank" className="text-blue-500 hover:underline">
+                  Visualizar Contrato Assinado
+                </Link>
+              )}
             </div>
-          )}
-          <Button variant="outline" className="w-full" asChild>
-            <a href={contrato.url} download>Baixar Contrato</a>
-          </Button>
-        </CardFooter>
-      </Card>
+          </div>
+        </div>
+
+        <div>
+          <div className="bg-white rounded-lg border shadow-sm">
+            <div className="p-6 flex flex-col space-y-1.5">
+              <h3 className="text-2xl font-semibold leading-none tracking-tight">Informações</h3>
+            </div>
+            <div className="p-6 pt-0">
+              <div className="space-y-4">
+                <p className="text-sm">
+                  Este contrato estabelece os termos e condições para a prestação de serviços educacionais.
+                </p>
+                <p className="text-sm">
+                  Após a assinatura, o contrato não pode ser alterado. Caso seja necessário fazer alterações,
+                  entre em contato com a secretaria acadêmica.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  )
+  );
 }
