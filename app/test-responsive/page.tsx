@@ -15,8 +15,8 @@ import {
   ResponsiveTextarea, 
   ResponsiveSelect 
 } from '@/app/components/ui/ResponsiveForm';
-import { Button } from '@/components/ui/Button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/Card";
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 
 export default function TestResponsivePage() {
   return (
