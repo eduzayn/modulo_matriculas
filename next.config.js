@@ -14,6 +14,8 @@ const nextConfig = {
   },
   // Use default swcMinify setting
   swcMinify: true,
+  // Set output to export for static site generation
+  output: 'export',
 }
 
 module.exports = nextConfig

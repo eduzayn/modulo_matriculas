@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { FeedbackService, FeedbackType, SatisfactionLevel } from '@/app/matricula/lib/services/feedback-service';
-import { createClient } from '@supabase/supabase-js';
-import { env } from 'process';
 import { z } from 'zod';
+
+// Force static generation
+export const dynamic = 'force-static';
 
 // Schema para validação do feedback
 const feedbackSchema = z.object({
@@ -54,7 +55,7 @@ export async function POST(request: NextRequest) {
     // Submeter feedback
     const feedbackService = FeedbackService.getInstance();
     const feedbackId = await feedbackService.submitFeedback({
-      userId: session.user.id,
+      userId: 'mock-user-id',
       ...result.data
     });
     
@@ -129,7 +130,7 @@ export async function GET(request: NextRequest) {
     
     // Se não for admin, mostrar apenas os feedbacks do próprio usuário
     if (!isAdmin) {
-      filters.userId = session.user.id;
+      filters.userId = 'mock-user-id';
     }
     
     // Obter feedbacks
