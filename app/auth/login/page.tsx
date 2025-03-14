@@ -17,7 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/Card";
-import { Input } from "@/components/ui/input";
+import { Input } from "@/components/ui/Input";
 import { useToast } from "@/components/ui/use-toast";
 
 // Esquema de validação do formulário
