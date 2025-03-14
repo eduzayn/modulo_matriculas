@@ -22,7 +22,7 @@ export default function DashboardPage() {
     currentMonth: 'R$ 25.000,00',
     lastMonth: 'R$ 22.500,00',
     percentageChange: 11.1,
-    trend: 'up',
+    trend: 'up' as const,
   };
 
   // Mock data for payment status
