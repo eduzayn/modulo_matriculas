@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/Badge"
+import { Badge } from "@/components/ui/badge"
 import {
   Card,
   CardContent,
@@ -10,7 +10,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/Card"
+} from "@/components/ui/card"
 import {
   Dialog,
   DialogContent,
@@ -26,8 +26,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/Select"
-import { Textarea } from "@/components/ui/Textarea"
+} from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
 import { DocumentoStatus } from '../types/matricula'
 import { avaliarDocumento } from '../actions/matricula-actions'
 import { toast } from '@/components/ui/use-toast'
