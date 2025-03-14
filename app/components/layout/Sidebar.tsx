@@ -17,6 +17,18 @@ import {
   Percent,
 } from 'lucide-react';
 
+// Icon color mapping
+const iconColors = {
+  dashboard: "text-blue-500",
+  alunos: "text-green-500",
+  cursos: "text-purple-500",
+  pagamentos: "text-amber-500",
+  descontos: "text-pink-500",
+  relatorios: "text-cyan-500",
+  configuracoes: "text-gray-500",
+  suporte: "text-indigo-500",
+};
+
 import { matriculaRoutes } from '@/app/matricula/routes';
 
 interface SidebarProps {
@@ -38,42 +50,42 @@ export default function Sidebar({ isMobile = false }: SidebarProps) {
     {
       name: 'Dashboard',
       href: matriculaRoutes.dashboard,
-      icon: <Home className="h-5 w-5" />,
+      icon: <Home className={`h-5 w-5 ${iconColors.dashboard}`} />,
     },
     {
       name: 'Alunos',
       href: matriculaRoutes.alunos,
-      icon: <Users className="h-5 w-5" />,
+      icon: <Users className={`h-5 w-5 ${iconColors.alunos}`} />,
     },
     {
       name: 'Cursos',
       href: matriculaRoutes.cursos,
-      icon: <BookOpen className="h-5 w-5" />,
+      icon: <BookOpen className={`h-5 w-5 ${iconColors.cursos}`} />,
     },
     {
       name: 'Pagamentos',
       href: matriculaRoutes.pagamentos,
-      icon: <DollarSign className="h-5 w-5" />,
+      icon: <DollarSign className={`h-5 w-5 ${iconColors.pagamentos}`} />,
     },
     {
       name: 'Descontos',
       href: matriculaRoutes.descontos,
-      icon: <Percent className="h-5 w-5" />,
+      icon: <Percent className={`h-5 w-5 ${iconColors.descontos}`} />,
     },
     {
       name: 'Relatórios',
       href: matriculaRoutes.relatorios,
-      icon: <BarChart2 className="h-5 w-5" />,
+      icon: <BarChart2 className={`h-5 w-5 ${iconColors.relatorios}`} />,
     },
     {
       name: 'Configurações',
       href: matriculaRoutes.configuracoes,
-      icon: <Settings className="h-5 w-5" />,
+      icon: <Settings className={`h-5 w-5 ${iconColors.configuracoes}`} />,
     },
     {
       name: 'Suporte',
       href: matriculaRoutes.suporte,
-      icon: <HelpCircle className="h-5 w-5" />,
+      icon: <HelpCircle className={`h-5 w-5 ${iconColors.suporte}`} />,
     },
   ];
 
