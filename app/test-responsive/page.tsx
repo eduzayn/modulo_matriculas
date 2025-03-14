@@ -7,17 +7,16 @@ import {
   ResponsiveHeader, 
   ResponsiveSection, 
   ResponsiveGrid 
-} from '../components/ui/ResponsiveLayout';
+} from '@/app/components/ui/ResponsiveLayout';
 import { 
   ResponsiveForm, 
   ResponsiveFormGroup, 
-  ResponsiveFormRow, 
   ResponsiveInput, 
   ResponsiveTextarea, 
   ResponsiveSelect 
-} from '../components/ui/ResponsiveForm';
-import { Button } from '../../components/ui/Button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+} from '@/app/components/ui/ResponsiveForm';
+import { Button } from '@/components/ui/Button';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/Card";
 
 export default function TestResponsivePage() {
   return (
@@ -34,10 +33,9 @@ export default function TestResponsivePage() {
           }
         />
 
-        <ResponsiveSection 
-          title="Formulário Responsivo" 
-          description="Exemplo de formulário com diferentes tipos de campos"
-        >
+        <ResponsiveSection>
+          <h2 className="text-2xl font-bold mb-4">Formulário Responsivo</h2>
+          <p className="text-sm text-gray-500 mb-6">Exemplo de formulário com diferentes tipos de campos</p>
           <Card>
             <CardHeader>
               <CardTitle>Dados do Aluno</CardTitle>
@@ -45,7 +43,7 @@ export default function TestResponsivePage() {
             </CardHeader>
             <CardContent>
               <ResponsiveForm onSubmit={(e) => e.preventDefault()}>
-                <ResponsiveFormRow>
+                <ResponsiveFormGroup>
                   <ResponsiveInput 
                     label="Nome Completo" 
                     placeholder="Digite o nome completo" 
@@ -57,9 +55,9 @@ export default function TestResponsivePage() {
                     placeholder="exemplo@email.com" 
                     id="email"
                   />
-                </ResponsiveFormRow>
+                </ResponsiveFormGroup>
                 
-                <ResponsiveFormRow>
+                <ResponsiveFormGroup>
                   <ResponsiveInput 
                     label="CPF" 
                     placeholder="000.000.000-00" 
@@ -70,9 +68,9 @@ export default function TestResponsivePage() {
                     type="date" 
                     id="data_nascimento"
                   />
-                </ResponsiveFormRow>
+                </ResponsiveFormGroup>
                 
-                <ResponsiveFormRow>
+                <ResponsiveFormGroup>
                   <ResponsiveSelect 
                     label="Curso" 
                     id="curso"
@@ -93,7 +91,7 @@ export default function TestResponsivePage() {
                       { value: "pix", label: "PIX" },
                     ]}
                   />
-                </ResponsiveFormRow>
+                </ResponsiveFormGroup>
                 
                 <ResponsiveTextarea 
                   label="Observações" 
@@ -109,10 +107,9 @@ export default function TestResponsivePage() {
           </Card>
         </ResponsiveSection>
 
-        <ResponsiveSection 
-          title="Grid Responsivo" 
-          description="Exemplo de grid com diferentes números de colunas"
-        >
+        <ResponsiveSection>
+          <h2 className="text-2xl font-bold mb-4">Grid Responsivo</h2>
+          <p className="text-sm text-gray-500 mb-6">Exemplo de grid com diferentes números de colunas</p>
           <ResponsiveGrid columns={3}>
             {[1, 2, 3, 4, 5, 6].map((item) => (
               <Card key={item}>
