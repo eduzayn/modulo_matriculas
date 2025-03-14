@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/Button"
 import {
   Card,
   CardContent,
@@ -9,14 +9,14 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/Card"
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
+} from "@/components/ui/Tabs"
+import { Badge } from "@/components/ui/Badge"
 import { Separator } from '@/components/ui/separator'
 import { useRouter } from 'next/navigation'
 import { matriculaRoutes } from '../routes'
