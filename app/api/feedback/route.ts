@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { FeedbackService, FeedbackType, SatisfactionLevel } from '@/app/matricula/lib/services/feedback-service';
 import { z } from 'zod';
+import { createClient } from '@edunexia/auth'
 
 // Force static generation
 export const dynamic = 'force-static';
+
+const supabase = createClient()
 
 // Schema para validação do feedback
 const feedbackSchema = z.object({

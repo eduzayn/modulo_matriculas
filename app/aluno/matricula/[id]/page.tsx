@@ -11,12 +11,8 @@ interface MatriculaDetailsPageProps {
 export default async function MatriculaDetailsPage({ params }: MatriculaDetailsPageProps) {
   const { id } = params
   
-  // Authentication is now handled by the main site
-  // TODO: Get user ID from main site's authentication system
-  const userId = 'placeholder-user-id'
-  
   // Obter detalhes da matrícula
-  const matricula = await getMatriculaDetails(null, userId, id)
+  const matricula = await getMatriculaDetails(null, null, id)
   
   if (!matricula) {
     notFound()

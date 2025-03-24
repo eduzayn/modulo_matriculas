@@ -1,7 +1,6 @@
 export type ErrorCode =
   | 'UNEXPECTED_ERROR'
   | 'NOT_FOUND'
-  | 'UNAUTHORIZED'
   | 'FORBIDDEN'
   | 'VALIDATION_ERROR'
   | 'CREATION_FAILED'
@@ -23,42 +22,44 @@ export type ErrorCode =
   | 'GATEWAY_ERROR'
   | 'INVALID_PAYMENT_METHOD'
   | 'INVALID_DISCOUNT'
-  | 'INVALID_NEGOTIATION';
+  | 'INVALID_NEGOTIATION'
+  | 'INVALID_INPUT'
+  | 'INTERNAL_ERROR';
 
 export class AppError extends Error {
-  code: ErrorCode;
-
-  constructor(message: string, code: ErrorCode) {
+  constructor(
+    public code: string,
+    message: string
+  ) {
     super(message);
-    this.code = code;
     this.name = 'AppError';
   }
 }
 
-export const appErrors: Record<ErrorCode, AppError> = {
-  UNEXPECTED_ERROR: new AppError('Ocorreu um erro inesperado', 'UNEXPECTED_ERROR'),
-  NOT_FOUND: new AppError('Recurso não encontrado', 'NOT_FOUND'),
-  UNAUTHORIZED: new AppError('Não autorizado', 'UNAUTHORIZED'),
-  FORBIDDEN: new AppError('Acesso negado', 'FORBIDDEN'),
-  VALIDATION_ERROR: new AppError('Erro de validação', 'VALIDATION_ERROR'),
-  CREATION_FAILED: new AppError('Falha na criação', 'CREATION_FAILED'),
-  UPDATE_FAILED: new AppError('Falha na atualização', 'UPDATE_FAILED'),
-  DELETION_FAILED: new AppError('Falha na exclusão', 'DELETION_FAILED'),
-  QUERY_ERROR: new AppError('Erro na consulta', 'QUERY_ERROR'),
-  ALREADY_EXISTS: new AppError('Recurso já existe', 'ALREADY_EXISTS'),
-  INVALID_STATUS: new AppError('Status inválido', 'INVALID_STATUS'),
-  UPLOAD_FAILED: new AppError('Falha no upload', 'UPLOAD_FAILED'),
-  ALREADY_ALLOCATED: new AppError('Já alocado', 'ALREADY_ALLOCATED'),
-  NO_VACANCIES: new AppError('Sem vagas disponíveis', 'NO_VACANCIES'),
-  ALREADY_SIGNED: new AppError('Já assinado', 'ALREADY_SIGNED'),
-  INVALID_CLASS: new AppError('Turma inválida', 'INVALID_CLASS'),
-  // Financial module error messages
-  PAYMENT_FAILED: new AppError('Falha no processamento do pagamento', 'PAYMENT_FAILED'),
-  ALREADY_PAID: new AppError('Este pagamento já foi registrado', 'ALREADY_PAID'),
-  ALREADY_CANCELLED: new AppError('Este pagamento já foi cancelado', 'ALREADY_CANCELLED'),
-  INSUFFICIENT_FUNDS: new AppError('Saldo insuficiente', 'INSUFFICIENT_FUNDS'),
-  GATEWAY_ERROR: new AppError('Erro no gateway de pagamento', 'GATEWAY_ERROR'),
-  INVALID_PAYMENT_METHOD: new AppError('Método de pagamento inválido', 'INVALID_PAYMENT_METHOD'),
-  INVALID_DISCOUNT: new AppError('Desconto inválido', 'INVALID_DISCOUNT'),
-  INVALID_NEGOTIATION: new AppError('Negociação inválida', 'INVALID_NEGOTIATION')
+export const appErrors = {
+  INVALID_INPUT: new AppError('INVALID_INPUT', 'Entrada inválida'),
+  NOT_FOUND: new AppError('NOT_FOUND', 'Recurso não encontrado'),
+  FORBIDDEN: new AppError('FORBIDDEN', 'Acesso negado'),
+  VALIDATION_ERROR: new AppError('VALIDATION_ERROR', 'Erro de validação'),
+  GATEWAY_ERROR: new AppError('GATEWAY_ERROR', 'Erro de comunicação com serviço externo'),
+  INTERNAL_ERROR: new AppError('INTERNAL_ERROR', 'Erro interno do servidor'),
+  UNEXPECTED_ERROR: new AppError('UNEXPECTED_ERROR', 'Erro inesperado'),
+  CREATION_FAILED: new AppError('CREATION_FAILED', 'Falha na criação'),
+  UPDATE_FAILED: new AppError('UPDATE_FAILED', 'Falha na atualização'),
+  DELETION_FAILED: new AppError('DELETION_FAILED', 'Falha na exclusão'),
+  QUERY_ERROR: new AppError('QUERY_ERROR', 'Erro na consulta'),
+  ALREADY_EXISTS: new AppError('ALREADY_EXISTS', 'Recurso já existe'),
+  INVALID_STATUS: new AppError('INVALID_STATUS', 'Status inválido'),
+  UPLOAD_FAILED: new AppError('UPLOAD_FAILED', 'Falha no upload'),
+  ALREADY_ALLOCATED: new AppError('ALREADY_ALLOCATED', 'Já alocado'),
+  NO_VACANCIES: new AppError('NO_VACANCIES', 'Sem vagas disponíveis'),
+  ALREADY_SIGNED: new AppError('ALREADY_SIGNED', 'Já assinado'),
+  INVALID_CLASS: new AppError('INVALID_CLASS', 'Turma inválida'),
+  PAYMENT_FAILED: new AppError('PAYMENT_FAILED', 'Falha no processamento do pagamento'),
+  ALREADY_PAID: new AppError('ALREADY_PAID', 'Este pagamento já foi registrado'),
+  ALREADY_CANCELLED: new AppError('ALREADY_CANCELLED', 'Este pagamento já foi cancelado'),
+  INSUFFICIENT_FUNDS: new AppError('INSUFFICIENT_FUNDS', 'Saldo insuficiente'),
+  INVALID_PAYMENT_METHOD: new AppError('INVALID_PAYMENT_METHOD', 'Método de pagamento inválido'),
+  INVALID_DISCOUNT: new AppError('INVALID_DISCOUNT', 'Desconto inválido'),
+  INVALID_NEGOTIATION: new AppError('INVALID_NEGOTIATION', 'Negociação inválida')
 };

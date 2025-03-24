@@ -2,7 +2,7 @@
 
 import { z } from 'zod';
 import { AppError } from './errors';
-import type { ActionResponse } from '../types/actions';
+import type { ActionResponse } from '@edunexia/types';
 
 export function createSafeActionClient() {
   return {

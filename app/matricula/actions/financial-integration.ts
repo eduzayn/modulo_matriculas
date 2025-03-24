@@ -2,18 +2,18 @@
 
 import { createSafeActionClient } from 'next-safe-action';
 import { cookies } from 'next/headers';
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from '@edunexia/auth';
 import { z } from 'zod';
 import { AppError, appErrors } from '@/lib/errors';
-import type { ActionResponse } from '@/types/actions';
-import { FormaPagamento } from '@/app/matricula/types/matricula';
+import type { ActionResponse } from '@edunexia/types';
 import { 
-  PaymentStatus, 
-  PaymentMethod, 
+  FormaPagamento, 
+  PaymentStatus,
+  PaymentMethod,
   DiscountType,
   TransactionType,
   TransactionStatus
-} from '@/app/matricula/types/financial';
+} from '@edunexia/types';
 
 const action = createSafeActionClient();
 
@@ -44,8 +44,8 @@ const generatePaymentsSchema = z.object({
 // Gerar pagamentos para uma matrícula
 export const generatePayments = action(generatePaymentsSchema, async (data): Promise<ActionResponse<{ success: boolean }>> => {
     try {
+      // Authentication is now handled by the main site
       // TODO: Get authenticated user from main site
-      // For now, maintain database operations but authentication is handled by main site
       const cookieStore = cookies();
       const supabase = createClient(cookieStore); // Will be replaced with main site's database client
 
@@ -218,8 +218,8 @@ const registerPaymentSchema = z.object({
 // Registrar pagamento de uma parcela
 export const registerPayment = action(registerPaymentSchema, async (data): Promise<ActionResponse<{ success: boolean }>> => {
     try {
+      // Authentication is now handled by the main site
       // TODO: Get authenticated user from main site
-      // For now, maintain database operations but authentication is handled by main site
       const cookieStore = cookies();
       const supabase = createClient(cookieStore); // Will be replaced with main site's database client
 
@@ -316,8 +316,8 @@ const cancelPaymentSchema = z.object({
 // Cancelar pagamento de uma parcela
 export const cancelPayment = action(cancelPaymentSchema, async (data): Promise<ActionResponse<{ success: boolean }>> => {
     try {
+      // Authentication is now handled by the main site
       // TODO: Get authenticated user from main site
-      // For now, maintain database operations but authentication is handled by main site
       const cookieStore = cookies();
       const supabase = createClient(cookieStore); // Will be replaced with main site's database client
 

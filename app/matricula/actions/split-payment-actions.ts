@@ -3,8 +3,8 @@
 import { createSafeActionClient } from 'next-safe-action';
 import { z } from 'zod';
 import { AppError, appErrors } from '@/lib/errors';
-import type { ActionResponse } from '@/types/actions';
-import { PaymentStatus } from '@/app/matricula/types/financial';
+import type { ActionResponse } from '@edunexia/types';
+import { PaymentStatus } from '@edunexia/types';
 
 const action = createSafeActionClient();
 

@@ -100,12 +100,8 @@ const Badge: React.FC<BadgeProps> = ({ children, variant = 'default', className 
 }
 
 export default async function AlunoContratosPage() {
-  // Authentication is now handled by the main site
-  // TODO: Get user ID from main site authentication
-  const userId = '' // This will come from the main site's auth
-  
   // Obter contratos do aluno
-  const contratos = await getAlunoContratos(null, userId)
+  const contratos = await getAlunoContratos(null)
   
   // Função para formatar data
   const formatDate = (dateString: string) => {

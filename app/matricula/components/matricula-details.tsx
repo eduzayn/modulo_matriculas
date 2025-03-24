@@ -20,7 +20,7 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from '@/components/ui/separator'
 import { useRouter } from 'next/navigation'
 import { matriculaRoutes } from '../routes'
-import { MatriculaStatus, DocumentoStatus } from '../types/matricula'
+import { MatriculaStatus, StatusDocumento } from '@edunexia/types'
 import { updateMatriculaStatus } from '../actions/matricula-actions'
 import { toast } from '@/components/ui/use-toast'
 import { 
@@ -92,9 +92,9 @@ export function MatriculaDetails({ matricula }: MatriculaDetailsProps) {
 
   const getDocumentStatusBadgeVariant = (status: string): "outline" | "secondary" | "destructive" | "default" | null | undefined => {
     const variants: Record<string, "outline" | "secondary" | "destructive" | "default" | null | undefined> = {
-      [DocumentoStatus.PENDENTE]: 'outline',
-      [DocumentoStatus.APROVADO]: 'outline',
-      [DocumentoStatus.REJEITADO]: 'destructive',
+      [StatusDocumento.PENDENTE]: 'outline',
+      [StatusDocumento.APROVADO]: 'outline',
+      [StatusDocumento.REJEITADO]: 'destructive',
     }
     return variants[status] || 'outline'
   }

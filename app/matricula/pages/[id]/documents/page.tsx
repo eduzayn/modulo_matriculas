@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Button } from '../../../../../components/ui/Button';
+import { matriculaRoutes } from '../../../../matricula/routes';
 
 interface DocumentListProps {
   documents: any[];
@@ -107,11 +108,6 @@ export default function DocumentsPage({ params }: { params: { id: string } }) {
       created_at: '2023-01-02T00:00:00Z',
     },
   ];
-  
-  // Routes for navigation
-  const matriculaRoutes = {
-    details: (id: string) => `/matricula/${id}`,
-  };
   
   // Admin check
   const isAdmin = false;

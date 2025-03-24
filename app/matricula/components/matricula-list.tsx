@@ -30,7 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/Select";
-import { MatriculaStatus } from '../types/matricula';
+import { MatriculaStatus } from '@edunexia/types';
 import { matriculaRoutes } from '../routes';
 
 interface MatriculaListProps {

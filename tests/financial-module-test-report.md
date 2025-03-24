@@ -65,4 +65,4 @@ O módulo financeiro foi implementado com sucesso, atendendo a todos os requisit
 
 1. Monitorar o desempenho em produção
 2. Coletar feedback dos usuários
-3. Implementar melhorias contínuas com base no feedback
+3. Implementar melhorias contínuas com base no feedback 

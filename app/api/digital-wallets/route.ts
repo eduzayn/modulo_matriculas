@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { DigitalWallet } from '@/app/matricula/types/payment-integrations';
-import { db } from '@/lib/db'; // TODO: Update to use centralized database client
 
 /**
  * API para listar carteiras digitais disponíveis
@@ -8,7 +7,6 @@ import { db } from '@/lib/db'; // TODO: Update to use centralized database clien
  */
 export async function GET(request: NextRequest) {
   try {
-    // TODO: Authentication is now handled by the main site
     // Verificar carteiras digitais configuradas no banco de dados
     const { data: configuredWallets, error } = await supabase
       .from('financial.digital_wallets')
@@ -85,7 +83,6 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    // TODO: Authentication is now handled by the main site
     // Obter dados da requisição
     const body = await request.json();
     

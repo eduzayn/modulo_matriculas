@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from '@edunexia/auth';
 import { cookies } from 'next/headers';
 
 // Lytex API configuration
 const LYTEX_API_URL = 'https://api.lytex.com.br/v2';
 const LYTEX_CLIENT_ID = process.env.LYTEX_CLIENT_ID;
 const LYTEX_CLIENT_SECRET = process.env.LYTEX_CLIENT_SECRET;
+
+const supabase = createClient();
 
 /**
  * Get Lytex API token
@@ -124,7 +126,6 @@ export async function POST(request: NextRequest) {
   try {
     // Authentication is now handled by the main site
     // TODO: Get user information from main site's authentication system
-    const supabase = createServerSupabaseClient(); // Use a non-auth Supabase client for database operations
     
     // Get the request body
     const body = await request.json();

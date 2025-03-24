@@ -1,12 +1,22 @@
 'use server';
 
-import { createSafeActionClient } from 'next-safe-action';
 import { z } from 'zod';
+import { ApiClient, Matricula } from '@edunexia/api-client';
 import { contractService } from '../lib/services/contract-service';
 import { monitoringService } from '../lib/services/monitoring-service';
+import { action, ActionError } from '../../lib/safe-action';
+import { 
+  MatriculaStatus, 
+  FormaPagamento, 
+  StatusDocumento, 
+  AssinaturaStatus 
+} from '@edunexia/types';
 
-// Create a safe action client
-const action = createSafeActionClient();
+// Initialize API client
+const api = new ApiClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 // Schema for creating a matricula
 const createMatriculaSchema = z.object({
@@ -15,14 +25,14 @@ const createMatriculaSchema = z.object({
   data_inicio: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   data_termino: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   valor_total: z.number().positive(),
-  forma_pagamento: z.enum(['boleto', 'cartao', 'pix', 'transferencia']),
+  forma_pagamento: z.nativeEnum(FormaPagamento),
   parcelas: z.number().int().positive(),
 });
 
 // Schema for updating matricula status
 const updateMatriculaStatusSchema = z.object({
   matricula_id: z.string().uuid(),
-  status: z.enum(['pendente', 'ativa', 'cancelada', 'concluida', 'trancada']),
+  status: z.nativeEnum(MatriculaStatus),
 });
 
 // Schema for uploading a document
@@ -51,179 +61,184 @@ const assinarContratoSchema = z.object({
 });
 
 // Create a new matricula
-export const createMatricula = action(
-  createMatriculaSchema,
-  async (data) => {
+export const createMatricula = action
+  .schema(createMatriculaSchema)
+  .action(async ({ parsedInput }) => {
     try {
       monitoringService.incrementMetric('matricula:create');
       
-      // TODO: Replace with main site's API call
-      const { data: aluno, error: alunoError } = await fetch(process.env.MAIN_SITE_URL + '/api/students/' + data.aluno_id).then(res => res.json());
+      const { data: matricula, error } = await api.createMatricula({
+        aluno_id: parsedInput.aluno_id,
+        curso_id: parsedInput.curso_id,
+        data_inicio: parsedInput.data_inicio,
+        data_fim: parsedInput.data_termino,
+        valor_total: parsedInput.valor_total,
+        valor_parcela: parsedInput.valor_total / parsedInput.parcelas,
+        numero_parcelas: parsedInput.parcelas,
+        documentos: [],
+        status: MatriculaStatus.PENDENTE,
+        data_matricula: new Date().toISOString()
+      });
 
-      if (alunoError) {
-        console.error('Erro ao buscar aluno:', alunoError);
-        return { success: false, error: 'Aluno não encontrado' };
+      if (error) {
+        throw new ActionError(error.message);
       }
 
-      // TODO: Replace with actual database call
-      const matriculaId = Math.random().toString(36).substring(2, 15);
-      
-      return {
-        success: true,
-        data: {
-          id: matriculaId,
-          ...data,
-          status: 'pendente',
-          created_at: new Date().toISOString(),
-        },
-      };
+      return matricula;
     } catch (error) {
+      if (error instanceof ActionError) {
+        throw error;
+      }
       console.error('Erro ao criar matrícula:', error);
-      return { success: false, error: 'Erro ao criar matrícula' };
+      throw new ActionError('Erro ao criar matrícula');
     }
-  }
-);
+  });
 
 // Update matricula status
-export const updateMatriculaStatus = action(
-  updateMatriculaStatusSchema,
-  async (data) => {
+export const updateMatriculaStatus = action
+  .schema(updateMatriculaStatusSchema)
+  .action(async ({ parsedInput }) => {
     try {
       monitoringService.incrementMetric('matricula:update:status');
       
-      // TODO: Replace with actual database call
-      
-      return {
-        success: true,
-        data: {
-          id: data.matricula_id,
-          status: data.status,
-          updated_at: new Date().toISOString(),
-        },
-      };
+      const { data: matricula, error } = await api.updateMatricula(parsedInput.matricula_id, {
+        status: parsedInput.status
+      });
+
+      if (error) {
+        throw new ActionError(error.message);
+      }
+
+      return matricula;
     } catch (error) {
+      if (error instanceof ActionError) {
+        throw error;
+      }
       console.error('Erro ao atualizar status da matrícula:', error);
-      return { success: false, error: 'Erro ao atualizar status da matrícula' };
+      throw new ActionError('Erro ao atualizar status da matrícula');
     }
-  }
-);
+  });
 
 // Upload a document
-export const uploadDocumento = action(
-  uploadDocumentoSchema,
-  async (data) => {
+export const uploadDocumento = action
+  .schema(uploadDocumentoSchema)
+  .action(async ({ parsedInput }) => {
     try {
       monitoringService.incrementMetric('documento:upload');
       
-      // TODO: Replace with actual file upload and database call
+      // TODO: Implement file upload to Supabase Storage
       const documentoId = Math.random().toString(36).substring(2, 15);
       
+      const { data: matricula, error } = await api.updateMatricula(parsedInput.matricula_id, {
+        documentos: [`https://example.com/documents/${documentoId}`]
+      });
+
+      if (error) {
+        throw new ActionError(error.message);
+      }
+
       return {
-        success: true,
-        data: {
-          id: documentoId,
-          matricula_id: data.matricula_id,
-          tipo: data.tipo,
-          url: `https://example.com/documents/${documentoId}`,
-          aprovado: null,
-          created_at: new Date().toISOString(),
-        },
+        id: documentoId,
+        matricula_id: parsedInput.matricula_id,
+        tipo: parsedInput.tipo,
+        url: `https://example.com/documents/${documentoId}`,
+        status: StatusDocumento.PENDENTE,
+        created_at: new Date().toISOString(),
       };
     } catch (error) {
+      if (error instanceof ActionError) {
+        throw error;
+      }
       console.error('Erro ao fazer upload do documento:', error);
-      return { success: false, error: 'Erro ao fazer upload do documento' };
+      throw new ActionError('Erro ao fazer upload do documento');
     }
-  }
-);
+  });
 
 // Evaluate a document
-export const avaliarDocumento = action(
-  avaliarDocumentoSchema,
-  async (data) => {
+export const avaliarDocumento = action
+  .schema(avaliarDocumentoSchema)
+  .action(async ({ parsedInput }) => {
     try {
       monitoringService.incrementMetric('documento:avaliar');
       
-      // TODO: Replace with actual database call
+      // TODO: Implement document evaluation in Supabase
       
       return {
-        success: true,
-        data: {
-          id: data.documento_id,
-          aprovado: data.aprovado,
-          observacao: data.observacao,
-          updated_at: new Date().toISOString(),
-        },
+        id: parsedInput.documento_id,
+        aprovado: parsedInput.aprovado,
+        status: parsedInput.aprovado ? StatusDocumento.APROVADO : StatusDocumento.REJEITADO,
+        observacao: parsedInput.observacao,
+        updated_at: new Date().toISOString(),
       };
     } catch (error) {
+      if (error instanceof ActionError) {
+        throw error;
+      }
       console.error('Erro ao avaliar documento:', error);
-      return { success: false, error: 'Erro ao avaliar documento' };
+      throw new ActionError('Erro ao avaliar documento');
     }
-  }
-);
+  });
 
 // Generate a contract
-export const gerarContrato = action(
-  gerarContratoSchema,
-  async (data) => {
+export const gerarContrato = action
+  .schema(gerarContratoSchema)
+  .action(async ({ parsedInput }) => {
     try {
       monitoringService.incrementMetric('contrato:gerar');
       
-      // TODO: Replace with actual database call to get matricula data
-      const matriculaData = {
-        matriculaId: data.matricula_id,
-        alunoNome: 'Nome do Aluno',
-        cursoNome: 'Nome do Curso',
-        valorTotal: 1000,
-        dataInicio: '01/01/2023',
-        dataTermino: '31/12/2023',
-      };
+      const { data: matricula, error } = await api.getMatriculaById(parsedInput.matricula_id);
+
+      if (error || !matricula) {
+        throw new ActionError(error?.message || 'Matrícula não encontrada');
+      }
+
+      // TODO: Implement contract generation with actual data
+      const contractPdf = await contractService.generateContract({
+        matriculaId: parsedInput.matricula_id,
+        alunoNome: 'Nome do Aluno', // TODO: Get from aluno data
+        cursoNome: 'Nome do Curso', // TODO: Get from curso data
+        valorTotal: matricula.valor_total,
+        dataInicio: matricula.data_inicio,
+        dataTermino: matricula.data_fim,
+      });
       
-      // Generate contract PDF
-      const contractPdf = await contractService.generateContract(matriculaData);
-      
-      // TODO: Save the PDF to storage and update database
+      // TODO: Save the PDF to Supabase Storage and update database
       
       return {
-        success: true,
-        data: {
-          matricula_id: data.matricula_id,
-          contrato_url: `https://example.com/contracts/${data.matricula_id}`,
-          created_at: new Date().toISOString(),
-        },
+        matricula_id: parsedInput.matricula_id,
+        contrato_url: `https://example.com/contracts/${parsedInput.matricula_id}`,
+        status: AssinaturaStatus.PENDENTE,
+        created_at: new Date().toISOString(),
       };
     } catch (error) {
+      if (error instanceof ActionError) {
+        throw error;
+      }
       console.error('Erro ao gerar contrato:', error);
-      return { success: false, error: 'Erro ao gerar contrato' };
+      throw new ActionError('Erro ao gerar contrato');
     }
-  }
-);
+  });
 
 // Sign a contract
-export const assinarContrato = action(
-  assinarContratoSchema,
-  async (data) => {
+export const assinarContrato = action
+  .schema(assinarContratoSchema)
+  .action(async ({ parsedInput }) => {
     try {
       monitoringService.incrementMetric('contrato:assinar');
       
-      // TODO: Replace with actual database call to get contract PDF
-      // const contractPdf = ...
-      
-      // TODO: Sign the contract
-      // const signedPdf = await contractService.signContract(contractPdf, data.assinatura);
-      
-      // TODO: Save the signed PDF to storage and update database
+      // TODO: Implement contract signing in Supabase
       
       return {
-        success: true,
-        data: {
-          matricula_id: data.matricula_id,
-          contrato_assinado: true,
-          assinatura_data: new Date().toISOString(),
-        },
+        matricula_id: parsedInput.matricula_id,
+        contrato_assinado: true,
+        status: AssinaturaStatus.ASSINADO,
+        assinatura_data: new Date().toISOString(),
       };
     } catch (error) {
+      if (error instanceof ActionError) {
+        throw error;
+      }
       console.error('Erro ao assinar contrato:', error);
-      return { success: false, error: 'Erro ao assinar contrato' };
+      throw new ActionError('Erro ao assinar contrato');
     }
-  }
-);
+  });

@@ -1,6 +1,5 @@
 // Simplified notification service
 import nodemailer from 'nodemailer';
-import twilio from 'twilio';
 
 // Create a test SMTP transporter
 const transporter = nodemailer.createTransport({
@@ -12,12 +11,6 @@ const transporter = nodemailer.createTransport({
     pass: process.env.SMTP_PASSWORD || 'password',
   },
 });
-
-// Create a test Twilio client
-const twilioClient = twilio(
-  process.env.TWILIO_ACCOUNT_SID || 'AC00000000000000000000000000000000',
-  process.env.TWILIO_AUTH_TOKEN || '0000000000000000000000000000000000'
-);
 
 export const notificationService = {
   /**

@@ -1,8 +1,7 @@
-import { ActionResponse } from '@/types/actions';
+import { ActionResponse, CreditScoreLevel, CreditScoreResult } from '@edunexia/types';
 import { AppError, appErrors } from '@/lib/errors';
 import { createSafeActionClient } from '@/lib/safe-action';
 import { z } from 'zod';
-import { CreditScoreLevel, CreditScoreResult } from '../types/payment-integrations';
 
 // Configuração da API de análise de crédito
 const CREDIT_API_URL = process.env.CREDIT_API_URL || 'https://api.creditanalysis.com';

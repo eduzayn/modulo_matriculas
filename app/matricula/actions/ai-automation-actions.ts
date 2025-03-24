@@ -3,7 +3,14 @@
 import { action } from '@/lib/safe-action';
 import { z } from 'zod';
 import { AppError, appErrors } from '@/lib/errors';
-import type { ActionResponse } from '@/types/actions';
+import { 
+  ActionResponse,
+  OCRStatus,
+  ChatbotIntent,
+  ChatbotIntentConfig,
+  ChatbotIntentType,
+  EvasionRisk
+} from '@edunexia/types';
 import { cookies } from 'next/headers';
 import { createClient } from '@/lib/supabase/server';
 import { 
@@ -13,12 +20,7 @@ import {
   novaChatbotConversaSchema,
   recomendacaoTurmaSchema,
   preferenciaAlunoSchema,
-  verificacaoIdSchema,
-  OCRStatus,
-  ChatbotIntent,
-  ChatbotIntentConfig,
-  ChatbotIntentType,
-  EvasionRisk
+  verificacaoIdSchema
 } from '../types/ai-automation';
 
 // Use imported action from safe-action

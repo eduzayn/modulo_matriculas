@@ -28,7 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/Select"
 import { Textarea } from "@/components/ui/Textarea"
-import { DocumentoStatus } from '../types/matricula'
+import { StatusDocumento } from '@edunexia/types'
 import { avaliarDocumento } from '../actions/matricula-actions'
 import { toast } from '@/components/ui/use-toast'
 import { useRouter } from 'next/navigation'
@@ -41,7 +41,7 @@ interface DocumentListProps {
 export function DocumentList({ documents, isAdmin = false }: DocumentListProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [selectedDocument, setSelectedDocument] = useState<any>(null)
-  const [status, setStatus] = useState<DocumentoStatus>(DocumentoStatus.PENDENTE)
+  const [status, setStatus] = useState<StatusDocumento>(StatusDocumento.PENDENTE)
   const [observacoes, setObservacoes] = useState('')
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const router = useRouter()
@@ -85,16 +85,16 @@ export function DocumentList({ documents, isAdmin = false }: DocumentListProps) 
 
   const openAvaliacaoDialog = (document: any) => {
     setSelectedDocument(document)
-    setStatus(document.status || DocumentoStatus.PENDENTE)
+    setStatus(document.status || StatusDocumento.PENDENTE)
     setObservacoes(document.observacoes || '')
     setIsDialogOpen(true)
   }
 
-  const getStatusBadgeVariant = (status: DocumentoStatus): "outline" | "secondary" | "destructive" | "default" | null | undefined => {
-    const variants: Record<DocumentoStatus, "outline" | "secondary" | "destructive" | "default" | null | undefined> = {
-      [DocumentoStatus.PENDENTE]: 'outline',
-      [DocumentoStatus.APROVADO]: 'outline',
-      [DocumentoStatus.REJEITADO]: 'destructive',
+  const getStatusBadgeVariant = (status: StatusDocumento): "outline" | "secondary" | "destructive" | "default" | null | undefined => {
+    const variants: Record<StatusDocumento, "outline" | "secondary" | "destructive" | "default" | null | undefined> = {
+      [StatusDocumento.PENDENTE]: 'outline',
+      [StatusDocumento.APROVADO]: 'outline',
+      [StatusDocumento.REJEITADO]: 'destructive',
     }
     return variants[status] || 'outline'
   }
@@ -125,7 +125,7 @@ export function DocumentList({ documents, isAdmin = false }: DocumentListProps) 
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg">{document.tipo}</CardTitle>
-              <Badge variant={getStatusBadgeVariant(document.status as DocumentoStatus)}>
+              <Badge variant={getStatusBadgeVariant(document.status as StatusDocumento)}>
                 {document.status}
               </Badge>
             </div>
@@ -179,16 +179,16 @@ export function DocumentList({ documents, isAdmin = false }: DocumentListProps) 
               <h4 className="text-sm font-medium">Status</h4>
               <Select
                 value={status}
-                onValueChange={(value) => setStatus(value as DocumentoStatus)}
+                onValueChange={(value) => setStatus(value as StatusDocumento)}
                 disabled={isLoading}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione o status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={DocumentoStatus.PENDENTE}>Pendente</SelectItem>
-                  <SelectItem value={DocumentoStatus.APROVADO}>Aprovado</SelectItem>
-                  <SelectItem value={DocumentoStatus.REJEITADO}>Rejeitado</SelectItem>
+                  <SelectItem value={StatusDocumento.PENDENTE}>Pendente</SelectItem>
+                  <SelectItem value={StatusDocumento.APROVADO}>Aprovado</SelectItem>
+                  <SelectItem value={StatusDocumento.REJEITADO}>Rejeitado</SelectItem>
                 </SelectContent>
               </Select>
             </div>

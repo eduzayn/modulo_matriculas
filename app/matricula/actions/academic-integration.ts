@@ -2,11 +2,11 @@
 
 import { createSafeActionClient } from 'next-safe-action';
 import { cookies } from 'next/headers';
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from '@edunexia/auth';
 import { z } from 'zod';
 import { AppError, appErrors } from '@/lib/errors';
-import type { ActionResponse } from '@/types/actions';
-import { MatriculaStatus } from '@/app/matricula/types/matricula';
+import type { ActionResponse } from '@edunexia/types';
+import { MatriculaStatus } from '@edunexia/types';
 
 const action = createSafeActionClient();
 
@@ -22,8 +22,7 @@ export const allocateClass = action
   .schema(allocateClassSchema)
   .action(async (data): Promise<ActionResponse<{ success: boolean }>> => {
     try {
-      // TODO: Replace with main site's authentication system
-      // Authentication is now handled centrally
+      // Authentication is now handled by the main site
       const supabase = createClient();
 
       // Verificar se a matrícula existe e está ativa
@@ -151,8 +150,7 @@ export const checkAcademicRequirements = action
   .schema(checkAcademicRequirementsSchema)
   .action(async (data): Promise<ActionResponse<{ approved: boolean; reasons?: string[] }>> => {
     try {
-      // TODO: Replace with main site's authentication system
-      // Authentication is now handled centrally
+      // Authentication is now handled by the main site
       const supabase = createClient();
 
       // Verificar se a matrícula existe
@@ -241,8 +239,7 @@ export const generateCurriculum = action
   .schema(generateCurriculumSchema)
   .action(async (data): Promise<ActionResponse<{ success: boolean; curriculum_id?: string }>> => {
     try {
-      // TODO: Replace with main site's authentication system
-      // Authentication is now handled centrally
+      // Authentication is now handled by the main site
       const supabase = createClient();
 
       // Verificar se a matrícula existe

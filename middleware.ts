@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createMiddlewareClient } from '@edunexia/auth'
 
 // Rotas públicas que não requerem autenticação
 const publicRoutes = [
@@ -65,28 +65,8 @@ export async function middleware(request: NextRequest) {
   // Criar resposta inicial
   let response = NextResponse.next()
 
-  // Inicializar o cliente Supabase
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false,
-        detectSessionInUrl: false,
-      },
-    }
-  )
-
-  // Obter token de autenticação do cookie
-  const authCookie = request.cookies.get('sb-auth-token')?.value
-  
-  // Se não houver cookie de autenticação, redirecionar para login
-  if (!authCookie) {
-    const redirectUrl = new URL('/auth/login', request.url)
-    redirectUrl.searchParams.set('callbackUrl', request.url)
-    return NextResponse.redirect(redirectUrl)
-  }
+  // Criar cliente de middleware do novo sistema de autenticação
+  const supabase = createMiddlewareClient(request, response)
 
   try {
     // Verificar se o token é válido

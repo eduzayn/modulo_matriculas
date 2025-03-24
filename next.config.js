@@ -11,11 +11,28 @@ const nextConfig = {
   // Only include essential image configuration
   images: {
     unoptimized: true,
+    domains: ['localhost'],
   },
   // Use default swcMinify setting
   swcMinify: true,
   // Set output to export for static site generation
   output: 'export',
+  transpilePackages: [
+    "@edunexia/ui-components",
+    "@edunexia/auth",
+    "@edunexia/api-client",
+    "@edunexia/utils"
+  ],
+  experimental: {
+    serverActions: true,
+  },
+  webpack: (config) => {
+    config.externals.push({
+      'utf-8-validate': 'commonjs utf-8-validate',
+      'bufferutil': 'commonjs bufferutil',
+    })
+    return config
+  },
 }
 
 module.exports = nextConfig

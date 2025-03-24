@@ -10,7 +10,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { CalendarIcon, Download, FileText, PieChart, TrendingUp, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
-import { PaymentStatus } from '../types/financial';
+import { PaymentStatus } from '@edunexia/types';
 
 // Interface para tipagem do Supabase
 interface MatriculaJoin {
